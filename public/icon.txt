@@ -1,0 +1,57 @@
+<i class="fa-solid fa-heart"></i>
+<i class="fa-solid fa-star"></i>
+<i class="fa-solid fa-comment"></i>
+<i class="fa-regular fa-circle-user"></i>
+``
+
+
+  // const users = [
+  //   {
+  //     id: 1,
+  //     username: "Nguyen Anh",
+  //     avatar: "/images/icon.jpg"
+  //   },
+  //   {
+  //     id: 2,
+  //     username: "Linh Chi",
+  //     avatar: "/images/icon.jpg"
+  //   },
+  //   {
+  //     id: 3,
+  //     username: "Linh Anh",
+  //     avatar: "/images/icon.jpg"
+  //   },
+  // ]
+
+  // const chats = {
+  //   chats: {
+  //     "12": {
+  //       messages: {
+  //         msg1: {
+  //           senderId: 1,
+  //           content: "Xin chào, bạn khỏe không?",
+  //           timestamp: 1696602950000,
+  //         },
+  //         msg2: {
+  //           senderId: 2,
+  //           content: "Mình khỏe, còn bạn?",
+  //           timestamp: 1696602955000,
+  //         },
+  //       },
+  //     },
+  //     "13": {
+  //       messages: {
+  //         msg1: {
+  //           senderId: 1,
+  //           content: "Chào Linh Anh!",
+  //           timestamp: 1696603050000,
+  //         },
+  //         msg2: {
+  //           senderId: 3,
+  //           content: "Ồ thì ra là như vậy",
+  //           timestamp: 1696602955000,
+  //         }
+  //       },
+  //     },
+  //   },
+  // };

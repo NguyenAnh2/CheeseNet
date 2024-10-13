@@ -6,7 +6,6 @@ const {
   signInWithEmailAndPassword,
 } = require("firebase/auth");
 const { getDatabase } = require("firebase/database");
-
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,

@@ -15,7 +15,6 @@ const GetChat = ({ user1Id, user2Id, flagSend }) => {
   const [newContent, setNewContent] = useState("");
   const [isDeletePopupVisible, setDeletePopupVisible] = useState(false);
   const [messageToDelete, setMessageToDelete] = useState(null);
-  const [followSnapshot, setFollowSnapshot] = useState([])
   const messagesEndRef = useRef(null);
 
   const styleSendMessage =
@@ -29,13 +28,14 @@ const GetChat = ({ user1Id, user2Id, flagSend }) => {
     const messagesRef = ref(database, `chats/${chatId}/messages`);
     try {
       const snapshot = await get(messagesRef);
-      setFollowSnapshot(snapshot)
       if (snapshot.exists()) {
         const data = snapshot.val();
         const messagesArray = Object.keys(data).map((key) => ({
           uid: key,
           ...data[key],
         }));
+        console.log(messages);
+        
         setMessages(messagesArray);
       } else {
         setMessages([]);
@@ -47,7 +47,7 @@ const GetChat = ({ user1Id, user2Id, flagSend }) => {
 
   useEffect(() => {
     fetchMessages(); // Chỉ gọi một lần để lấy tin nhắn
-  }, [chatId, flagSend, newContent, isDeletePopupVisible, followSnapshot]);
+  }, [chatId, flagSend, newContent, isDeletePopupVisible]);
 
   const handleEditMessage = (messageId, currentContent) => {
     setEditingMessage(messageId); // Bắt đầu chỉnh sửa tin nhắn

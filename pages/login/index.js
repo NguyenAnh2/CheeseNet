@@ -1,5 +1,3 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -15,7 +13,7 @@ export default function LoginPage() {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("/login", {
+      const response = await fetch("/api/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -67,9 +65,6 @@ export default function LoginPage() {
 
   return (
     <>
-      {/* <Link href="/" >
-        <FontAwesomeIcon icon={faArrowLeft} className="mt-5 ml-5 text-2xl"/>
-      </Link> */}
       <div className="relative flex flex-col px-6 py-8 -translate-x-2/4 left-2/4 w-11/12 border-2 translate-y-1/4 rounded-lg">
         <h2 className="text-2xl font-bold my-3">Đăng nhập</h2>
         <form className="" onSubmit={handleLogin}>

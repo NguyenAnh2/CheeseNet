@@ -22,7 +22,7 @@ export default function Home() {
       <div className="relative w-full flex pt-16">
         {/* <SideLeft /> */}
         <ParentOpenMessage />
-        <div className="relative left-2/4 -translate-x-2/4 w-[30%]">
+        <div className="relative left-2/4 -translate-x-2/4 sm:w-[30%] w-[90%]">
           <NewsFeed />
         </div>
         <SideRight />

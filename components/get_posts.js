@@ -109,15 +109,15 @@ export default function GetPosts() {
   }, []);
 
   return (
-    <div className="">
+    <div className="bg-white">
       {posts
         .sort((a, b) => b.timestamp - a.timestamp) // Sắp xếp theo timestamp (mới nhất lên đầu)
         .map((post) => {
           const user = users.find((user) => user.uid === post.userId);
           return (
-            <div className="flex flex-col border rounded-md my-6">
+            <div className="flex flex-col border rounded-md my-6 sm:w-full">
               <div className="flex justify-between mb-5 border-b px-2 py-3">
-                <div className="flex">
+                <div className="flex" title={user.username}>
                   <Image
                     src={user ? user.image : "/images/icon.jpg"}
                     alt="avatarUser"
@@ -145,18 +145,19 @@ export default function GetPosts() {
 
               {modalImage && (
                 <div
-                  className="fixed inset-x-[-116%] -inset-y-full pt-40 flex items-center justify-center bg-black bg-opacity-30 z-[100] cursor-pointer"
+                //  
+                  className="fixed inset-x-[-116%] inset-y-custom-modal pt-40 flex items-center justify-center bg-black bg-opacity-30 z-[100] cursor-pointer"
                   onClick={closeModal} // Đóng modal khi nhấp bên ngoài
                 >
                   <img
                     src={modalImage}
                     alt="Modal Preview"
-                    className="max-w-full max-h-full rounded"
+                    className="max-[50%] max-h-[50%] rounded"
                     onClick={(e) => e.stopPropagation()} // Ngăn chặn sự kiện click từ ảnh
                   />
                   <FontAwesomeIcon
                     icon={faClose}
-                    className="absolute text-white z-[100] text-2xl top-[34%] right-3 cursor-pointer"
+                    className="absolute text-white z-[100] text-2xl top-0 right-3 cursor-pointer"
                   />
                 </div>
               )}

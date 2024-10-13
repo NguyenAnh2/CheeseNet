@@ -115,37 +115,39 @@ export default function AddPost() {
   };
 
   return (
-    <div>
+    <div className="mobile-w-full relative flex justify-center">
       {userId && (
-        <div className="w-fit">
-          {!isPost && !isDiary && (
-            <div className="flex items-center border rounded-md shadow my-6">
+        <div className="sm:w-fit">
+          {!isPost && !isDiary && ( 
+            <div className="relative left-2/4 -translate-x-2/4 w-fit flex items-center border rounded-md shadow my-6 z-[100]">
               <div
-                className="flex flex-col border-r px-3 py-2 mr-3 cursor-pointer"
+                className="flex flex-col border-r px-3 py-2 md:mr-3 cursor-pointer"
+                title="Thêm bài viết"
                 onClick={(e) => setIsPost(!isPost)}
               >
                 <FontAwesomeIcon icon={faPlus} />
-                <p>Bài viết</p>
+                <p className="hidden md:block">Bài viết</p>
               </div>
-              <p className="font-serif">Hay</p>
+              <p className="md:font-serif hidden md:block">Hay</p>
               <div
-                className="flex flex-col border-l px-3 py-2 ml-3 cursor-pointer"
+                className="flex flex-col border-l px-3 py-2 md:ml-3 cursor-pointer"
+                title="Thêm nhật ký"
                 onClick={() => setIsDiary(!isDiary)}
               >
                 <FontAwesomeIcon icon={faPencil} />
-                <p>Nhật ký</p>
+                <p className="hidden md:block">Nhật ký</p>
               </div>
             </div>
           )}
 
           {isPost && (
-            <div className="flex flex-col justify-between relative border rounded-md m-5 pr-6 pb-8 pt-6">
+            <div className="relative flex flex-col justify-between border rounded-md sm:m-5 mt-5 pr-2 sm:pr-6 pb-8 pt-6 z-[102] bg-white">
               <form onSubmit={(e) => handleSubmitPost(e)} className="">
                 <textarea
                   ref={contentPostRef}
                   rows="2"
-                  className="w-[324px] overflow-auto text-left p-2 outline-neutral-400 resize-none"
-                  placeholder="Cùng chia sẻ ngày hôm nay của bạn nhé!"
+                  className="lg:w-[325px] md:w-[246px] w-full overflow-auto text-left p-2 outline-neutral-400 resize-none"
+                  placeholder="Này hôm nay của bạn ra sao?"
                   onKeyDown={(e) => {
                     if (e.key === "Enter" && !e.shiftKey) {
                       e.preventDefault();
@@ -193,7 +195,7 @@ export default function AddPost() {
 
               {modalImage && (
                 <div
-                  className="fixed inset-x-[-116%] -inset-y-full pt-40 flex items-center justify-center bg-black bg-opacity-70 z-[100] cursor-pointer"
+                  className="fixed inset-x-[-116%] inset-y-custom-modal pt-40 flex items-center justify-center bg-black bg-opacity-70 z-[100] cursor-pointer"
                   onClick={closeModal} // Đóng modal khi nhấp bên ngoài
                 >
                   <img
@@ -218,12 +220,12 @@ export default function AddPost() {
           )}
 
           {isDiary && (
-            <div className="flex justify-between relative border rounded-md m-5 pr-6 py-6">
+            <div className="relative flex flex-col justify-between border rounded-md sm:m-5 mt-5 pr-2 sm:pr-6 pb-8 pt-6 z-[102] bg-white">
               <form onSubmit={(e) => handleSubmitDiary(e)}>
                 <textarea
                   ref={contentDiaryRef}
                   rows="2"
-                  className="w-[324px] overflow-auto text-left p-2 outline-neutral-400 resize-none"
+                  className="lg:w-[325px] md:w-[246px] w-full overflow-auto text-left p-2 outline-neutral-400 resize-none"
                   placeholder="Hoặc lưu lại một chút câu chuyện! Yên tâm là không ai có thể đọc chúng. &#x1F609;"
                   onKeyDown={(e) => {
                     if (e.key === "Enter" && !e.shiftKey) {

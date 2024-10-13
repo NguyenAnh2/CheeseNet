@@ -85,13 +85,13 @@ export default function ParentOpenMessage() {
     const ele = document.getElementById(`inner_message_${uid}`);
     const send_form = document.getElementById("form-send-message");
     if (toggleMiniState[uid]) {
-      ele.classList.remove("relative");
+      // ele.classList.remove("relative");
       ele.classList.add("hidden");
       send_form.classList.remove("absolute")
       send_form.classList.add("hidden")
     } else {
       ele.classList.remove("hidden");
-      ele.classList.add("relative");
+      // ele.classList.add("relative");
       send_form.classList.remove("hidden")
       send_form.classList.add("absolute")
     }
@@ -105,7 +105,7 @@ export default function ParentOpenMessage() {
   return (
     <div>
       {findIndexUser && (
-        <div className="max-w-[302px] w-full fixed flex mx-3 bottom-0 z-10 transition-all">
+        <div className="max-w-[302px] w-full fixed flex mx-3 bottom-0 transition-all z-[1000]">
           {findIndexUser.map((indexUser) => (
             <Message
               user={users[indexUser]}

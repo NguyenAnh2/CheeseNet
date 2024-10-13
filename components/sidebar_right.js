@@ -20,7 +20,7 @@ export default function SideRight() {
       setChatHistory((prev) => [...prev, { type: "user", text: message }]);
 
       try {
-        const response = await fetch("http://localhost:5000/api/chat", {
+        const response = await fetch("/api/chat", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

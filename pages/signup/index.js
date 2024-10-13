@@ -53,9 +53,9 @@ const RegisterForm = () => {
 
   return (
     <>
-      <Link href="/">
+      {/* <Link href="/">
         <FontAwesomeIcon icon={faArrowLeft} className="mt-5 ml-5 text-2xl" />
-      </Link>
+      </Link> */}
       <form
         className="relative flex flex-col px-6 py-8 -translate-x-2/4 left-2/4 w-11/12 border-2 translate-y-1/4 rounded-lg"
         onSubmit={handleRegister}

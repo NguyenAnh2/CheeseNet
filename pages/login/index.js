@@ -67,9 +67,9 @@ export default function LoginPage() {
 
   return (
     <>
-      <Link href="/" >
+      {/* <Link href="/" >
         <FontAwesomeIcon icon={faArrowLeft} className="mt-5 ml-5 text-2xl"/>
-      </Link>
+      </Link> */}
       <div className="relative flex flex-col px-6 py-8 -translate-x-2/4 left-2/4 w-11/12 border-2 translate-y-1/4 rounded-lg">
         <h2 className="text-2xl font-bold my-3">Đăng nhập</h2>
         <form className="" onSubmit={handleLogin}>

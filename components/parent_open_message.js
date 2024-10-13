@@ -3,7 +3,6 @@ import SideLeft from "./sidebar_left";
 import { useState, useEffect } from "react";
 import { database } from "../firebase/firebaseConfig";
 import { ref, child, get } from "firebase/database";
-import { doc } from "prettier";
 
 export default function ParentOpenMessage() {
   const [openMess, setOpenMess] = useState([]);

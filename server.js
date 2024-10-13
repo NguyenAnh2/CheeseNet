@@ -9,15 +9,14 @@ const { getAuth, signInWithEmailAndPassword } = require("firebase/auth");
 require("dotenv").config();
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT;
 
 // Middleware
 app.use(cors());
 app.use(cookieParser());
 app.use(bodyParser.json());
 
-const secretKey = process.env.SECERET_KEY;
-const apiKeyGenimi = process.env.API_KEY_GEMINI;
+const apiKeyGenimi = process.env.NEXT_PUBLIC_API_KEY_GEMINI;
 
 
 const firebaseConfig = {

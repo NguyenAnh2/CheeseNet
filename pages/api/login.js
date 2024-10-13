@@ -30,6 +30,13 @@ export default async function handler(req, res) {
       );
       const user = userCredential.user;
 
+      // Kiểm tra trạng thái xác thực email
+      if (!user.emailVerified) {
+        return res.status(403).json({
+          error: "Email chưa được xác thực. Vui lòng kiểm tra email và xác nhận tài khoản của bạn.",
+        });
+      }
+
       // Lấy ID token và refresh token
       const idToken = await user.getIdToken();
       const refreshToken = user.refreshToken;

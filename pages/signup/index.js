@@ -1,11 +1,10 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { useState } from "react";
 import { database } from "../../firebase/firebaseConfig";
 import { ref, set } from "firebase/database";
 import {
   auth,
   createUserWithEmailAndPassword,
+  sendEmailVerification,
 } from "../../firebase/firebaseConfig";
 import Link from "next/link";
 
@@ -26,6 +25,16 @@ const RegisterForm = () => {
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         const user = userCredential.user;
+
+        sendEmailVerification(user)
+          .then(() => {
+            alert("Email xác nhận đã được gửi. Vui lòng kiểm tra hộp thư.");
+          })
+          .catch((error) => {
+            console.error("Error sending email verification:", error);
+            setError("Gửi email xác nhận thất bại. Vui lòng thử lại.");
+          });
+
         // Lưu thông tin người dùng vào bảng 'users' trong Firebase Realtime Database
         set(ref(database, "users/" + user.uid), {
           username: username,

@@ -26,7 +26,7 @@ export default function LoginPage() {
         login(data.user.uid);
         router.push("/");
       } else {
-        alert("Vui lòng kiểm tra lại tài khoản và mật khẩu!");
+        alert("Lỗi, vui lòng kiểm tra lại thông tin!");
       }
     } catch (error) {
       console.error("Error:", error);

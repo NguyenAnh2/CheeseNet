@@ -6,7 +6,6 @@ import {
   faImage,
 } from "@fortawesome/free-solid-svg-icons";
 import { useState, useRef } from "react";
-import { useRouter } from "next/router";
 import { useAuth } from "./auth";
 import { database } from "../firebase/firebaseConfig";
 import { ref, child, set, push } from "firebase/database";

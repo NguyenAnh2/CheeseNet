@@ -11,7 +11,6 @@ export default function GetPosts() {
   const [isLike, setIsLike] = useState(false);
   const [posts, setPosts] = useState([]);
   const [users, setUsers] = useState([]);
-  const [followSnapshot, setFollowSnapshot] = useState([]);
   const [currentTime, setCurrentTime] = useState(Date.now());
   const [modalImage, setModalImage] = useState(null);
   const { userId } = useAuth();
@@ -32,7 +31,6 @@ export default function GetPosts() {
     const postsRef = ref(database, `posts/`);
     try {
       const snapshot = await get(postsRef);
-      setFollowSnapshot(snapshot);
       if (snapshot.exists()) {
         const data = snapshot.val();
         const allPosts = [];
@@ -42,7 +40,6 @@ export default function GetPosts() {
           }
         });
         setPosts(allPosts);
-        console.log(posts);
       } else {
         setPosts([]);
       }
@@ -66,7 +63,6 @@ export default function GetPosts() {
             ...snapshot.val()[key], // Thêm các giá trị khác từ object
           }));
           setUsers(usersArray);
-          console.log(users);
         } else {
           console.log("No data available");
         }

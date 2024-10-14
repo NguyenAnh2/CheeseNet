@@ -1,12 +1,5 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faMessage, faBell } from "@fortawesome/free-regular-svg-icons";
-import {
-  faHome,
-  faTv,
-  faPeopleGroup,
-  faMagnifyingGlass,
-  faUserFriends,
-} from "@fortawesome/free-solid-svg-icons";
+import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 import { ref, get, child } from "firebase/database";
 import { database } from "../firebase/firebaseConfig";
 import { useState, useEffect } from "react";
@@ -26,7 +19,6 @@ export default function Heading() {
         if (snapshot.val()) {
           setUser(snapshot.val());
         }
-        console.log(user);
       })
       .catch((error) => {
         console.error(error);
@@ -68,8 +60,8 @@ export default function Heading() {
 
         <ul className="flex">
           {userId ? (
-            <div className='flex items-center'>
-              <Link href="profile" className='flex items-center'>
+            <div className="flex items-center">
+              <Link href="profile" className="flex items-center">
                 <li className={``}>
                   <Image
                     className=" rounded-full"
@@ -79,7 +71,7 @@ export default function Heading() {
                     alt={user.username}
                   />
                 </li>
-                <span className='font-bold mx-3'>{user.username}</span>
+                <span className="font-bold mx-3">{user.username}</span>
               </Link>
               <Link href="login" className="mx-3 font-bold" onClick={logout}>
                 Đăng xuất

@@ -15,8 +15,6 @@ export default function SideLeft({ users, clickOpenMess }) {
         const filtered = users.filter((item) => item.uid !== userId);
         setFilterUsers(filtered);
       }
-    } else {
-      console.error("Không tìm thấy userId");
     }
   }, [users]);
 
@@ -24,35 +22,34 @@ export default function SideLeft({ users, clickOpenMess }) {
     setIsOpenLeft(!isOpenLeft);
   };
 
-  console.log(filterUsers);
-
   const liStyles =
     "flex items-center py-3 pl-3 text-sm hover:bg-slate-300 cursor-pointer select-none text-sm";
   return (
     <div>
       {/* <div className="sm:hidden absolute top-0 left-0 bottom-0 right-0 bg-black opacity-25 z-[9]"></div> */}
-      {(isOpenLeft) && (
+      {isOpenLeft && (
         <div className="sm:fixed sm:flex lg:w-80 md:w-60 sm:w-[190px] sm:z-0 flex-col fixed top-[64px] max-w-[500px] w-[60%] h-[calc(100vh-64px)] overflow-y-auto pl-4 left-0 bottom-0 border-r z-10 bg-white">
           <div className="flex justify-between items-center my-3 border-b pb-2">
             <p>Danh sách bạn bè</p>
           </div>
           <ul>
-            {filterUsers.map((user, index) => (
-              <li
-                key={user.uid}
-                className={liStyles}
-                onClick={() => clickOpenMess(user.uid)}
-              >
-                <Image
-                  className="mx-2 rounded-full"
-                  src={user.avatar}
-                  width={30}
-                  height={30}
-                  alt={`${user.username}`}
-                />
-                {user.username}
-              </li>
-            ))}
+            {filterUsers &&
+              filterUsers.map((user, index) => (
+                <li
+                  key={user.uid}
+                  className={liStyles}
+                  onClick={() => clickOpenMess(user.uid)}
+                >
+                  <Image
+                    className="mx-2 rounded-full"
+                    src={user.avatar}
+                    width={30}
+                    height={30}
+                    alt={`${user.username}`}
+                  />
+                  {user.username}
+                </li>
+              ))}
           </ul>
         </div>
       )}

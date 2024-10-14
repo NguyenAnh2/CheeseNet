@@ -45,7 +45,7 @@ export default function SideLeft({ users, clickOpenMess }) {
                 onClick={() => clickOpenMess(user.uid)}
               >
                 <Image
-                  className="mx-2 rounded-full"
+                  className="mx-2 rounded-full w-8 h-8 object-cover"
                   src={user.avatar}
                   width={30}
                   height={30}

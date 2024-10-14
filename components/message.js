@@ -62,7 +62,7 @@ function Message({
       <div className=" flex p-2 bg-slate-200">
         <div className="flex items-center">
           <Image
-            className="mx-2 rounded-full"
+            className="mx-2 rounded-full h-8 w-8 object-cover"
             src={user.avatar}
             width={30}
             height={30}

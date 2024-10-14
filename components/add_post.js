@@ -186,7 +186,7 @@ export default function AddPost() {
                   className="lg:w-[325px] md:w-[246px] w-full overflow-auto text-left p-2 outline-neutral-400 resize-none"
                   placeholder="Này hôm nay của bạn ra sao?"
                   onKeyDown={(e) => {
-                    if (e.key === "Enter" && !e.shiftKey) {
+                    if (e.key === "Enter" && e.ctrlKey) {
                       e.preventDefault();
                       handleSubmitPost(e);
                     }
@@ -265,10 +265,10 @@ export default function AddPost() {
                   className="lg:w-[325px] md:w-[246px] w-full overflow-auto text-left p-2 outline-neutral-400 resize-none"
                   placeholder="Hoặc lưu lại một chút câu chuyện! Yên tâm là không ai có thể đọc chúng. &#x1F609;"
                   onKeyDown={(e) => {
-                    if (e.key === "Enter" && !e.shiftKey) {
+                    if (e.key === "Enter" && e.ctrlKey) {
                       e.preventDefault();
                       handleSubmitDiary(e);
-                    }
+                    } 
                   }}
                 />
                 <button

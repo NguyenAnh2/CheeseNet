@@ -34,8 +34,6 @@ const GetChat = ({ user1Id, user2Id, flagSend }) => {
           uid: key,
           ...data[key],
         }));
-        console.log(messages);
-        
         setMessages(messagesArray);
       } else {
         setMessages([]);

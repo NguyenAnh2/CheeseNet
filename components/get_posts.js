@@ -1,4 +1,4 @@
-import { faClose, faReply } from "@fortawesome/free-solid-svg-icons";
+import { faClose, faEllipsis, faReply } from "@fortawesome/free-solid-svg-icons";
 import { faHeart } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Image from "next/image";
@@ -15,18 +15,6 @@ export default function GetPosts() {
   const [currentTime, setCurrentTime] = useState(Date.now());
   const [modalImage, setModalImage] = useState(null);
   const { userId } = useAuth();
-
-  const toggleLikePost = () => {
-    const postIdToLike = document.getElementById("icon_like_id");
-    // Thêm class animate-jump
-    postIdToLike.classList.add("animate-like");
-
-    // Sau 0.5 giây loại bỏ class
-    setTimeout(() => {
-      postIdToLike.classList.remove("animate-like");
-    }, 500);
-    setIsLike(!isLike);
-  };
 
   const fetchPosts = async () => {
     const postsRef = ref(database, `posts/`);
@@ -119,7 +107,7 @@ export default function GetPosts() {
                     <Image
                       src={user ? user.avatar : "/images/icon.jpg"}
                       alt="avatarUser"
-                      className="rounded-full mr-3 w-8 h-8 "
+                      className="rounded-full mr-3 w-8 h-8 object-cover"
                       width={30}
                       height={30}
                     />
@@ -127,7 +115,9 @@ export default function GetPosts() {
                   </div>
                   <p className="text-xs mt-3 text-slate-600">{timeAgo(post.timestamp)}</p>
                 </div>
-                <div></div>
+                {/* {user.uid === userId && (
+                  <FontAwesomeIcon icon={faEllipsis} />
+                )} */}
               </div>
               <div className="border-b mb-2 pb-5 px-3">
                 <div>{post.content}</div>

@@ -1,5 +1,11 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCamera, faClose, faPencil } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCamera,
+  faClose,
+  faPencil,
+  faEllipsis,
+  faTrash,
+} from "@fortawesome/free-solid-svg-icons";
 import Layout from "../../components/layout";
 import Heading from "../../components/heading";
 import Head from "next/head";
@@ -7,55 +13,74 @@ import ParentOpenMessage from "../../components/parent_open_message";
 import SideRight from "../../components/sidebar_right";
 import { useAuth } from "../../components/auth";
 import { useState, useEffect } from "react";
-import { ref, get, update, child } from "firebase/database";
+import { ref, get, update, child, remove } from "firebase/database";
 import { database } from "../../firebase/firebaseConfig";
+import Image from "next/image";
+import TabBar from "../../components/custom/tabbar";
 
 export default function Profile() {
   const [user, setUser] = useState([]);
-  const [createdTime, setCreatedTime] = useState("");
+  const [posts, setPosts] = useState([]);
 
+  const [createdTime, setCreatedTime] = useState("");
   const [selectedImage, setSelectedImage] = useState(null);
   const [isChangeUsername, setIsChangeUsername] = useState(false);
   const [changeUsername, setChangeUsername] = useState();
   const [isChangePhoneNumber, setIsChangePhoneNumber] = useState(false);
   const [changePhoneNumber, setChangePhoneNumber] = useState();
+  const [isModalDelete, setIsModalDelete] = useState(false);
+  const [selectedPostId, setSelectedPostId] = useState(null);
+  const [isDeleteSuccess, setIsDeleteSuccess] = useState(false);
   const { userId } = useAuth();
 
   useEffect(() => {
-    if (userId) {
-      const dbRef = ref(database);
-      get(child(dbRef, `users/${userId}`))
-        .then((snapshot) => {
-          if (snapshot.exists()) {
-            const data = snapshot.val();
-            setUser(data);
-          } else {
-            console.log("No data available");
-          }
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-    }
+    const dbRef = ref(database);
+    get(child(dbRef, `users/${userId}`))
+      .then((snapshot) => {
+        if (snapshot.exists()) {
+          const data = snapshot.val();
+          setUser(data);
+        } else {
+          setUser([]);
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   }, [userId]);
 
-  const getDateTime = () => {
-    let date = new Date(user["createdAt"]);
-    const year = date.getFullYear();
-    const month = date.getMonth() + 1;
-    const day = date.getDate();
-    const hours = date.getHours();
-    const minutes = date.getMinutes();
-    const seconds = date.getSeconds();
-
-    setCreatedTime(`${hours}:${minutes} ngày ${day}/${month}/${year}`);
-  };
+  useEffect(() => {
+    const dbRef = ref(database);
+    get(child(dbRef, `posts/${userId}`))
+      .then((snapshot) => {
+        if (snapshot.exists()) {
+          const data = snapshot.val();
+          const allPosts = [];
+          Object.keys(data).forEach((key) => {
+            if (data.post) {
+              Object.keys(data.post).forEach((postId) => {
+                allPosts.push({
+                  ...data.post[postId],
+                  postId: postId, // Thêm postId vào đối tượng post
+                });
+              });
+            }
+          });
+          setPosts(allPosts);
+        } else {
+          setPosts([]);
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, [userId, isDeleteSuccess]);
 
   useEffect(() => {
     setUser(user);
+    setPosts(posts);
     getDateTime();
-    console.log(user);
-  }, [user]);
+  }, [user, posts]);
 
   const handleSubmitProfile = (e) => {
     e.preventDefault();
@@ -105,6 +130,50 @@ export default function Profile() {
     setIsChangePhoneNumber(!isChangePhoneNumber);
   };
 
+  const getDateTime = () => {
+    let date = new Date(user["createdAt"]);
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+    const hours = date.getHours();
+    const minutes = date.getMinutes();
+    const seconds = date.getSeconds();
+
+    setCreatedTime(`${hours}:${minutes} ngày ${day}/${month}/${year}`);
+  };
+
+  const timeAgo = (timestamp) => {
+    const now = Date.now(); // Lấy thời gian hiện tại
+    const secondsPast = (now - timestamp) / 1000;
+
+    if (secondsPast < 60) {
+      return `${Math.floor(secondsPast)} giây trước`;
+    } else if (secondsPast < 3600) {
+      return `${Math.floor(secondsPast / 60)} phút trước`;
+    } else if (secondsPast < 86400) {
+      return `${Math.floor(secondsPast / 3600)} giờ trước`;
+    } else {
+      return `${Math.floor(secondsPast / 86400)} ngày trước`;
+    }
+  };
+
+  const handleModalDelete = (postId) => {
+    setSelectedPostId(postId);
+    setIsModalDelete(!isModalDelete);
+  };
+
+  const handleDeletePost = (postId) => {
+    const postRef = ref(database, `posts/${userId}/post/${postId}`);
+    remove(postRef)
+      .then(() => {
+        setIsDeleteSuccess(true);
+        setIsModalDelete(!isModalDelete);
+      })
+      .catch((error) => {
+        console.error("Lỗi khi xóa post:", error);
+      });
+  };
+
   return (
     <Layout>
       <Head>
@@ -112,7 +181,10 @@ export default function Profile() {
       </Head>
       <Heading />
       <ParentOpenMessage />
-      <div className="relative top-20 w-[40%] left-[100%] translate-x-[-175%] duration-300 font-mono text-white group cursor-pointer  overflow-hidden bg-[#DCDFE4] dark:bg-[#22272B] rounded-3xl p-4  hover:bg-blue-200 hover:dark:bg-[#0C66E4]">
+
+      <TabBar />
+
+      <div className="relative top-32 w-[40%] left-[100%] translate-x-[-175%] h-fit mb-28 duration-300  text-white group cursor-pointer bg-[#DCDFE4] dark:bg-[#22272B] rounded-3xl p-4 hover:bg-blue-200 hover:dark:bg-[#0C66E4]">
         <div className="w-[100%] flex flex-col justify-center items-center">
           <div>
             <div className="flex justify-between items-center">
@@ -122,7 +194,7 @@ export default function Profile() {
               {(isChangePhoneNumber || isChangeUsername || selectedImage) && (
                 <button
                   onClick={handleSubmitProfile}
-                  className="text-pink-200 bg-blue-600 hover:bg-blue-400 h-fit px-2 py-1 text-xl rounded-md"
+                  className="text-pink-200 bg-blue-600 hover:bg-blue-400 h-fit px-2 py-1 text-xl rounded-md transition-all"
                 >
                   Lưu
                 </button>
@@ -135,7 +207,7 @@ export default function Profile() {
                   <input
                     type="text"
                     defaultValue={user.username}
-                    className="border border-slate-300 p-2 rounded"
+                    className="border border-slate-300 p-2 rounded text-black"
                     name="changeUsername"
                     onChange={(e) => setChangeUsername(e.target.value)}
                   />
@@ -167,7 +239,7 @@ export default function Profile() {
                   <input
                     type="text"
                     defaultValue={user.phonenumber}
-                    className="border border-slate-300 p-2 rounded"
+                    className="border border-slate-300 p-2 rounded text-black"
                     name="changePhoneNumber"
                     onChange={(e) => setChangePhoneNumber(e.target.value)}
                   />
@@ -231,6 +303,93 @@ export default function Profile() {
           </div>
         </div>
       </div>
+      {posts ? (
+        <div>
+          {posts
+            .sort((a, b) => b.timestamp - a.timestamp)
+            .map((post) => (
+              <div className="relative w-[40%] left-[100%] translate-x-[-175%] block">
+                <div className="flex justify-between items-center mb-5 border-b px-2 py-3">
+                  <div className="flex flex-col" title={user && user.username}>
+                    <div className="flex">
+                      <Image
+                        src={user ? user.avatar : "/images/icon.jpg"}
+                        alt="avatarUser"
+                        className="rounded-full mr-3 w-8 h-8 object-cover"
+                        width={30}
+                        height={30}
+                      />
+                      <p>{user ? user.username : "Unknown User"}</p>
+                    </div>
+                    <p className="text-xs mt-3 text-slate-600">
+                      {timeAgo(post.timestamp)}
+                    </p>
+                  </div>
+                  <div
+                    className="cursor-pointer px-2 py-6"
+                    onClick={() => handleModalDelete(post.postId)}
+                  >
+                    <FontAwesomeIcon icon={faTrash} />
+                  </div>
+                </div>
+                <div
+                  className={`border-b mb-2 ${post.image ? "mb-20" : "mb-5"} px-3`}
+                >
+                  <div className="mb-5">{post.content}</div>
+                  {post.image && (
+                    <Image
+                      src={post.image}
+                      alt="imageOfPost"
+                      className="w-full block cursor-pointer hover:scale-[1.2] bg-white z-[1000000] transition-all"
+                      width={100}
+                      height={100}
+                    />
+                  )}
+                </div>
+              </div>
+            ))}
+        </div>
+      ) : (
+        <p>Bạn chưa đăng bài viết nào, hãy thử đăng nhé!</p>
+      )}
+
+      {isModalDelete && (
+        <div className="fixed top-[30%] right-2/4 translate-x-[50%] bg-white border shadow-xl rounded-lg px-8 pb-10 pt-6">
+          <p className="mb-10">
+            <strong>Bạn có chắc chắn muốn xóa bài biết này không?</strong>
+          </p>
+          <div className="absolute right-2 bottom-2">
+            <button
+              className="red-btn px-2 py-1 font-semibold rounded mx-1"
+              onClick={() => setIsModalDelete(false)}
+            >
+              Hủy
+            </button>
+            <button
+              className="green-btn px-2 py-1 font-semibold rounded mx-1"
+              onClick={(e) => handleDeletePost(selectedPostId)}
+            >
+              Xóa
+            </button>
+          </div>
+        </div>
+      )}
+
+      {isDeleteSuccess && (
+        <div className="fixed top-[30%] right-2/4 translate-x-[50%] bg-white border shadow-xl rounded-lg px-8 pb-10 pt-6">
+          <p className="mb-10">
+            <strong>Vừa xóa bài thành công rồi!</strong>
+          </p>
+          <div className="absolute right-2 bottom-2">
+            <button
+              className="green-btn px-2 py-1 font-semibold rounded mx-1"
+              onClick={() => setIsDeleteSuccess(!isDeleteSuccess)}
+            >
+              Ok boi
+            </button>
+          </div>
+        </div>
+      )}
       <SideRight />
     </Layout>
   );

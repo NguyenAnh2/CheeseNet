@@ -97,3 +97,25 @@ img {
     display: none;
   }
 }
+
+
+/* Modal  */
+.green-btn {
+  background-color: #47a04b;
+}
+
+.red-btn {
+  background-color: #f93a3a;
+}
+
+/* Custom input number*/
+/* Trong file CSS hoặc styles */
+.custom-input::-webkit-outer-spin-button,
+.custom-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.custom-input {
+  -moz-appearance: textfield;
+}

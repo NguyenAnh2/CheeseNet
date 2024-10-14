@@ -1,5 +1,4 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
-require('dotenv').config();
 
 const apiKeyGenimi = process.env.API_KEY_GEMINI;
 const genAI = new GoogleGenerativeAI(apiKeyGenimi); // Thay thế bằng API key của bạn

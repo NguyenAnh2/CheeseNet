@@ -97,17 +97,3 @@ img {
     display: none;
   }
 }
-
-.custom-after::after {
-  content: '';
-  position: fixed;
-  width: 30px;
-  height: 30px;
-  border-top-right-radius: 8px;
-  border-bottom-right-radius: 8px;
-  background-color: lightgreen;
-  top: 25%;
-  right: 40%;
-  transform: translateX(100%);
-  z-index: 100;
-}

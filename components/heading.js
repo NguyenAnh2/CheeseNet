@@ -33,12 +33,12 @@ export default function Heading() {
     "text-2xl py-3 px-7 rounded cursor-pointer hover:bg-slate-300 transition-all";
 
   return (
-    <div className="fixed bg-slate-400 w-full h-16 z-50">
+    <div className="fixed bg-slate-400 w-full h-16 z-50 top-0">
       <div className="flex justify-between items-center h-16">
         <div className="flex items-center">
           <Link href="/">
             <Image
-              className="rounded-full mx-4 w-10 "
+              className="rounded-full mx-4 w-10 h-10"
               src="/images/icon.jpg"
               width={30}
               height={30}
@@ -64,7 +64,7 @@ export default function Heading() {
               <Link href="profile" className="flex items-center">
                 <li className={``}>
                   <Image
-                    className=" rounded-full"
+                    className="w-8 h-8 rounded-full overflow-hidden object-cover"
                     src={user.avatar}
                     width={30}
                     height={30}

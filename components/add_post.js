@@ -6,6 +6,7 @@ import {
   faImage,
 } from "@fortawesome/free-solid-svg-icons";
 import { useState, useRef } from "react";
+import Confetti from "react-confetti";
 import { useAuth } from "./auth";
 import { database } from "../firebase/firebaseConfig";
 import { ref, child, set, push } from "firebase/database";
@@ -15,6 +16,8 @@ export default function AddPost() {
   const [isDiary, setIsDiary] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [modalImage, setModalImage] = useState(null);
+  const [isPostSuccess, setIsPostSuccess] = useState(false);
+  const [isDiarySuccess, setIsDiarySuccess] = useState(false);
   const contentPostRef = useRef();
   const contentDiaryRef = useRef();
   const { userId } = useAuth();
@@ -40,13 +43,17 @@ export default function AddPost() {
         .then(() => {
           setIsPost(!isPost);
           setSelectedImage(null);
-          alert("Ồ bài viết của bạn hay thực sự. ❤️❤️❤️");
-          window.location.href = "/";
+          setIsPostSuccess(true);
         })
         .catch((error) => {
           console.error("Error sending post: ", error);
         });
     }
+  };
+
+  const handlePostModalSuccess = () => {
+    window.location.href = "/";
+    setIsPostSuccess(false);
   };
 
   const handleSubmitDiary = (e) => {
@@ -68,13 +75,17 @@ export default function AddPost() {
         .then(() => {
           setIsDiary(!isDiary);
           setSelectedImage(null);
-          alert("Tôi sẽ giữ kín bí mật này giữa chúng ta. 😍");
-          window.location.href = "/";
+          setIsDiarySuccess(true);
         })
         .catch((error) => {
           console.error("Error sending post: ", error);
         });
     }
+  };
+
+  const handleDiaryModalSuccess = () => {
+    window.location.href = "/";
+    setIsDiarySuccess(false);
   };
 
   const handleClosePost = () => {
@@ -115,9 +126,36 @@ export default function AddPost() {
 
   return (
     <div className="mobile-w-full relative flex justify-center">
+      {isPostSuccess && (
+        <div className="absolute top-2/4 w-[370px] h-[140px] border shadow-md bg-white rounded-lg px-3 py-3 z-[10000]">
+          <p className="font-bold text-xl">
+            Bài viết của bạn đã được đăng lên CheeseNet!!!❤️❤️❤️
+          </p>
+          <button
+            onClick={handlePostModalSuccess}
+            className="border px-3 py-2 rounded text-blue-500 bg-slate-600 absolute right-2 bottom-2 font-semibold"
+          >
+            Hiểu rồi!
+          </button>
+        </div>
+      )}
+      {isDiarySuccess && (
+        <div className="absolute top-2/4 w-[370px] h-[140px] border shadow-md bg-white rounded-lg px-3 py-3 z-[10000]">
+          <p className="font-bold text-xl">
+            Sẽ là bí mật của riêng bạn! ❤️
+          </p>
+          <button
+            onClick={handleDiaryModalSuccess}
+            className="border px-3 py-2 rounded text-blue-500 bg-slate-600 absolute right-2 bottom-2 font-semibold"
+          >
+            Nhớ đó!
+          </button>
+        </div>
+      )}
+      {isPostSuccess || (isDiarySuccess && <Confetti />)}
       {userId && (
         <div className="sm:w-fit">
-          {!isPost && !isDiary && ( 
+          {!isPost && !isDiary && (
             <div className="relative left-2/4 -translate-x-2/4 w-fit flex items-center border rounded-md shadow my-6 z-[100]">
               <div
                 className="flex flex-col border-r px-3 py-2 md:mr-3 cursor-pointer"
@@ -141,7 +179,7 @@ export default function AddPost() {
 
           {isPost && (
             <div className="relative flex flex-col justify-between border rounded-md sm:m-5 mt-5 pr-2 sm:pr-6 pb-8 pt-6 z-[102] bg-white">
-              <form onSubmit={(e) => handleSubmitPost(e)} className="">
+              <form onSubmit={(e) => handleSubmitPost(e)}>
                 <textarea
                   ref={contentPostRef}
                   rows="2"

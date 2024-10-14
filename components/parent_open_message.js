@@ -103,7 +103,7 @@ export default function ParentOpenMessage() {
   }
 
   return (
-    <div>
+    <div className="z-10">
       {findIndexUser && (
         <div className="max-w-[302px] w-full fixed flex mx-3 bottom-0 transition-all z-[1000]">
           {findIndexUser.map((indexUser) => (

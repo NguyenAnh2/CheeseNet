@@ -1,3 +1,3 @@
 export default function Layout({ children }) {
-  return <div className="h-[200vh] transition-all">{children}</div>;
+  return <div className="relative h-[200vh]">{children}</div>;
 }

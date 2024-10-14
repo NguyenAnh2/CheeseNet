@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Image from "next/image";
 import { useAuth } from "./auth";
 import { useState, useRef, useEffect } from "react";
+import Checkbox from "./custom/checkbox";
 import { ref, get, remove, update, child } from "firebase/database";
 import { database } from "../firebase/firebaseConfig";
 
@@ -113,17 +114,20 @@ export default function GetPosts() {
           return (
             <div className="flex flex-col border rounded-md my-6 sm:w-full">
               <div className="flex justify-between mb-5 border-b px-2 py-3">
-                <div className="flex" title={user.username}>
-                  <Image
-                    src={user ? user.image : "/images/icon.jpg"}
-                    alt="avatarUser"
-                    className="rounded-full mx-3"
-                    width={30}
-                    height={30}
-                  />
-                  <p>{user ? user.username : "Unknown User"}</p>
+                <div className="flex flex-col" title={user && user.username}>
+                  <div className="flex">
+                    <Image
+                      src={user ? user.avatar : "/images/icon.jpg"}
+                      alt="avatarUser"
+                      className="rounded-full mr-3 w-8 h-8 "
+                      width={30}
+                      height={30}
+                    />
+                    <p>{user ? user.username : "Unknown User"}</p>
+                  </div>
+                  <p className="text-xs mt-3 text-slate-600">{timeAgo(post.timestamp)}</p>
                 </div>
-                <p>{timeAgo(post.timestamp)}</p>
+                <div></div>
               </div>
               <div className="border-b mb-2 pb-5 px-3">
                 <div>{post.content}</div>
@@ -141,7 +145,7 @@ export default function GetPosts() {
 
               {modalImage && (
                 <div
-                //  
+                  //
                   className="fixed inset-x-[-116%] inset-y-custom-modal pt-40 flex items-center justify-center bg-black bg-opacity-30 z-[100] cursor-pointer"
                   onClick={closeModal} // Đóng modal khi nhấp bên ngoài
                 >
@@ -159,19 +163,7 @@ export default function GetPosts() {
               )}
 
               <div className="flex px-3 items-center mb-1">
-                {isLike ? (
-                  <div id="icon_like_id">
-                    <FontAwesomeIcon
-                      icon={faHeart}
-                      onClick={toggleLikePost}
-                      className="text-red-600"
-                    />
-                  </div>
-                ) : (
-                  <div id="icon_like_id">
-                    <FontAwesomeIcon icon={faHeart} onClick={toggleLikePost} />
-                  </div>
-                )}
+                <Checkbox />
                 <FontAwesomeIcon
                   icon={faReply}
                   className="mx-2 text-blue-400"

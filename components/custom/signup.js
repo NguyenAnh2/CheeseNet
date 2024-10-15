@@ -1,6 +1,5 @@
 import React from "react";
-import styled from "styled-components";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { database } from "../../firebase/firebaseConfig";
 import { ref, set } from "firebase/database";
 import {
@@ -20,48 +19,77 @@ const SignUp = () => {
   const [username, setUsername] = useState("");
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [isRegistered, setIsRegistered] = useState(false);
 
-  const buttonStyle =
-    "px-3 py-2 bg-blue-400 hover:bg-blue-300 active:bg-yellow-200 font-bold rounded my-3 mx-3";
-
-  const handleRegister = (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
 
-    // Đăng ký người dùng với email và mật khẩu
-    createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        const user = userCredential.user;
+    if (password !== repassword) {
+      setError("Mật khẩu không khớp. Vui lòng thử lại.");
+      return;
+    }
 
-        sendEmailVerification(user)
-          .then(() => {
-            alert("Email xác nhận đã được gửi. Vui lòng kiểm tra hộp thư.");
-          })
-          .catch((error) => {
-            console.error("Error sending email verification:", error);
-            setError("Gửi email xác nhận thất bại. Vui lòng thử lại.");
-          });
+    try {
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      const user = userCredential.user;
 
-        // Lưu thông tin người dùng vào bảng 'users' trong Firebase Realtime Database
-        set(ref(database, "users/" + user.uid), {
-          username: username,
-          email: email,
-          uid: user.uid,
-          avatar: "/images/defaultavatar.jpg",
-          createdAt: Date.now(),
-        })
-          .then(() => {
-            window.location.href = "/login";
-          })
-          .catch((error) => {
-            console.error("Error saving user info:", error);
-            setError(error);
-          });
-      })
-      .catch((error) => {
-        console.error("Registration error:", error);
-        setError(error);
+      await sendEmailVerification(user);
+      alert("Email xác nhận đã được gửi. Vui lòng kiểm tra hộp thư.");
+
+      set(ref(database, "users/" + user.uid), {
+        username: username,
+        email: email,
+        uid: user.uid,
+        avatar: "/images/defaultavatar.jpg",
+        createdAt: Date.now(),
       });
+
+      setIsRegistered(true);
+    } catch (error) {
+      console.error("Registration error:", error);
+      setError(error.message);
+    }
   };
+
+  useEffect(() => {
+    const checkEmailVerification = async () => {
+      const user = auth.currentUser;
+
+      if (user) {
+        try {
+          const response = await fetch("/api/users", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              uid: user.uid,
+              username: username,
+              email: email,
+            }),
+          });
+          console.log("Done");
+
+          if (response.ok) {
+            alert("Thông tin người dùng đã được lưu thành công vào MSSQL.");
+            window.location.href = "/login"; // Chuyển hướng sau khi lưu
+          } else {
+            const errorData = await response.json();
+            setError(errorData.error);
+          }
+        } catch (error) {
+          console.error("Error calling API:", error);
+          setError("Có lỗi khi lưu thông tin vào MSSQL.");
+        }
+      }
+    };
+
+    checkEmailVerification();
+  }, [isRegistered]);
 
   const ToggleShowPassword = () => {
     setShowPassword(!showPassword);

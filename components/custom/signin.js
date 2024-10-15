@@ -3,6 +3,8 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useAuth } from "../../components/auth";
+import { sendPasswordResetEmail } from "firebase/auth";
+import { auth } from "../../firebase/firebaseConfig";
 import styles from "../../pages/signup/SignUp.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye } from "@fortawesome/free-solid-svg-icons";
@@ -12,8 +14,9 @@ const SignIn = () => {
   const { login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
+  const [messageFail, setMessageFail] = useState("");
+  const [messageSuccess, setMessageSuccess] = useState("");
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -56,20 +59,37 @@ const SignIn = () => {
   };
 
   useEffect(() => {
-    // Làm mới token mỗi 1 giờ
     const tokenRefreshInterval = setInterval(
       () => {
         refreshUserToken();
       },
       60 * 60 * 1000
-    ); // 1 giờ
+    );
 
-    // Xóa interval khi component bị unmount
     return () => clearInterval(tokenRefreshInterval);
   }, []);
 
   const ToggleShowPassword = () => {
     setShowPassword(!showPassword);
+  };
+
+  const handleResetPassword = () => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!email) {
+      setMessageFail("Vui lòng nhập email để lấy lại mật khẩu.");
+    } else if (!emailRegex.test(email)) {
+      setMessageFail("Vui lòng nhập địa chỉ email hợp lệ.");
+    } else {
+      try {
+        sendPasswordResetEmail(auth, email);
+        setMessageSuccess(
+          "Email đặt lại mật khẩu đã được gửi. Vui lòng kiểm tra hộp thư của bạn."
+        );
+      } catch (error) {
+        setMessageFail(`Lỗi khi gửi email: ${error.message}`);
+      }
+    }
   };
 
   return (
@@ -89,6 +109,11 @@ const SignIn = () => {
             autoComplete="false"
           />
           <span>Email</span>
+          {messageFail ? (
+            <p className="text-red-500">{messageFail}</p>
+          ) : (
+            <p className="text-green-500">{messageSuccess}</p>
+          )}
         </label>
 
         <label className="relative flex">
@@ -111,20 +136,31 @@ const SignIn = () => {
           </div>
         </label>
         <button className={styles.submit}>Đăng nhập</button>
-        <p className={styles.signin}>
-          Bạn chưa có tài khoản?{" "}
-          <Link className="blue-600 right-0 mr-3 ml-1" href="/signup">
-            Đăng ký
-          </Link>{" "}
-        </p>
-        <div className="flex relative right-0 bottom-0 my-1">
-          <p className="">Đăng nhập với </p>
-          <p
-            className="text-blue-600 right-0 mx-2"
-            // onClick={() => handleLoginGoogle()}
+        <div className="flex justify-between">
+          <div>
+            <p className={styles.signin}>
+              Bạn chưa có tài khoản?{" "}
+              <Link className="blue-600 right-0 mr-3 ml-1" href="/signup">
+                Đăng ký
+              </Link>{" "}
+            </p>
+            <div className="flex relative right-0 bottom-0 my-1">
+              <p className="">Đăng nhập với </p>
+              <p
+                className="text-blue-600 right-0 mx-2"
+                // onClick={() => handleLoginGoogle()}
+              >
+                Google
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            className="text-red-500"
+            onClick={handleResetPassword}
           >
-            Google
-          </p>
+            Quên mật khẩu?
+          </button>
         </div>
       </form>
     </div>

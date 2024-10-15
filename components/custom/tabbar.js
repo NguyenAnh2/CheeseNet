@@ -10,8 +10,8 @@ export default function TabBar() {
           href="/profile"
           className={`px-4 py-2 ${
             router.pathname === "/profile"
-              ? "border-b-2 border-blue-500 bg-white text-black" // Active tab
-              : "text-black hover:bg-blue-200 hover:text-blue-600" // Hover effect
+              ? "border-b-2 border-blue-500 bg-white text-black"
+              : "text-black hover:bg-blue-200 hover:text-blue-600"
           }`}
         >
           Thông tin
@@ -22,7 +22,7 @@ export default function TabBar() {
           href="/diary"
           className={`px-4 py-2 ${
             router.pathname === "/diary"
-              ? "border-b-2 border-red-500 text-black" // Active tab
+              ? "border-b-2 border-red-500 text-black"
               : "text-black hover:bg-blue-200 hover:text-blue-600"
           }`}
         >

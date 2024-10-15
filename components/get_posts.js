@@ -1,4 +1,8 @@
-import { faClose, faEllipsis, faReply } from "@fortawesome/free-solid-svg-icons";
+import {
+  faClose,
+  faEllipsis,
+  faReply,
+} from "@fortawesome/free-solid-svg-icons";
 import { faHeart } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Image from "next/image";
@@ -13,27 +17,26 @@ export default function GetPosts() {
   const [posts, setPosts] = useState([]);
   const [users, setUsers] = useState([]);
   const [currentTime, setCurrentTime] = useState(Date.now());
+  const [error, setError] = useState('')
   const [modalImage, setModalImage] = useState(null);
   const { userId } = useAuth();
 
   const fetchPosts = async () => {
-    const postsRef = ref(database, `posts/`);
     try {
-      const snapshot = await get(postsRef);
-      if (snapshot.exists()) {
-        const data = snapshot.val();
-        const allPosts = [];
-        Object.keys(data).forEach((userId) => {
-          if (data[userId].post) {
-            allPosts.push(...Object.values(data[userId].post));
-          }
-        });
-        setPosts(allPosts);
+      const response = await fetch(`/api/posts`, {
+        method: "GET",
+      });
+
+      if (response.ok) {
+        const entries = await response.json();
+        setPosts(entries);
       } else {
-        setPosts([]);
+        const errorData = await response.json();
+        setError(errorData.error); 
       }
     } catch (error) {
-      console.error("Error fetching messages: ", error);
+      setError("Failed to fetch posts entries.");
+      console.error("Error fetching posts:", error);
     }
   };
 
@@ -86,17 +89,16 @@ export default function GetPosts() {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentTime(Date.now()); // Cập nhật thời gian hiện tại mỗi giây
+      setCurrentTime(Date.now());
     }, 6000);
 
-    // Clear interval khi component bị unmount
     return () => clearInterval(interval);
   }, []);
 
   return (
     <div className="bg-white">
       {posts
-        .sort((a, b) => b.timestamp - a.timestamp) // Sắp xếp theo timestamp (mới nhất lên đầu)
+        .sort((a, b) => b.timestamp - a.timestamp)
         .map((post) => {
           const user = users.find((user) => user.uid === post.userId);
           return (
@@ -113,19 +115,21 @@ export default function GetPosts() {
                     />
                     <p>{user ? user.username : "Unknown User"}</p>
                   </div>
-                  <p className="text-xs mt-3 text-slate-600">{timeAgo(post.timestamp)}</p>
+                  <p className="text-xs mt-3 text-slate-600">
+                    {timeAgo(post.timestamp)}
+                  </p>
                 </div>
                 {/* {user.uid === userId && (
                   <FontAwesomeIcon icon={faEllipsis} />
                 )} */}
               </div>
               <div className="border-b mb-2 pb-5 px-3">
-                <div>{post.content}</div>
+                <div className="mb-2">{post.content}</div>
                 {post.image && (
                   <Image
                     src={post.image}
                     alt="imageOfPost"
-                    className="w-full block cursor-pointer"
+                    className="w-full block cursor-pointer transition-transform hover:scale-[1.2]"
                     width={100}
                     height={100}
                     onClick={() => openModal(post.image)}

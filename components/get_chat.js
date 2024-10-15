@@ -44,12 +44,12 @@ const GetChat = ({ user1Id, user2Id, flagSend }) => {
   };
 
   useEffect(() => {
-    fetchMessages(); // Chỉ gọi một lần để lấy tin nhắn
+    fetchMessages();
   }, [chatId, flagSend, newContent, isDeletePopupVisible]);
 
   const handleEditMessage = (messageId, currentContent) => {
-    setEditingMessage(messageId); // Bắt đầu chỉnh sửa tin nhắn
-    setNewContent(currentContent); // Gán nội dung hiện tại của tin nhắn vào input
+    setEditingMessage(messageId);
+    setNewContent(currentContent);
   };
 
   const handleSaveMessage = (messageId) => {
@@ -58,8 +58,8 @@ const GetChat = ({ user1Id, user2Id, flagSend }) => {
     update(messageRef, { content: newContent })
       .then(() => {
         console.log("Message updated successfully!");
-        setEditingMessage(null); // Kết thúc chỉnh sửa
-        setNewContent(""); // Xóa nội dung trong ô input
+        setEditingMessage(null);
+        setNewContent("");
       })
       .catch((error) => {
         console.error("Error updating message: ", error);
@@ -83,13 +83,11 @@ const GetChat = ({ user1Id, user2Id, flagSend }) => {
       });
   };
 
-  // Hàm xác nhận xóa tin nhắn
   const confirmDelete = () => {
-    handleDeleteMessage(messageToDelete); // Gọi hàm xóa tin nhắn
-    setDeletePopupVisible(false); // Đóng popup
+    handleDeleteMessage(messageToDelete);
+    setDeletePopupVisible(false);
   };
 
-  // Cuộn xuống cuối mỗi khi có thay đổi trong messages
   useEffect(() => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView();
@@ -111,7 +109,7 @@ const GetChat = ({ user1Id, user2Id, flagSend }) => {
                 <textarea
                   id={message.uid}
                   type="text"
-                  className='px-3 rounded-lg inline-block break-words overflow-hidden text-left resize-none w-full bg-slate-100'
+                  className="px-3 rounded-lg inline-block break-words overflow-hidden text-left resize-none w-full bg-slate-100"
                   value={newContent}
                   onChange={(e) => setNewContent(e.target.value)}
                 />

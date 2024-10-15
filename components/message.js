@@ -6,7 +6,7 @@ import {
   faPaperPlane,
 } from "@fortawesome/free-solid-svg-icons";
 import Image from "next/image";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import { useAuth } from "./auth";
 import { database } from "../firebase/firebaseConfig";
 import { ref, child, set, push } from "firebase/database";

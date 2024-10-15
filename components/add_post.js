@@ -10,44 +10,43 @@ import Confetti from "react-confetti";
 import { useAuth } from "./auth";
 import { database } from "../firebase/firebaseConfig";
 import { ref, child, set, push } from "firebase/database";
+import Link from "next/link";
 
 export default function AddPost() {
   const [isPost, setIsPost] = useState(false);
-  const [isDiary, setIsDiary] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [modalImage, setModalImage] = useState(null);
   const [isPostSuccess, setIsPostSuccess] = useState(false);
-  const [isDiarySuccess, setIsDiarySuccess] = useState(false);
   const contentPostRef = useRef();
-  const contentDiaryRef = useRef();
   const { userId } = useAuth();
 
-  const handleSubmitPost = (e) => {
+  const handleSubmitPost = async (e) => {
     e.preventDefault();
 
-    const postRef = child(ref(database), `posts/${userId}/post`);
-    console.log(postRef);
+    const newPost = {
+      userId: userId,
+      content: contentPostRef.current.value,
+      image: selectedImage,
+    };
 
-    // Tạo một ID tự động cho post
-    const newDiaryRef = push(postRef);
+    try {
+      const response = await fetch("/api/posts", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newPost),
+      });
 
-    if (selectedImage || contentPostRef.current.value) {
-      const newPost = {
-        userId: userId,
-        content: contentPostRef.current.value,
-        image: selectedImage,
-        timestamp: Date.now(),
-      };
-
-      set(newDiaryRef, newPost)
-        .then(() => {
-          setIsPost(!isPost);
-          setSelectedImage(null);
-          setIsPostSuccess(true);
-        })
-        .catch((error) => {
-          console.error("Error sending post: ", error);
-        });
+      if (response.ok) {
+        setIsPost(!isPost);
+        setSelectedImage(null);
+        setIsPostSuccess(true);
+      } else {
+        console.error("Error sending post:", await response.json());
+      }
+    } catch (error) {
+      console.error("Error sending post:", error);
     }
   };
 
@@ -56,44 +55,8 @@ export default function AddPost() {
     setIsPostSuccess(false);
   };
 
-  const handleSubmitDiary = (e) => {
-    e.preventDefault();
-    const diaryRef = child(ref(database), `diary/${userId}`);
-    console.log(diaryRef);
-
-    // Tạo một ID tự động cho post
-    const newDiaryRef = push(diaryRef);
-
-    if (contentDiaryRef.current.value) {
-      const newDiary = {
-        userId: userId,
-        content: contentDiaryRef.current.value,
-        timestamp: Date.now(),
-      };
-
-      set(newDiaryRef, newDiary)
-        .then(() => {
-          setIsDiary(!isDiary);
-          setSelectedImage(null);
-          setIsDiarySuccess(true);
-        })
-        .catch((error) => {
-          console.error("Error sending post: ", error);
-        });
-    }
-  };
-
-  const handleDiaryModalSuccess = () => {
-    window.location.href = "/";
-    setIsDiarySuccess(false);
-  };
-
   const handleClosePost = () => {
     setIsPost(!isPost);
-  };
-
-  const handleCloseDiary = () => {
-    setIsDiary(!isDiary);
   };
 
   const handleAddImage = () => {
@@ -139,23 +102,11 @@ export default function AddPost() {
           </button>
         </div>
       )}
-      {isDiarySuccess && (
-        <div className="absolute top-2/4 w-[370px] h-[140px] border shadow-md bg-white rounded-lg px-3 py-3 z-[10000]">
-          <p className="font-bold text-xl">
-            Sẽ là bí mật của riêng bạn! ❤️
-          </p>
-          <button
-            onClick={handleDiaryModalSuccess}
-            className="border px-3 py-2 rounded text-blue-500 bg-slate-600 absolute right-2 bottom-2 font-semibold"
-          >
-            Nhớ đó!
-          </button>
-        </div>
-      )}
-      {isPostSuccess || (isDiarySuccess && <Confetti />)}
+
+      {isPostSuccess && <Confetti />}
       {userId && (
         <div className="sm:w-fit">
-          {!isPost && !isDiary && (
+          {!isPost && (
             <div className="relative left-2/4 -translate-x-2/4 w-fit flex items-center border rounded-md shadow my-6 z-[100]">
               <div
                 className="flex flex-col border-r px-3 py-2 md:mr-3 cursor-pointer"
@@ -166,14 +117,14 @@ export default function AddPost() {
                 <p className="hidden md:block">Bài viết</p>
               </div>
               <p className="md:font-serif hidden md:block">Hay</p>
-              <div
+              <Link
+                href="/diary"
                 className="flex flex-col border-l px-3 py-2 md:ml-3 cursor-pointer"
                 title="Thêm nhật ký"
-                onClick={() => setIsDiary(!isDiary)}
               >
                 <FontAwesomeIcon icon={faPencil} />
                 <p className="hidden md:block">Nhật ký</p>
-              </div>
+              </Link>
             </div>
           )}
 
@@ -252,36 +203,6 @@ export default function AddPost() {
                 icon={faClose}
                 className="absolute right-2 top-2 cursor-pointer"
                 onClick={handleClosePost}
-              />
-            </div>
-          )}
-
-          {isDiary && (
-            <div className="relative flex flex-col justify-between border rounded-md sm:m-5 mt-5 pr-2 sm:pr-6 pb-8 pt-6 z-[102] bg-white">
-              <form onSubmit={(e) => handleSubmitDiary(e)}>
-                <textarea
-                  ref={contentDiaryRef}
-                  rows="2"
-                  className="lg:w-[325px] md:w-[246px] w-full overflow-auto text-left p-2 outline-neutral-400 resize-none"
-                  placeholder="Hoặc lưu lại một chút câu chuyện! Yên tâm là không ai có thể đọc chúng. &#x1F609;"
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" && e.ctrlKey) {
-                      e.preventDefault();
-                      handleSubmitDiary(e);
-                    } 
-                  }}
-                />
-                <button
-                  onSubmit={handleSubmitDiary}
-                  className="absolute text-pink-500 font-bold right-2 bottom-2"
-                >
-                  Gửi gắm
-                </button>
-              </form>
-              <FontAwesomeIcon
-                icon={faClose}
-                className="absolute right-2 top-2 cursor-pointer"
-                onClick={handleCloseDiary}
               />
             </div>
           )}

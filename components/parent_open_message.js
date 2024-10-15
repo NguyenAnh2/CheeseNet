@@ -16,10 +16,9 @@ export default function ParentOpenMessage() {
     get(child(dbRef, `users`))
       .then((snapshot) => {
         if (snapshot.exists()) {
-          // Chuyển đổi object từ snapshot.val() thành mảng
           const usersArray = Object.keys(snapshot.val()).map((key) => ({
-            uid: key, // Lưu lại key làm id cho từng bản ghi
-            ...snapshot.val()[key], // Thêm các giá trị khác từ object
+            uid: key,
+            ...snapshot.val()[key],
           }));
           setUsers(usersArray);
         } else {

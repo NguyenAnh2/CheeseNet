@@ -12,7 +12,7 @@ import Head from "next/head";
 import ParentOpenMessage from "../../components/parent_open_message";
 import SideRight from "../../components/sidebar_right";
 import { useAuth } from "../../components/auth";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { ref, get, update, child, remove } from "firebase/database";
 import { database } from "../../firebase/firebaseConfig";
 import Image from "next/image";
@@ -21,8 +21,6 @@ import TabBar from "../../components/custom/tabbar";
 export default function Profile() {
   const [user, setUser] = useState([]);
   const [posts, setPosts] = useState([]);
-
-  const [createdTime, setCreatedTime] = useState("");
   const [selectedImage, setSelectedImage] = useState(null);
   const [isChangeUsername, setIsChangeUsername] = useState(false);
   const [changeUsername, setChangeUsername] = useState();
@@ -31,63 +29,69 @@ export default function Profile() {
   const [isModalDelete, setIsModalDelete] = useState(false);
   const [selectedPostId, setSelectedPostId] = useState(null);
   const [isDeleteSuccess, setIsDeleteSuccess] = useState(false);
+  const [error, setError] = useState("");
   const { userId } = useAuth();
 
-  useEffect(() => {
-    const dbRef = ref(database);
-    get(child(dbRef, `users/${userId}`))
-      .then((snapshot) => {
-        if (snapshot.exists()) {
-          const data = snapshot.val();
-          setUser(data);
+  const fetchUserInfo = async () => {
+    if (userId) {
+      try {
+        const response = await fetch(`/api/users?uid=${userId}`, {
+          method: "GET",
+        });
+
+        if (response.ok) {
+          const entries = await response.json();
+          setUser(entries);
         } else {
-          setUser([]);
+          const errorData = await response.json();
+          setError(errorData.error);
         }
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+      } catch (error) {
+        setError("Failed to fetch posts entries.");
+        console.error("Error fetching posts:", error);
+      }
+    }
+  };
+
+  useEffect(() => {
+    fetchUserInfo();
   }, [userId]);
 
-  useEffect(() => {
-    const dbRef = ref(database);
-    get(child(dbRef, `posts/${userId}`))
-      .then((snapshot) => {
-        if (snapshot.exists()) {
-          const data = snapshot.val();
-          const allPosts = [];
-          Object.keys(data).forEach((key) => {
-            if (data.post) {
-              Object.keys(data.post).forEach((postId) => {
-                allPosts.push({
-                  ...data.post[postId],
-                  postId: postId, // Thêm postId vào đối tượng post
-                });
-              });
-            }
-          });
-          setPosts(allPosts);
+  const fetchPostsOfUser = async () => {
+    if (userId) {
+      try {
+        const response = await fetch(`/api/posts?userId=${userId}`, {
+          method: "GET",
+        });
+
+        if (response.ok) {
+          const entries = await response.json();
+          setPosts(entries);
         } else {
-          setPosts([]);
+          const errorData = await response.json();
+          setError(errorData.error);
         }
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  }, [userId, isDeleteSuccess]);
+      } catch (error) {
+        setError("Failed to fetch posts entries.");
+        console.error("Error fetching posts:", error);
+      }
+    }
+  };
 
   useEffect(() => {
-    setUser(user);
-    setPosts(posts);
-    getDateTime();
-  }, [user, posts]);
+    fetchPostsOfUser();
+  }, [userId]);
+
+  const sortedPosts = useMemo(() => {
+    return posts.sort((a, b) => b.timestamp - a.timestamp);
+  }, [posts]);
 
   const handleSubmitProfile = (e) => {
     e.preventDefault();
     const updates = {
-      username: changeUsername || user["username"],
-      phonenumber: changePhoneNumber || user["phonenumber"],
-      avatar: selectedImage || user["avatar"],
+      username: changeUsername || user['0']["username"],
+      phonenumber: changePhoneNumber || user['0']["phonenumber"],
+      avatar: selectedImage || user['0']["avatar"],
       updatedAt: Date.now(),
     };
 
@@ -130,17 +134,18 @@ export default function Profile() {
     setIsChangePhoneNumber(!isChangePhoneNumber);
   };
 
-  const getDateTime = () => {
-    let date = new Date(user["createdAt"]);
-    const year = date.getFullYear();
-    const month = date.getMonth() + 1;
-    const day = date.getDate();
-    const hours = date.getHours();
-    const minutes = date.getMinutes();
-    const seconds = date.getSeconds();
-
-    setCreatedTime(`${hours}:${minutes} ngày ${day}/${month}/${year}`);
-  };
+  const createdTime = () => {
+    if (user['0']['createdAt']) {
+      let date = new Date(user["createdAt"]);
+      const year = date.getFullYear();
+      const month = date.getMonth() + 1;
+      const day = date.getDate();
+      const hours = date.getHours();
+      const minutes = date.getMinutes();
+      return `${hours}:${minutes} ngày ${day}/${month}/${year}`;
+    }
+    return "";
+  }
 
   const timeAgo = (timestamp) => {
     const now = Date.now(); // Lấy thời gian hiện tại
@@ -184,7 +189,7 @@ export default function Profile() {
 
       <TabBar />
 
-      <div className="relative top-32 w-[40%] left-[100%] translate-x-[-175%] h-fit mb-28 duration-300  text-white group cursor-pointer bg-[#DCDFE4] dark:bg-[#22272B] rounded-3xl p-4 hover:bg-blue-200 hover:dark:bg-[#0C66E4]">
+      <div className="relative top-32 w-[40%] left-[100%] translate-x-[-175%] h-fit mb-36 duration-300  text-white group cursor-pointer bg-[#DCDFE4] dark:bg-[#22272B] rounded-3xl p-4 hover:bg-blue-200 hover:dark:bg-[#0C66E4]">
         <div className="w-[100%] flex flex-col justify-center items-center">
           <div>
             <div className="flex justify-between items-center">
@@ -206,13 +211,13 @@ export default function Profile() {
                 {isChangeUsername ? (
                   <input
                     type="text"
-                    defaultValue={user.username}
+                    defaultValue={user['0']['username']}
                     className="border border-slate-300 p-2 rounded text-black"
                     name="changeUsername"
                     onChange={(e) => setChangeUsername(e.target.value)}
                   />
                 ) : (
-                  <span className="mx-2 font-semibold">{user["username"]}</span>
+                  <span className="mx-2 font-semibold">{user['0']["username"]}</span>
                 )}
               </div>
               {isChangeUsername ? (
@@ -230,7 +235,7 @@ export default function Profile() {
               )}
             </div>
             <div className="py-2">
-              Email: <span className="mx-2 font-semibold">{user["email"]}</span>
+              Email: <span className="mx-2 font-semibold">{user['0']["email"]}</span>
             </div>
             <div className="flex justify-between items-center w-full">
               <div className="py-2">
@@ -238,14 +243,14 @@ export default function Profile() {
                 {isChangePhoneNumber ? (
                   <input
                     type="text"
-                    defaultValue={user.phonenumber}
+                    defaultValue={user['0']['phonenumber']}
                     className="border border-slate-300 p-2 rounded text-black"
                     name="changePhoneNumber"
                     onChange={(e) => setChangePhoneNumber(e.target.value)}
                   />
                 ) : (
                   <span className="mx-2 font-semibold">
-                    {user["phonenumber"]}
+                    {user['0']["phonenumber"]}
                   </span>
                 )}
               </div>
@@ -275,7 +280,7 @@ export default function Profile() {
                 )}
                 <div className="relative w-60 h-60 object-cover cursor-pointer rounded-full overflow-hidden">
                   <img
-                    src={selectedImage || user["avatar"]}
+                    src={selectedImage || user['0']["avatar"]}
                     alt="Preview"
                     className=""
                   />
@@ -303,54 +308,55 @@ export default function Profile() {
           </div>
         </div>
       </div>
-      {posts ? (
+
+      {sortedPosts.length > 0 ? (
         <div>
-          {posts
-            .sort((a, b) => b.timestamp - a.timestamp)
-            .map((post) => (
-              <div className="relative w-[40%] left-[100%] translate-x-[-175%] block">
-                <div className="flex justify-between items-center mb-5 border-b px-2 py-3">
-                  <div className="flex flex-col" title={user && user.username}>
-                    <div className="flex">
-                      <Image
-                        src={user ? user.avatar : "/images/icon.jpg"}
-                        alt="avatarUser"
-                        className="rounded-full mr-3 w-8 h-8 object-cover"
-                        width={30}
-                        height={30}
-                      />
-                      <p>{user ? user.username : "Unknown User"}</p>
-                    </div>
-                    <p className="text-xs mt-3 text-slate-600">
-                      {timeAgo(post.timestamp)}
-                    </p>
+          {sortedPosts.map((post) => (
+            <div className="relative w-[40%] left-[100%] translate-x-[-175%] block">
+              <div className="flex justify-between items-center mb-5 border-b px-2 py-3">
+                <div className="flex flex-col" title={user && user.username}>
+                  <div className="flex">
+                    <Image
+                      src={user ? user.avatar : "/images/icon.jpg"}
+                      alt="avatarUser"
+                      className="rounded-full mr-3 w-8 h-8 object-cover"
+                      width={30}
+                      height={30}
+                    />
+                    <p>{user ? user.username : "Unknown User"}</p>
                   </div>
-                  <div
-                    className="cursor-pointer px-2 py-6"
-                    onClick={() => handleModalDelete(post.postId)}
-                  >
-                    <FontAwesomeIcon icon={faTrash} />
-                  </div>
+                  <p className="text-xs mt-3 text-slate-600">
+                    {timeAgo(post.timestamp)}
+                  </p>
                 </div>
                 <div
-                  className={`border-b mb-2 ${post.image ? "mb-20" : "mb-5"} px-3`}
+                  className="cursor-pointer px-2 py-6"
+                  onClick={() => handleModalDelete(post.postId)}
                 >
-                  <div className="mb-5">{post.content}</div>
-                  {post.image && (
-                    <Image
-                      src={post.image}
-                      alt="imageOfPost"
-                      className="w-full block cursor-pointer hover:scale-[1.2] bg-white z-[1000000] transition-all"
-                      width={100}
-                      height={100}
-                    />
-                  )}
+                  <FontAwesomeIcon icon={faTrash} />
                 </div>
               </div>
-            ))}
+              <div
+                className={`border-b mb-2 ${post.image ? "mb-20" : "mb-5"} px-3`}
+              >
+                <div className="mb-5">{post.content}</div>
+                {post.image && (
+                  <Image
+                    src={post.image}
+                    alt="imageOfPost"
+                    className="w-full block cursor-pointer hover:scale-[1.2] bg-white z-[1000000] transition-all"
+                    width={100}
+                    height={100}
+                  />
+                )}
+              </div>
+            </div>
+          ))}
         </div>
       ) : (
-        <p>Bạn chưa đăng bài viết nào, hãy thử đăng nhé!</p>
+        <p className="relative w-[40%] left-[100%] translate-x-[-175%] block">
+          Bạn chưa đăng bài viết nào, hãy thử đăng nhé!
+        </p>
       )}
 
       {isModalDelete && (

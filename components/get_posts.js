@@ -40,7 +40,7 @@ export default function GetPosts({}) {
 
   const getUsers = async () => {
     try {
-      const response = await fetch(`/api/users`, {
+      const response = await fetch(`/api/usersget`, {
         method: "GET",
       });
 

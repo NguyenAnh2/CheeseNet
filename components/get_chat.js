@@ -80,7 +80,7 @@ const GetChat = ({ user1Id, user2Id, flagSend }) => {
   const handleGetUserSend = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch(`/api/userbyid/?uid=${user1Id}`, {
+      const response = await fetch(`/api/usersget/?uid=${user1Id}`, {
         method: "GET",
       });
 

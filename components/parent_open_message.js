@@ -12,7 +12,7 @@ export default function ParentOpenMessage() {
 
   const getUsers = async () => {
     try {
-      const response = await fetch(`/api/usersget`, {
+      const response = await fetch(`/api/users/get`, {
         method: "GET",
       });
 

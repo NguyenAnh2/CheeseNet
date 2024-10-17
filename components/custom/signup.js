@@ -70,7 +70,7 @@ const SignUp = () => {
 
       if (user) {
         try {
-          const response = await fetch("/api/users", {
+          const response = await fetch("/api/users/post", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",

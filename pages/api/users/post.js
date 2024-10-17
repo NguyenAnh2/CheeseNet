@@ -133,25 +133,6 @@ export default async function handler(req, res) {
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
-  } else if (req.method === "GET") {
-    const { uid } = req.query;
-    try {
-      const client = await connectToDatabase();
-      const database = client.db("cheese_net");
-      const collection = database.collection("users");
-      let result;
-
-      if (!uid) {
-        result = await collection.find({}).toArray();
-      } else {
-        result = await collection.findOne({ uid });
-      }
-
-      res.status(200).json(result);
-    } catch (error) {
-      console.error("Error fetching users:", error);
-      res.status(500).json({ error: "Có lỗi khi lấy thông tin người dùng." });
-    }
   } else {
     res.status(405).json({ error: "Method not allowed." });
   }

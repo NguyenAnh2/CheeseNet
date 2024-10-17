@@ -14,7 +14,7 @@ export default function Heading() {
 
   const getUser = async () => {
     try {
-      const response = await fetch(`/api/users?uid=${userId}`)
+      const response = await fetch(`/api/userbyid?uid=${userId}`)
         .then((res) => res.json())
         .then((data) => {
           setUser(data);

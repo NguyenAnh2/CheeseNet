@@ -38,7 +38,7 @@ export default function GetPosts({}) {
     fetchPosts();
   }, [userId]);
 
-  const getUser = async () => {
+  const getUsers = async () => {
     try {
       const response = await fetch(`/api/users`, {
         method: "GET",
@@ -60,7 +60,7 @@ export default function GetPosts({}) {
   };
 
   useEffect(() => {
-    getUser();
+    getUsers();
   }, [userId]);
 
   const openModal = (image) => {

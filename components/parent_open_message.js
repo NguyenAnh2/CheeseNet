@@ -10,7 +10,7 @@ export default function ParentOpenMessage() {
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(true);
 
-  const getUser = async () => {
+  const getUsers = async () => {
     try {
       const response = await fetch(`/api/users`, {
         method: "GET",
@@ -33,7 +33,7 @@ export default function ParentOpenMessage() {
     }
   };
   useEffect(() => {
-    getUser();
+    getUsers();
   }, [isLoading]);
 
   useEffect(() => {

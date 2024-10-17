@@ -1,7 +1,5 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
-import { ref, get, child } from "firebase/database";
-import { database } from "../firebase/firebaseConfig";
 import { useState, useEffect } from "react";
 import { useAuth } from "./auth";
 import Image from "next/image";
@@ -11,26 +9,33 @@ export default function Heading() {
   const { userId } = useAuth();
   const { logout } = useAuth();
   const [user, setUser] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  const fetchUser = () => {
-    const dbRef = ref(database);
-    get(child(dbRef, `users/${userId}`))
-      .then((snapshot) => {
-        if (snapshot.val()) {
-          setUser(snapshot.val());
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+  const getUser = async () => {
+    try {
+      const response = await fetch(`/api/users?uid=${userId}`)
+        .then((res) => res.json())
+        .then((data) => {
+          setUser(data);
+          setIsLoading(false);
+        })
+        .catch(() => {
+          const errorData = response.json();
+          setError(errorData.error);
+          setIsLoading(true);
+        });
+    } catch (error) {
+      setError("Failed to fetch posts entries.");
+      console.error("Error fetching posts:", error);
+    }
   };
 
   useEffect(() => {
-    fetchUser();
-  }, [userId]);
+    getUser();
+  }, [isLoading]);
 
-  const liStylesCenter =
-    "text-2xl py-3 px-7 rounded cursor-pointer hover:bg-slate-300 transition-all";
+
 
   return (
     <div className="fixed bg-slate-400 w-full h-16 z-50 top-0">
@@ -52,6 +57,8 @@ export default function Heading() {
               className="py-2 px-4 border-none outline-none text-base rounded-full w-full hidden sm:block"
             />
             <FontAwesomeIcon
+              width={10}
+              height={10}
               icon={faMagnifyingGlass}
               className="absolute sm:right-3 text-red-200 sm:text-slate-500 top-2/4 -translate-y-2/4 cursor-pointer"
             />
@@ -59,7 +66,7 @@ export default function Heading() {
         </div>
 
         <ul className="flex">
-          {userId ? (
+          {user && !isLoading ? (
             <div className="flex items-center">
               <Link href="profile" className="flex items-center">
                 <li className={``}>
@@ -89,28 +96,6 @@ export default function Heading() {
           )}
         </ul>
       </div>
-      {/* <ul className="flex absolute right-2/4 translate-x-2/4 top-2/4 -translate-y-2/4 h-16 text-center items-center">
-        <Link href="/">
-          <li className={liStylesCenter}>
-            <FontAwesomeIcon icon={faHome} size="lg" />
-          </li>
-        </Link>
-        <Link href="/watch">
-          <li className={liStylesCenter}>
-            <FontAwesomeIcon icon={faTv} size="lg" />
-          </li>
-        </Link>
-        <Link href="/groups">
-          <li className={liStylesCenter}>
-            <FontAwesomeIcon icon={faPeopleGroup} size="lg" />
-          </li>
-        </Link>
-        <Link href="/friends">
-          <li className={liStylesCenter}>
-            <FontAwesomeIcon icon={faUserFriends} size="lg" />
-          </li>
-        </Link>
-      </ul> */}
     </div>
   );
 }

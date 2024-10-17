@@ -1,7 +1,7 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import { database } from "../../firebase/firebaseConfig";
-import { ref, set } from "firebase/database";
+import { ref, set, get, update, child, remove } from "firebase/database";
 import {
   auth,
   createUserWithEmailAndPassword,
@@ -37,18 +37,27 @@ const SignUp = () => {
       );
       const user = userCredential.user;
 
-      await sendEmailVerification(user);
+      sendEmailVerification(user);
       alert("Email xác nhận đã được gửi. Vui lòng kiểm tra hộp thư.");
 
-      set(ref(database, "users/" + user.uid), {
-        username: username,
-        email: email,
-        uid: user.uid,
-        avatar: "/images/defaultavatar.jpg",
-        createdAt: Date.now(),
-      });
+      const intervalId = setInterval(async () => {
+        await user.reload();
+        if (user.emailVerified) {
+          clearInterval(intervalId);
+          alert("Xác thực thành công!");
+          setIsRegistered(true);
 
-      setIsRegistered(true);
+          set(ref(database, "users/" + user.uid), {
+            username: username,
+            email: email,
+            uid: user.uid,
+            avatar: "/images/defaultavatar.jpg",
+            diary_password: null,
+            phonenumber: null,
+            createdAt: Date.now(),
+          });
+        }
+      }, 3000);
     } catch (error) {
       console.error("Registration error:", error);
       setError(error.message);
@@ -70,13 +79,15 @@ const SignUp = () => {
               uid: user.uid,
               username: username,
               email: email,
+              avatar: "/images/defaultavatar.jpg",
+              diary_password: null,
+              phonenumber: null,
+              createdAt: Date.now(),
             }),
           });
-          console.log("Done");
 
           if (response.ok) {
-            alert("Thông tin người dùng đã được lưu thành công vào MSSQL.");
-            window.location.href = "/login"; // Chuyển hướng sau khi lưu
+            window.location.href = "/login";
           } else {
             const errorData = await response.json();
             setError(errorData.error);
@@ -95,8 +106,21 @@ const SignUp = () => {
     setShowPassword(!showPassword);
   };
 
+  const handleDeleteAccount = () => {
+    const userRef = ref(database, `users`);
+
+    remove(userRef)
+      .then(() => {
+        console.log("Tài khoản đã được xóa thành công.");
+      })
+      .catch((error) => {
+        console.error("Lỗi khi xóa tài khoản:", error);
+      });
+  };
+
   return (
     <div className="flex justify-center items-center mt-16 ">
+      <button onClick={handleDeleteAccount}>Xóa tài khoản</button>
       <form className={styles.form} onSubmit={handleRegister}>
         <p className={styles.title}>Đăng ký </p>
         <p className={styles.message}>

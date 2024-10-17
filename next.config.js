@@ -11,4 +11,7 @@ module.exports = {
   devIndicators: {
     autoPrerender: false,
   },
+  images: {
+    domains: ["res.cloudinary.com"],
+  },
 };

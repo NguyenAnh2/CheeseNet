@@ -1,95 +1,142 @@
-import sql from "mssql";
+import { MongoClient, ObjectId } from "mongodb";
 
-// Cấu hình kết nối tới MSSQL
-const dbConfig = {
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  server: process.env.DB_SERVER,
-  database: process.env.DB_DATABASE,
-  options: {
-    encrypt: true, // Sử dụng nếu bạn kết nối qua giao thức an toàn
-    trustServerCertificate: true, // Bật lên nếu máy chủ có chứng chỉ tự tạo
-  },
-};
-
-let poolPromise;
-
-async function connectToDatabase() {
-  if (!poolPromise) {
-    poolPromise = sql
-      .connect(dbConfig)
-      .then((pool) => {
-        console.log("Connected to MSSQL");
-        return pool;
-      })
-      .catch((err) => {
-        console.error("Database Connection Failed", err);
-        poolPromise = null; // Reset pool nếu lỗi
-        throw err;
-      });
-  }
-  return poolPromise;
-}
-
-export const config = {
-  api: {
-    bodyParser: {
-      sizeLimit: "10mb",
-    },
-  },
-};
+const uri = process.env.MONGODB_URI;
+const client = new MongoClient(uri);
 
 export default async function handler(req, res) {
   if (req.method === "POST") {
-    const { userId, content, image } = req.body;
-    const timestamp = Date.now();
-
-    if (!userId || !content) {
-      return res.status(400).json({ error: "Thiếu userId hoặc content." });
-    }
+    const { userId, content, image, likes, timestamp } = req.body;
 
     try {
-      const pool = await connectToDatabase();
+      await client.connect();
+      const database = client.db("cheese_net");
+      const collection = database.collection("posts");
 
-      await pool
-        .request()
-        .input("userId", sql.NVarChar, userId)
-        .input("content", sql.NText, content)
-        .input("image", sql.NVarChar, image || null)
-        .input("timestamp", sql.BigInt, timestamp)
-        .query(
-          `INSERT INTO Posts (userId, content, image, timestamp) 
-           VALUES (@userId, @content, @image, @timestamp)`
-        );
+      const result = await collection.insertOne({
+        userId,
+        content,
+        image,
+        likes,
+        timestamp,
+      });
 
-      res.status(201).json({ message: "Bài viết đã được lưu thành công" });
+      res.status(201).json({
+        message: "Potst entry saved successfully!",
+        id: result.insertedId,
+      });
     } catch (error) {
-      console.error("Error saving post:", error);
-      res.status(500).json({ error: "Có lỗi khi lưu bài viết." });
+      console.error("MongoDB error", error);
+      res
+        .status(500)
+        .json({ error: "An error occurred while saving the posts entry." });
+    } finally {
+      await client.close();
     }
   } else if (req.method === "GET") {
-    const { userId } = req.query;
+    const { userId, postId } = req.query;
+
     try {
-      const pool = await connectToDatabase();
-      let result;
+      await client.connect();
+      const database = client.db("cheese_net");
+      const collection = database.collection("posts");
+
+      let query = {};
       if (userId) {
-        result = await pool
-          .request()
-          .input("userId", sql.NVarChar, userId)
-          .query(
-            `SELECT * FROM Posts WHERE userId = @userId ORDER BY timestamp DESC`
-          );
-      } else {
-        result = await pool
-          .request()
-          .query(`SELECT * FROM Posts ORDER BY timestamp DESC`);
+        query.userId = userId;
       }
-      res.status(200).json(result.recordset);
+
+      if (postId) {
+        query._id = new ObjectId(postId);
+      }
+
+      const postsEntry = await collection.find(query).toArray();
+
+      res.status(200).json(postsEntry);
     } catch (error) {
-      console.error("Error fetching posts:", error);
-      res.status(500).json({ error: "Có lỗi khi lấy bài viết." });
+      console.error("MongoDB error", error);
+      res.status(500).json({
+        error: "An error occurred while retrieving the posts entries.",
+        userId,
+        postId,
+      });
+    } finally {
+      await client.close();
+    }
+  } else if (req.method === "DELETE") {
+    const { postId } = req.query;
+
+    if (!postId) {
+      return res.status(400).json({ error: "Post ID is required ", postId });
+    }
+
+    try {
+      await client.connect();
+      const database = client.db("cheese_net");
+      const collection = database.collection("posts");
+
+      const result = await collection.deleteOne({ _id: new ObjectId(postId) });
+
+      if (result.deletedCount === 1) {
+        res.status(200).json({ message: "Post deleted successfully!" });
+      } else {
+        res.status(404).json({ error: "Post not found" });
+      }
+    } catch (error) {
+      console.error("MongoDB error", error);
+      res.status(500).json({
+        error: "An error occurred while deleting the post entry.",
+        _id,
+      });
+    }
+  } else if (req.method === "PUT") {
+    const { postId, userId } = req.body;
+
+    try {
+      await client.connect();
+      const database = client.db("cheese_net");
+      const collection = database.collection("posts");
+
+      // Tìm bài viết theo postId và kiểm tra xem người dùng đã like chưa
+      const post = await collection.findOne({ _id: new ObjectId(postId) });
+
+      if (!post) {
+        return res.status(404).json({ error: "Post not found" });
+      }
+
+      // Kiểm tra xem người dùng đã like hay chưa
+      const hasLiked = post.likes.some((like) => like.userId === userId);
+
+      let updatedLikes;
+
+      if (hasLiked) {
+        // Nếu người dùng đã like, thì xóa "like" của họ
+        updatedLikes = post.likes.filter((like) => like.userId !== userId);
+      } else {
+        // Nếu chưa like, thêm "like" của người dùng
+        updatedLikes = [...post.likes, { userId, like_at: Date.now() }];
+      }
+
+      // Cập nhật bài viết với danh sách likes mới
+      const result = await collection.updateOne(
+        { _id: new ObjectId(postId) },
+        { $set: { likes: updatedLikes } }
+      );
+
+      if (result.modifiedCount === 1) {
+        res.status(200).json({ message: "Post updated successfully!" });
+      } else {
+        res.status(400).json({ error: "Failed to update post" });
+      }
+    } catch (error) {
+      console.error("MongoDB error", error);
+      res
+        .status(500)
+        .json({ error: "An error occurred while updating the post." });
+    } finally {
+      await client.close();
     }
   } else {
-    res.status(405).json({ error: "Method not allowed." });
+    res.setHeader("Allow", ["POST", "GET"]);
+    res.status(405).end(`Method ${req.method} Not Allowed`);
   }
 }

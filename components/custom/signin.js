@@ -30,14 +30,13 @@ const SignIn = () => {
       });
       const data = await response.json();
       if (data.status) {
-        // Gọi hàm login để lưu userId và token vào Context và localStorage
         login(data.user.uid);
         router.push("/");
       } else {
-        alert("Lỗi, vui lòng kiểm tra lại thông tin!");
+        setMessageFail("Lỗi, vui lòng kiểm tra lại thông tin!");
       }
     } catch (error) {
-      console.error("Error:", error);
+      setMessageFail("Error:", error);
     }
   };
 

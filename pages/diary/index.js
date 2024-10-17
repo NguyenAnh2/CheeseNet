@@ -5,7 +5,7 @@ import SideRight from "../../components/sidebar_right";
 import TabBar from "../../components/custom/tabbar";
 import Head from "next/head";
 import Confetti from "react-confetti";
-import { ref, get, update, child, remove } from "firebase/database";
+import { ref, get, update } from "firebase/database";
 import { database } from "../../firebase/firebaseConfig";
 import { useAuth } from "../../components/auth";
 import { useState, useEffect, useRef, useMemo } from "react";
@@ -23,25 +23,34 @@ export default function Diary() {
   const algorithm = "aes-256-cbc";
   const [secretKey, setSecretKey] = useState();
   const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
   const contentDiaryRef = useRef();
   const diariesContentDecrypt = [];
   const { userId } = useAuth();
 
-  useEffect(() => {
-    const dbRef = ref(database);
-    get(child(dbRef, `users/${userId}`))
-      .then((snapshot) => {
-        if (snapshot.exists()) {
-          const data = snapshot.val();
+  const getUser = async () => {
+    try {
+      const response = await fetch(`/api/users?uid=${userId}`)
+        .then((res) => res.json())
+        .then((data) => {
+          console.log(data);
           setUser(data);
-        } else {
-          setUser([]);
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  }, [userId]);
+          setIsLoading(false);
+        })
+        .catch(() => {
+          const errorData = response.json();
+          setError(errorData.error);
+          setIsLoading(false);
+        });
+    } catch (error) {
+      setError("Failed to fetch posts entries.");
+      console.error("Error fetching posts:", error);
+    }
+  };
+
+  useEffect(() => {
+    getUser();
+  }, [userId, isLoading]);
 
   function hashPassword(password) {
     return CryptoJS.SHA256(password).toString();
@@ -52,7 +61,7 @@ export default function Diary() {
     const inputRefs = group === 1 ? inputRefs1.current : inputRefs2.current;
 
     if (value.length === 1 && index < inputRefs.length - 1) {
-      inputRefs[index + 1].focus(); // Chuyển focus sang ô tiếp theo
+      inputRefs[index + 1].focus();
     }
   };
 
@@ -65,7 +74,7 @@ export default function Diary() {
     }
   };
 
-  const handleComparePasswords = () => {
+  const handleComparePasswords = async () => {
     const password1 = inputRefs1.current.map((input) => input.value).join("");
     const password2 = inputRefs2.current.map((input) => input.value).join("");
 
@@ -81,16 +90,37 @@ export default function Diary() {
         update(userRef, updates)
           .then(() => {
             alert("Update thành công!");
-            window.location.reload();
           })
           .catch((error) => {
-            console.error("Lỗi khi cập nhật dữ liệu: ", error);
+            console.error("Lỗi khi cập nhật dữ liệu firebase: ", error);
           });
+
+        const response = await fetch("/api/users", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            uid: userId,
+            diary_password: hashPassword(password1),
+          }),
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+          alert(data.message);
+        } else {
+          alert(data.error);
+        }
+
+        window.location.reload();
+
+        setSecretKey(password1);
       } else {
         setIsMatch(false);
         inputRefs1.current.forEach((input) => (input.value = ""));
         inputRefs2.current.forEach((input) => (input.value = ""));
-        inputRefs1.current[0].focus(); // Chuyển focus về ô đầu tiên
+        inputRefs1.current[0].focus();
       }
     }
   };
@@ -126,16 +156,14 @@ export default function Diary() {
   }
 
   function decrypt(iv, encryptedData) {
-    // Kiểm tra độ dài của IV
     if (Buffer.from(iv, "hex").length !== 16) {
       throw new Error("Invalid IV length. IV must be 16 bytes for AES.");
     }
 
-    // Tạo decipher
     const decipher = crypto.createDecipheriv(
       algorithm,
-      Buffer.from(secretKey, "hex"), // Đảm bảo secretKey cũng có độ dài đúng
-      Buffer.from(iv, "hex") // Chuyển đổi IV từ hex sang Buffer
+      Buffer.from(secretKey, "hex"),
+      Buffer.from(iv, "hex")
     );
 
     let decrypted = decipher.update(encryptedData, "hex", "utf8");
@@ -187,10 +215,10 @@ export default function Diary() {
 
       if (response.ok) {
         const entries = await response.json();
-        setDiaryEntries(entries); // Cập nhật state với dữ liệu nhật ký
+        setDiaryEntries(entries);
       } else {
         const errorData = await response.json();
-        setError(errorData.error); // Xử lý lỗi
+        setError(errorData.error);
       }
     } catch (error) {
       setError("Failed to fetch diary entries.");
@@ -234,7 +262,7 @@ export default function Diary() {
 
   useEffect(() => {
     fetchDiaryEntries();
-  }, [userId]);
+  }, [secretKey]);
 
   const diariesFinaly = useMemo(() => {
     return diariesContentDecrypt.sort((a, b) => b.timestamp - a.timestamp);
@@ -245,24 +273,13 @@ export default function Diary() {
     window.location.reload();
   };
 
-  const handleDeleteAccount = () => {
-    const userRef = ref(database, `users`);
-
-    remove(userRef)
-      .then(() => {
-        console.log("Tài khoản đã được xóa thành công.");
-      })
-      .catch((error) => {
-        console.error("Lỗi khi xóa tài khoản:", error);
-      });
-  };
-
   return (
     <Layout>
       <Head>
         <title>Diary</title>
       </Head>
       <Heading />
+
       <ParentOpenMessage />
 
       <TabBar />
@@ -306,12 +323,11 @@ export default function Diary() {
         </div>
       )}
 
-      {!isMatchPassword && (
+      {!isMatchPassword && user && (
         <div>
-          {!user.diary_password ? (
+          {(!isLoading && !user.diary_password) ? (
             <div className="absolute top-[-100%] right-0 bottom-0 left-0 bg-slate-800 opacity-65">
               <div className="fixed top-[20%] left-2/4 translate-x-[-50%] flex justify-center items-center flex-col">
-              <button onClick={handleDeleteAccount}>Xóa tài khoản</button>
                 <p className="text-black font-bold text-3xl mb-3">
                   Tạo password:
                 </p>
@@ -365,7 +381,6 @@ export default function Diary() {
           ) : (
             <div className="absolute top-[-100%] right-0 bottom-0 left-0 bg-slate-800 opacity-65">
               <div className="fixed top-[20%] left-2/4 translate-x-[-50%] flex justify-center items-center flex-col">
-                <button onClick={handleDeleteAccount}>Xóa tài khoản</button>
                 <p className="text-black font-bold text-3xl mb-3">
                   Nhập password:
                 </p>

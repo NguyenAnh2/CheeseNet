@@ -1,36 +1,40 @@
 import Message from "./message";
 import SideLeft from "./sidebar_left";
 import { useState, useEffect } from "react";
-import { database } from "../firebase/firebaseConfig";
-import { ref, child, get } from "firebase/database";
 
 export default function ParentOpenMessage() {
   const [openMess, setOpenMess] = useState([]);
   const [findIndexUser, setFindIndexUser] = useState([]);
   const [users, setUsers] = useState([]);
   const [toggleMiniState, setToggleMiniState] = useState({});
+  const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    const dbRef = ref(database);
-    get(child(dbRef, `users`))
-      .then((snapshot) => {
-        if (snapshot.exists()) {
-          const usersArray = Object.keys(snapshot.val()).map((key) => ({
-            uid: key,
-            ...snapshot.val()[key],
-          }));
-          setUsers(usersArray);
-        } else {
-          console.log("No data available");
-        }
-        setIsLoading(false);
-      })
-      .catch((error) => {
-        console.error(error);
-        setIsLoading(false);
+  const getUser = async () => {
+    try {
+      const response = await fetch(`/api/users`, {
+        method: "GET",
       });
-  }, []);
+
+      if (response.ok) {
+        const entries = await response.json();
+        setUsers(entries);
+        setIsLoading(true);
+      } else {
+        const errorData = await response.json();
+        setError(errorData.error);
+        setIsLoading(true);
+      }
+      setIsLoading(false);
+    } catch (error) {
+      setError("Failed to fetch posts entries.");
+      console.error("Error fetching posts:", error);
+      setIsLoading(false);
+    }
+  };
+  useEffect(() => {
+    getUser();
+  }, [isLoading]);
 
   useEffect(() => {
     if (users.length > 0) {
@@ -84,15 +88,13 @@ export default function ParentOpenMessage() {
     const ele = document.getElementById(`inner_message_${uid}`);
     const send_form = document.getElementById("form-send-message");
     if (toggleMiniState[uid]) {
-      // ele.classList.remove("relative");
       ele.classList.add("hidden");
-      send_form.classList.remove("absolute")
-      send_form.classList.add("hidden")
+      send_form.classList.remove("absolute");
+      send_form.classList.add("hidden");
     } else {
       ele.classList.remove("hidden");
-      // ele.classList.add("relative");
-      send_form.classList.remove("hidden")
-      send_form.classList.add("absolute")
+      send_form.classList.remove("hidden");
+      send_form.classList.add("absolute");
     }
 
     setToggleMiniState((prevState) => ({

@@ -30,7 +30,6 @@ function Message({
 
     const messagesRef = child(ref(database), `chats/${chatId}/messages`);
 
-    // Tạo một ID tự động cho tin nhắn
     const newMessageRef = push(messagesRef);
 
     if (messRef.current.value) {
@@ -53,7 +52,7 @@ function Message({
     }
     messRef.current.value = "";
   };
-
+  
   return (
     <div
       id={user.uid}

@@ -25,9 +25,9 @@ export default function SideLeft({ users, clickOpenMess }) {
   const liStyles =
     "flex items-center py-3 pl-3 text-sm hover:bg-slate-300 cursor-pointer select-none text-sm";
   return (
-    <div className="z-10">
+    <div className="relative z-10">
       <div
-        className={`sm:fixed sm:flex lg:w-80 md:w-60 sm:w-[190px] sm:z-0 flex-col fixed top-[64px] max-w-[500px] w-[60%] h-[calc(100vh-64px)] overflow-y-auto pl-4 left-0 bottom-0 border-r z-10 bg-white transition-all duration-300 ease-in-out transform ${
+        className={`sm:fixed sm:flex lg:w-80 md:w-60 sm:w-[190px] sm:z-0 flex-col fixed top-[64px] max-w-[500px] w-[60%] h-[calc(100vh-64px)] overflow-y-auto pl-4 left-0 bottom-0 border-r bg-white transition-all duration-300 ease-in-out transform ${
           isOpenLeft ? "translate-x-0" : "-translate-x-full"
         }`}
       >

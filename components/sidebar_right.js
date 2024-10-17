@@ -49,7 +49,6 @@ export default function SideRight() {
 
   return (
     <div>
-      {/* {isOpenRight && ( */}
       <div
         className={`sm:fixed sm:flex sm:right-0 md:w-60 lg:w-80 sm:w-[190px] flex-col h-[calc(100vh-64px)] overflow-y-auto w-[60%] fixed top-[64px] right-0  bottom-0 border-slate-600 shadow-xl bg-white transition-all duration-300 ease-in-out transform ${
           isOpenRight ? "translate-x-0" : "translate-x-full"
@@ -102,7 +101,6 @@ export default function SideRight() {
           </button>
         </form>
       </div>
-      {/* )} */}
       <div className="fixed right-[0] top-[155px] bg-blue-200 hover:bg-blue-400 px-3 py-2 text-xl rounded-s-xl z-[10] cursor-pointer opacity-70">
         {isOpenRight ? (
           <FontAwesomeIcon icon={faArrowRight} onClick={toggleOpenRight} />

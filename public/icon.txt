@@ -3,55 +3,21 @@
 <i class="fa-solid fa-comment"></i>
 <i class="fa-regular fa-circle-user"></i>
 ``
-
-
-  // const users = [
-  //   {
-  //     id: 1,
-  //     username: "Nguyen Anh",
-  //     avatar: "/images/icon.jpg"
-  //   },
-  //   {
-  //     id: 2,
-  //     username: "Linh Chi",
-  //     avatar: "/images/icon.jpg"
-  //   },
-  //   {
-  //     id: 3,
-  //     username: "Linh Anh",
-  //     avatar: "/images/icon.jpg"
-  //   },
-  // ]
-
-  // const chats = {
-  //   chats: {
-  //     "12": {
-  //       messages: {
-  //         msg1: {
-  //           senderId: 1,
-  //           content: "Xin chào, bạn khỏe không?",
-  //           timestamp: 1696602950000,
-  //         },
-  //         msg2: {
-  //           senderId: 2,
-  //           content: "Mình khỏe, còn bạn?",
-  //           timestamp: 1696602955000,
-  //         },
-  //       },
-  //     },
-  //     "13": {
-  //       messages: {
-  //         msg1: {
-  //           senderId: 1,
-  //           content: "Chào Linh Anh!",
-  //           timestamp: 1696603050000,
-  //         },
-  //         msg2: {
-  //           senderId: 3,
-  //           content: "Ồ thì ra là như vậy",
-  //           timestamp: 1696602955000,
-  //         }
-  //       },
-  //     },
-  //   },
-  // };
+// const dbRef = ref(database);
+// get(child(dbRef, `users`))
+//   .then((snapshot) => {
+//     if (snapshot.exists()) {
+//       const usersArray = Object.keys(snapshot.val()).map((key) => ({
+//         uid: key,
+//         ...snapshot.val()[key],
+//       }));
+//       setUsers(usersArray);
+//     } else {
+//       console.log("No data available");
+//     }
+//     setIsLoading(false);
+//   })
+//   .catch((error) => {
+//     console.error(error);
+//     setIsLoading(false);
+//   });

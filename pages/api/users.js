@@ -1,79 +1,145 @@
-import sql from "mssql";
+import { MongoClient } from "mongodb";
 
-const dbConfig = {
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  server: process.env.DB_SERVER,
-  database: process.env.DB_DATABASE,
-  options: {
-    encrypt: true,
-    trustServerCertificate: true,
-  },
-};
-
-let poolPromise;
+const uri = process.env.MONGODB_URI;
+let client;
 
 async function connectToDatabase() {
-  if (!poolPromise) {
-    poolPromise = sql
-      .connect(dbConfig)
-      .then((pool) => {
-        console.log("Connected to MSSQL");
-        return pool;
-      })
-      .catch((err) => {
-        console.error("Database Connection Failed", err);
-        poolPromise = null; // Reset pool nếu lỗi
-        throw err;
-      });
+  if (!client) {
+    client = new MongoClient(uri);
+    await client.connect();
+    console.log("Connected to MongoDB");
   }
-  return poolPromise;
+  return client;
 }
 
-async function saveUserToMSSQL(uid, username, email) {
-  const pool = await connectToDatabase();
-  await pool
-    .request()
-    .input("uid", sql.NVarChar, uid)
-    .input("username", sql.NVarChar, username)
-    .input("email", sql.NVarChar, email)
-    .input("createdAt", sql.BigInt, Date.now())
-    .query(
-      `INSERT INTO Users (uid, username, email, createdAt) 
-           VALUES (@uid, @username, @email, @createdAt)`
-    );
+async function saveUserToMongoDB(
+  uid,
+  username,
+  email,
+  avatar,
+  phonenumber,
+  diary_password
+) {
+  const client = await connectToDatabase();
+  const database = client.db("cheese_net");
+  const collection = database.collection("users");
+
+  const result = await collection.insertOne({
+    uid,
+    username,
+    email,
+    avatar,
+    phonenumber,
+    diary_password,
+    createdAt: Date.now(),
+  });
+
+  return result;
+}
+
+async function updateUserDiaryPassword(uid, diary_password) {
+  const client = await connectToDatabase();
+  const database = client.db("cheese_net");
+  const collection = database.collection("users");
+
+  const result = await collection.updateOne(
+    { uid },
+    { $set: { diary_password } }
+  );
+
+  return result;
+}
+
+async function updateUserDiaryInfo(
+  uid,
+  username,
+  avatar,
+  phonenumber,
+  updatedAt
+) {
+  const client = await connectToDatabase();
+  const database = client.db("cheese_net");
+  const collection = database.collection("users");
+
+  const result = await collection.updateOne(
+    { uid },
+    {
+      $set: {
+        username,
+        avatar,
+        phonenumber,
+        updatedAt,
+      },
+    }
+  );
+
+  return result;
 }
 
 export default async function handler(req, res) {
   if (req.method === "POST") {
-    const { uid, username, email } = req.body;
-
-    if (!uid || !username || !email) {
-      return res.status(400).json({ error: "Thiếu thông tin." });
-    }
+    const {
+      uid,
+      username,
+      email,
+      avatar,
+      phonenumber,
+      updatedAt,
+      diary_password,
+    } = req.body;
 
     try {
-      await saveUserToMSSQL(uid, username, email);
-      res.status(201).json({ message: "Người dùng đã được lưu thành công" });
+      if (username && email) {
+        await saveUserToMongoDB(
+          uid,
+          username,
+          email,
+          avatar,
+          phonenumber,
+          updatedAt,
+          diary_password
+        );
+        return res
+          .status(201)
+          .json({ message: "Người dùng mới đã được lưu thành công" });
+      }
+
+      const result = await updateUserDiaryPassword(uid, diary_password);
+      const resultInfo = await updateUserDiaryInfo(
+        uid,
+        username,
+        avatar,
+        phonenumber,
+        updatedAt
+      );
+
+      if (result.modifiedCount === 0 && resultInfo.modifiedCount === 0) {
+        return res.status(404).json({ error: "Cập nhật thất bại." });
+      }
+
+      return res
+        .status(200)
+        .json({ message: "Cập nhật thông tin thành công." });
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
   } else if (req.method === "GET") {
     const { uid } = req.query;
     try {
-      const pool = await connectToDatabase();
+      const client = await connectToDatabase();
+      const database = client.db("cheese_net");
+      const collection = database.collection("users");
       let result;
+
       if (!uid) {
-        result = await pool.request().query(`SELECT * FROM Users`);
+        result = await collection.find({}).toArray();
       } else {
-        result = await pool
-          .request()
-          .input("uid", sql.NVarChar, uid)
-          .query(`SELECT * FROM Users WHERE uid = @uid`);
+        result = await collection.findOne({ uid });
       }
-      res.status(200).json(result.recordset);
+
+      res.status(200).json(result);
     } catch (error) {
-      console.error("Error fetching posts:", error);
+      console.error("Error fetching users:", error);
       res.status(500).json({ error: "Có lỗi khi lấy thông tin người dùng." });
     }
   } else {

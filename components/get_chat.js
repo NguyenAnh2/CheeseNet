@@ -2,19 +2,27 @@ import { ref, get, remove, update } from "firebase/database";
 import { useEffect, useState, useRef } from "react";
 import { database } from "../firebase/firebaseConfig";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { fetchUser } from "../utils/fetchUser";
 import {
   faPencil,
   faTrash,
   faCheck,
   faClose,
 } from "@fortawesome/free-solid-svg-icons";
+import { fetchPost } from "../utils/fetchPost";
+import Image from "next/image";
 
 const GetChat = ({ user1Id, user2Id, flagSend }) => {
   const [messages, setMessages] = useState([]);
   const [editingMessage, setEditingMessage] = useState(null);
+  const [userSend, setUserSend] = useState([]);
+  const [userReceiver, setUserReceiver] = useState([]);
+  const [selectedPost, setSelectedPost] = useState([]);
+  const [isModalOpenSelectedPost, setIsModalOpenSelectedPost] = useState(false);
   const [newContent, setNewContent] = useState("");
   const [isDeletePopupVisible, setDeletePopupVisible] = useState(false);
   const [messageToDelete, setMessageToDelete] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
   const messagesEndRef = useRef(null);
 
   const styleSendMessage =
@@ -45,7 +53,86 @@ const GetChat = ({ user1Id, user2Id, flagSend }) => {
 
   useEffect(() => {
     fetchMessages();
-  }, [chatId, flagSend, newContent, isDeletePopupVisible]);
+  }, [chatId, flagSend, newContent, isDeletePopupVisible, messages.content]);
+
+  const handleGetUserReceived = async () => {
+    try {
+      setIsLoading(true);
+      const response = await fetch(`/api/users/?uid=${user2Id}`, {
+        method: "GET",
+      });
+
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status} ${response.statusText}`);
+      }
+
+      if (response.ok) {
+        const userData = await response.json();
+        setUserReceiver(userData);
+        setIsLoading(false);
+      }
+    } catch (error) {
+      setIsLoading(false);
+      return error;
+    }
+  };
+
+  const handleGetUserSend = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch(`/api/users/?uid=${user1Id}`, {
+        method: "GET",
+      });
+
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status} ${response.statusText}`);
+      }
+
+      if (response.ok) {
+        const userData = await response.json();
+        setIsLoading(false);
+        setUserSend(userData);
+      }
+    } catch (error) {
+      setIsLoading(false);
+      return error;
+    }
+  };
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      setIsLoading(true);
+      try {
+        await Promise.all([handleGetUserReceived(), handleGetUserSend()]);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchUsers();
+  }, [user1Id, user2Id]);
+
+  console.log(userReceiver);
+  console.log(userSend);
+
+  const handleOpenModalSelectedPost = async (postId) => {
+    if (postId) {
+      try {
+        const postData = await fetchPost(postId);
+        setSelectedPost(postData);
+      } catch (error) {
+        console.error("Error fetching post:", error);
+      }
+    }
+    setIsModalOpenSelectedPost(true);
+  };
+
+  const handleCloseModalSelectedPost = () => {
+    setIsModalOpenSelectedPost(false);
+    setSelectedPost(null);
+  };
 
   const handleEditMessage = (messageId, currentContent) => {
     setEditingMessage(messageId);
@@ -94,6 +181,21 @@ const GetChat = ({ user1Id, user2Id, flagSend }) => {
     }
   }, [messages]);
 
+  const timeAgo = (timestamp) => {
+    const now = Date.now();
+    const secondsPast = (now - timestamp) / 1000;
+
+    if (secondsPast < 60) {
+      return `${Math.floor(secondsPast)} giây trước`;
+    } else if (secondsPast < 3600) {
+      return `${Math.floor(secondsPast / 60)} phút trước`;
+    } else if (secondsPast < 86400) {
+      return `${Math.floor(secondsPast / 3600)} giờ trước`;
+    } else {
+      return `${Math.floor(secondsPast / 86400)} ngày trước`;
+    }
+  };
+
   return (
     <ul className="">
       {messages.map((message) => (
@@ -130,8 +232,23 @@ const GetChat = ({ user1Id, user2Id, flagSend }) => {
               </div>
             </div>
           ) : (
-            <div className="relative px-3 py-1">
-              {message.content}
+            <div className="relative px-3 py-1 text-left">
+              {message.isReply ? (
+                <div
+                  className="cursor-pointer font-sans"
+                  onClick={() => handleOpenModalSelectedPost(message.postId)}
+                >
+                  {message.senderId === user1Id && userSend && userReceiver ? (
+                    <span className="text-xs text-slate-400">{`${userSend.username} đã trả lời ${userReceiver.username}`}</span>
+                  ) : (
+                    <span className="text-xs text-slate-400">{`${userSend.username} đã trả lời ${userReceiver.username}`}</span>
+                  )}
+                  <div className="text-xs text-slate-400">(xem chi tiết): </div>
+                  <div>{message.content}</div>
+                </div>
+              ) : (
+                <div>{message.content}</div>
+              )}
               {message.senderId === user1Id && (
                 <div className="flex absolute left-[-23%] top-[50%] -translate-y-2/4">
                   <button
@@ -163,6 +280,37 @@ const GetChat = ({ user1Id, user2Id, flagSend }) => {
               Xác nhận
             </button>
             <button onClick={() => setDeletePopupVisible(false)}>Hủy</button>
+          </div>
+        </div>
+      )}
+
+      {isModalOpenSelectedPost && (
+        <div className="fixed z-[1000] inset-0 flex items-center justify-center bg-black bg-opacity-50 mt-14 py-8">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-lg w-full">
+            <button
+              onClick={handleCloseModalSelectedPost}
+              className="text-red-500 float-right"
+            >
+              Đóng
+            </button>
+            {selectedPost ? (
+              <div className="transition-transform">
+                <p className="text-sm text-slate-700 mb-2">
+                  {timeAgo(selectedPost[0].timestamp)}
+                </p>
+                <h2 className="text-xl">{selectedPost[0].content}</h2>
+                {selectedPost[0].image && (
+                  <Image
+                    src={selectedPost[0].image}
+                    width={30}
+                    height={30}
+                    className="w-full h-full object-cover hover:scale-[1.2]"
+                  />
+                )}
+              </div>
+            ) : (
+              <p>Loading post...</p>
+            )}
           </div>
         </div>
       )}

@@ -8,8 +8,6 @@ import {
 import { useState, useRef } from "react";
 import Confetti from "react-confetti";
 import { useAuth } from "./auth";
-import { database } from "../firebase/firebaseConfig";
-import { ref, child, set, push } from "firebase/database";
 import Link from "next/link";
 
 export default function AddPost() {
@@ -17,36 +15,76 @@ export default function AddPost() {
   const [selectedImage, setSelectedImage] = useState(null);
   const [modalImage, setModalImage] = useState(null);
   const [isPostSuccess, setIsPostSuccess] = useState(false);
+  const [error, setError] = useState();
   const contentPostRef = useRef();
   const { userId } = useAuth();
 
   const handleSubmitPost = async (e) => {
     e.preventDefault();
-
     const newPost = {
       userId: userId,
       content: contentPostRef.current.value,
-      image: selectedImage,
+      file: selectedImage,
+      likes: [],
+      timestamp: Date.now(),
     };
 
     try {
-      const response = await fetch("/api/posts", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newPost),
-      });
+      if (selectedImage) {
+        const uploadResponse = await fetch("/api/upload", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ file: selectedImage }),
+        });
 
-      if (response.ok) {
-        setIsPost(!isPost);
-        setSelectedImage(null);
-        setIsPostSuccess(true);
+        const uploadData = await uploadResponse.json();
+
+        if (uploadResponse.ok) {
+          newPost.image = uploadData.imageUrl;
+
+          const postResponse = await fetch("/api/posts", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(newPost),
+          });
+
+          if (postResponse.ok) {
+            setIsPost(!isPost);
+            setSelectedImage(null);
+            setIsPostSuccess(true);
+          } else {
+            setError(postResponse.json());
+            console.error("Error sending post:", await postResponse.json());
+          }
+        } else {
+          console.error("Error uploading image:", uploadData.error);
+          setError(uploadData.error);
+        }
       } else {
-        console.error("Error sending post:", await response.json());
+        const postResponse = await fetch("/api/posts", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(newPost),
+        });
+
+        if (postResponse.ok) {
+          setIsPost(!isPost);
+          setSelectedImage(null);
+          setIsPostSuccess(true);
+        } else {
+          setError(postResponse.json());
+          console.error("Error sending post:", await postResponse.json());
+        }
       }
     } catch (error) {
-      console.error("Error sending post:", error);
+      console.error("Error submitting post:", error);
+      setError(error);
     }
   };
 
@@ -73,9 +111,9 @@ export default function AddPost() {
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setSelectedImage(reader.result); // Lưu URL ảnh để preview
+        setSelectedImage(reader.result);
       };
-      reader.readAsDataURL(file); // Đọc nội dung của file ảnh
+      reader.readAsDataURL(file);
     }
   };
 

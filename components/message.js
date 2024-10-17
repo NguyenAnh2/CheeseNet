@@ -62,7 +62,7 @@ function Message({
         <div className="flex items-center">
           <Image
             className="mx-2 rounded-full h-8 w-8 object-cover"
-            src={user.avatar}
+            src={user.avatar ? user.avatar : '/images/defaultavatar.jpg'}
             width={30}
             height={30}
             alt="alt"

@@ -72,10 +72,10 @@ export default function Heading() {
                 <li className={``}>
                   <Image
                     className="w-8 h-8 rounded-full overflow-hidden object-cover"
-                    src={user.avatar}
+                    src={user.avatar ? user.avatar : '/images/defaultavatar.jpg'}
                     width={30}
                     height={30}
-                    alt={user.username}
+                    alt={user.username ? user.name : "cc"}
                   />
                 </li>
                 <span className="font-bold mx-3">{user.username}</span>

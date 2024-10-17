@@ -301,10 +301,11 @@ const GetChat = ({ user1Id, user2Id, flagSend }) => {
                 <h2 className="text-xl">{selectedPost[0].content}</h2>
                 {selectedPost[0].image && (
                   <Image
-                    src={selectedPost[0].image}
+                    src={selectedPost[0].image ? selectedPost[0].image : '/images/defaultavatar.jpg'}
                     width={30}
                     height={30}
                     className="w-full h-full object-cover hover:scale-[1.2]"
+                    alt="ccccc"
                   />
                 )}
               </div>

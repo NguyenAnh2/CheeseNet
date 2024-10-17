@@ -228,7 +228,7 @@ export default function AddPost() {
                     src={modalImage}
                     alt="Modal Preview"
                     className="max-w-full max-h-full rounded"
-                    onClick={(e) => e.stopPropagation()} // Ngăn chặn sự kiện click từ ảnh
+                    onClick={(e) => e.stopPropagation()} 
                   />
                   <FontAwesomeIcon
                     icon={faClose}

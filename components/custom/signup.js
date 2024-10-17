@@ -57,7 +57,7 @@ const SignUp = () => {
             createdAt: Date.now(),
           });
         }
-      }, 3000);
+      }, 10000);
     } catch (error) {
       console.error("Registration error:", error);
       setError(error.message);
@@ -106,21 +106,8 @@ const SignUp = () => {
     setShowPassword(!showPassword);
   };
 
-  const handleDeleteAccount = () => {
-    const userRef = ref(database, `users`);
-
-    remove(userRef)
-      .then(() => {
-        console.log("Tài khoản đã được xóa thành công.");
-      })
-      .catch((error) => {
-        console.error("Lỗi khi xóa tài khoản:", error);
-      });
-  };
-
   return (
     <div className="flex justify-center items-center mt-16 ">
-      <button onClick={handleDeleteAccount}>Xóa tài khoản</button>
       <form className={styles.form} onSubmit={handleRegister}>
         <p className={styles.title}>Đăng ký </p>
         <p className={styles.message}>

@@ -295,8 +295,8 @@ export default function Profile() {
                     />
                   ) : (
                     <FontAwesomeIcon
-                    width={20}
-                    height={20}
+                      width={20}
+                      height={20}
                       icon={faPencil}
                       className="cursor-pointer"
                       onClick={handleIsChangeUsername}
@@ -335,8 +335,8 @@ export default function Profile() {
                     />
                   ) : (
                     <FontAwesomeIcon
-                    width={20}
-                    height={20}
+                      width={20}
+                      height={20}
                       icon={faPencil}
                       className="cursor-pointer"
                       onClick={handleIsChangePhoneNumber}
@@ -399,7 +399,7 @@ export default function Profile() {
                     >
                       <div className="flex">
                         <Image
-                          src={user ? user.avatar : "/images/icon.jpg"}
+                          src={user ? user.avatar : "/images/defaultavatar.jpg"}
                           alt="avatarUser"
                           className="rounded-full mr-3 w-8 h-8 object-cover"
                           width={30}
@@ -424,7 +424,9 @@ export default function Profile() {
                     <div className="mb-5">{post.content}</div>
                     {post.image && (
                       <Image
-                        src={post.image}
+                        src={
+                          post.image ? post.image : "/images/defaultavatar.jpg"
+                        }
                         alt="imageOfPost"
                         className="w-full block cursor-pointer hover:scale-[1.2] bg-white z-[1000000] transition-all"
                         width={100}

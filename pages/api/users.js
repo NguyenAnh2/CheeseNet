@@ -104,6 +104,16 @@ export default async function handler(req, res) {
           .json({ message: "Người dùng mới đã được lưu thành công" });
       }
 
+      if (!username && !email && !avatar && !phonenumber) {
+        const result = await updateUserDiaryPassword(uid, diary_password);
+        if (result.modifiedCount === 0) {
+          return res.status(404).json({ error: "Cập nhật thất bại." });
+        }
+        return res
+          .status(200)
+          .json({ message: "Cập nhật password thành công." });
+      }
+
       const result = await updateUserDiaryPassword(uid, diary_password);
       const resultInfo = await updateUserDiaryInfo(
         uid,

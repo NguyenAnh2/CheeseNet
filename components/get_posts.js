@@ -187,7 +187,7 @@ export default function GetPosts({}) {
                 <div className="mb-2">{post.content}</div>
                 {post.image && (
                   <Image
-                    src={post.image}
+                    src={post.image ? post.image : '/images/defaultavatar.jpg'}
                     alt="imageOfPost"
                     className="w-full block cursor-pointer transition-transform hover:scale-[1.2]"
                     width={100}

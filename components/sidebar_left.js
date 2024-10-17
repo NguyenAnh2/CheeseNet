@@ -44,10 +44,10 @@ export default function SideLeft({ users, clickOpenMess }) {
               >
                 <Image
                   className="mx-2 rounded-full w-8 h-8 object-cover"
-                  src={user.avatar}
+                  src={user.avatar ? user.avatar : '/images/defaultavatar.jpg'}
                   width={30}
                   height={30}
-                  alt={`${user.username}`}
+                  alt={user.username ? user.name : 'cc'}
                 />
                 {user.username}
               </li>

@@ -10,6 +10,7 @@ import { useRouter } from "next/router";
 import Confetti from "react-confetti";
 import { useAuth } from "./auth";
 import Link from "next/link";
+import PinterestSearch from "./custom/search_pinterest";
 
 export default function AddPost({}) {
   const [isPost, setIsPost] = useState(false);
@@ -128,38 +129,28 @@ export default function AddPost({}) {
 
   const router = useRouter();
   const { code } = router.query;
-  const [userData, setUserData] = useState(null);
 
   useEffect(() => {
-    if (code) {
-      fetch(`/api/pinterest/user?code=${code}`)
-        .then((response) => response.json())
-        .then((data) => {
-          console.log("User data response:", data);
-          setUserData(data.data);
-        })
-        .catch((error) => console.error("Error fetching user data:", error));
-    }
+    const fetchAccessToken = async () => {
+      const response = await fetch(`/api/pinterest/user?code=${code}`);
+
+      if (response.ok) {
+        const data = await response.json();
+        const accessToken = data.accessToken;
+        const expiresAt = data.expiresAt;
+
+        localStorage.setItem("pinterestAccessToken", accessToken);
+        localStorage.setItem("expiresAt", expiresAt);
+      } else {
+        console.error("Failed to fetch access token");
+      }
+    };
+
+    fetchAccessToken();
   }, [code]);
 
   return (
     <div className="mobile-w-full relative flex justify-center">
-      {/* absolute bottom-2 left-2  */}
-      {userData ? (
-        <div>
-          <h2>
-            Welcome, {userData.first_name} {userData.last_name}!
-          </h2>
-        </div>
-      ) : (
-        <p>Loading...</p>
-      )}
-      <div className="flex items-center">
-        <p className="text-sm">Nếu chưa có ảnh? Hãy để </p>
-        <Link href="/api/pinterest/auth">
-          <button className="mx-1 text-blue-500">Pinterest</button>
-        </Link>
-      </div>
       {isPostSuccess && (
         <div className="absolute top-2/4 w-[370px] h-[140px] border shadow-md bg-white rounded-lg px-3 py-3 z-[10000]">
           <p className="font-bold text-xl">
@@ -221,6 +212,7 @@ export default function AddPost({}) {
                   Đăng
                 </button>
               </form>
+              <PinterestSearch />
 
               <input
                 id="fileImages"

@@ -5,12 +5,13 @@ import {
   faClose,
   faImage,
 } from "@fortawesome/free-solid-svg-icons";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
+import { useRouter } from "next/router";
 import Confetti from "react-confetti";
 import { useAuth } from "./auth";
 import Link from "next/link";
 
-export default function AddPost() {
+export default function AddPost({}) {
   const [isPost, setIsPost] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [modalImage, setModalImage] = useState(null);
@@ -125,8 +126,40 @@ export default function AddPost() {
     setModalImage(null); // Đóng modal
   };
 
+  const router = useRouter();
+  const { code } = router.query;
+  const [userData, setUserData] = useState(null);
+
+  useEffect(() => {
+    if (code) {
+      fetch(`/api/pinterest/user?code=${code}`)
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("User data response:", data);
+          setUserData(data.data);
+        })
+        .catch((error) => console.error("Error fetching user data:", error));
+    }
+  }, [code]);
+
   return (
     <div className="mobile-w-full relative flex justify-center">
+      {/* absolute bottom-2 left-2  */}
+      {userData ? (
+        <div>
+          <h2>
+            Welcome, {userData.first_name} {userData.last_name}!
+          </h2>
+        </div>
+      ) : (
+        <p>Loading...</p>
+      )}
+      <div className="flex items-center">
+        <p className="text-sm">Nếu chưa có ảnh? Hãy để </p>
+        <Link href="/api/pinterest/auth">
+          <button className="mx-1 text-blue-500">Pinterest</button>
+        </Link>
+      </div>
       {isPostSuccess && (
         <div className="absolute top-2/4 w-[370px] h-[140px] border shadow-md bg-white rounded-lg px-3 py-3 z-[10000]">
           <p className="font-bold text-xl">
@@ -167,7 +200,7 @@ export default function AddPost() {
           )}
 
           {isPost && (
-            <div className="relative flex flex-col justify-between border rounded-md sm:m-5 mt-5 pr-2 sm:pr-6 pb-8 pt-6 z-[102] bg-white">
+            <div className="relative flex flex-col justify-between border rounded-md sm:m-5 mt-5 pr-2 sm:pr-6 pb-16 pt-6 z-[102] bg-white">
               <form onSubmit={(e) => handleSubmitPost(e)}>
                 <textarea
                   ref={contentPostRef}
@@ -183,7 +216,7 @@ export default function AddPost() {
                 />
                 <button
                   onSubmit={handleSubmitPost}
-                  className=" absolute text-pink-500 font-bold bottom-2 right-2"
+                  className=" absolute text-pink-500 font-bold bottom-9 right-2"
                 >
                   Đăng
                 </button>
@@ -200,9 +233,10 @@ export default function AddPost() {
               />
               <FontAwesomeIcon
                 icon={faImage}
-                className="absolute left-2 bottom-2 text-pink-500 cursor-pointer"
+                className="absolute left-2 bottom-10 text-pink-500 cursor-pointer"
                 onClick={handleAddImage}
               />
+
               {selectedImage && (
                 <div className="w-fit relative mt-4">
                   <img
@@ -228,7 +262,7 @@ export default function AddPost() {
                     src={modalImage}
                     alt="Modal Preview"
                     className="max-w-full max-h-full rounded"
-                    onClick={(e) => e.stopPropagation()} 
+                    onClick={(e) => e.stopPropagation()}
                   />
                   <FontAwesomeIcon
                     icon={faClose}

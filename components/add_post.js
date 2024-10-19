@@ -166,27 +166,19 @@ export default function AddPost({}) {
       )}
 
       {isPostSuccess && <Confetti />}
+
       {userId && (
         <div className="sm:w-fit">
           {!isPost && (
             <div className="relative left-2/4 -translate-x-2/4 w-fit flex items-center border rounded-md shadow my-6 z-[100]">
               <div
-                className="flex flex-col border-r px-3 py-2 md:mr-3 cursor-pointer"
+                className="flex flex-col border-r px-3 py-2 cursor-pointer"
                 title="Thêm bài viết"
                 onClick={(e) => setIsPost(!isPost)}
               >
                 <FontAwesomeIcon icon={faPlus} />
                 <p className="hidden md:block">Bài viết</p>
               </div>
-              <p className="md:font-serif hidden md:block">Hay</p>
-              <Link
-                href="/diary"
-                className="flex flex-col border-l px-3 py-2 md:ml-3 cursor-pointer"
-                title="Thêm nhật ký"
-              >
-                <FontAwesomeIcon icon={faPencil} />
-                <p className="hidden md:block">Nhật ký</p>
-              </Link>
             </div>
           )}
 
@@ -212,6 +204,7 @@ export default function AddPost({}) {
                   Đăng
                 </button>
               </form>
+
               <PinterestSearch />
 
               <input

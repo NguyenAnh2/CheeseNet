@@ -323,6 +323,12 @@ export default function Diary() {
         </div>
       )}
 
+      {!userId && (
+        <div className="fixed top-[64px] bottom-0 left-0 right-0 bg-slate-800 opacity-80 z-[1000] flex justify-center items-center">
+          <div className="text-2xl font-bold text-red-500">Vui lòng đăng nhập để viết nhật ký</div>
+        </div>
+      )}
+
       {!isMatchPassword && user && (
         <div>
           {(!isLoading && !user.diary_password) ? (

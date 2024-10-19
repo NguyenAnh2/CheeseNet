@@ -1,5 +1,10 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
+import {
+  faBookOpen,
+  faMagnifyingGlass,
+  faPencil,
+  faVideo,
+} from "@fortawesome/free-solid-svg-icons";
 import { useState, useEffect } from "react";
 import { useAuth } from "./auth";
 import Image from "next/image";
@@ -35,8 +40,6 @@ export default function Heading() {
     getUser();
   }, [isLoading]);
 
-
-
   return (
     <div className="fixed bg-slate-400 w-full h-16 z-50 top-0">
       <div className="flex justify-between items-center h-16">
@@ -64,6 +67,30 @@ export default function Heading() {
             />
           </div>
         </div>
+        <div className="relative flex justify-center items-center w-[30%]">
+          <Link
+            href="/study"
+            className="flex flex-col justify-center items-center w-[33%] cursor-pointer text-xl py-2 hover:bg-blue-400 text-red-200"
+          >
+            <FontAwesomeIcon className="" icon={faBookOpen} width={20} height={20} />
+            <p className="hidden md:block">Học</p>
+          </Link>
+          <Link
+            href="/shorts"
+            className="flex flex-col justify-center items-center w-[33%] cursor-pointer text-xl py-2 hover:bg-blue-400 text-red-200"
+          >
+            <FontAwesomeIcon className="" icon={faVideo} width={20} height={20} />
+            <p className="hidden md:block">Shorts</p>
+          </Link>
+          <Link
+            href="/diary"
+            className="flex flex-col justify-center items-center w-[33%] cursor-pointer text-xl py-2 hover:bg-blue-400 text-red-200"
+            title="Thêm nhật ký"
+          >
+            <FontAwesomeIcon className="" icon={faPencil} width={20} height={20} />
+            <p className="hidden md:block">Nhật ký</p>
+          </Link>
+        </div>
 
         <ul className="flex">
           {user && !isLoading ? (
@@ -72,7 +99,9 @@ export default function Heading() {
                 <li className={``}>
                   <Image
                     className="w-8 h-8 rounded-full overflow-hidden object-cover"
-                    src={user.avatar ? user.avatar : '/images/defaultavatar.jpg'}
+                    src={
+                      user.avatar ? user.avatar : "/images/defaultavatar.jpg"
+                    }
                     width={30}
                     height={30}
                     alt={user.username ? user.name : "cc"}

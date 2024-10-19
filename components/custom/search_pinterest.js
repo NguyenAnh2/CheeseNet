@@ -23,8 +23,6 @@ const PinterestSearch = () => {
   const handleSubmitSearchPinterest = async (e) => {
     e.preventDefault();
     if (accessToken) {
-      console.log("Searching Pinterest for:", searchPinterest);
-      console.log("Access Token:", accessToken);
       try {
         const response = await fetch(
           `/api/pinterest/getpins?searchPinterest=${searchPinterest}`,

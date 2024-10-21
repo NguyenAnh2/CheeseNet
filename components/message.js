@@ -66,6 +66,7 @@ function Message({
             width={30}
             height={30}
             alt="alt"
+            loading="lazy"
           />
           <p className="mr-4">{user.username}</p>
         </div>

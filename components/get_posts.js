@@ -175,6 +175,7 @@ export default function GetPosts({}) {
                       className="rounded-full mr-3 w-8 h-8 object-cover"
                       width={30}
                       height={30}
+                      loading="lazy"
                     />
                     <p>{user ? user.username : "Unknown User"}</p> <br />
                   </div>
@@ -193,6 +194,7 @@ export default function GetPosts({}) {
                     width={100}
                     height={100}
                     onClick={() => openModal(post.image)}
+                    loading="lazy"
                   />
                 )}
               </div>

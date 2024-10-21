@@ -71,6 +71,7 @@ export default function Heading() {
               width={30}
               height={30}
               alt="logoweb"
+              loading="lazy"
             />
           </Link>
           <div className="relative">
@@ -181,6 +182,7 @@ export default function Heading() {
                     width={30}
                     height={30}
                     alt={user.username ? user.name : "cc"}
+                    loading="lazy"
                   />
                 </li>
                 <span className="hidden md:block font-bold mx-3">

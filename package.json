@@ -44,6 +44,7 @@
     "react-easy-crop": "^5.1.0",
     "react-router-dom": "^6.26.2",
     "react-scroll-to-bottom": "^4.2.0",
+    "react-toastify": "^10.0.6",
     "rss-parser": "^3.13.0",
     "styled-components": "^6.1.13"
   },

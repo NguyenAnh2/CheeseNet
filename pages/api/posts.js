@@ -38,9 +38,14 @@ export default async function handler(req, res) {
     try {
       await client.connect();
       const database = client.db("cheese_net");
-      const collection = database.collection("posts");
+      const postsCollection = database.collection("posts");
+      const usersCollection = database.collection("users");
 
       let query = {};
+
+      const currentUser = await usersCollection.findOne({ uid: userId });
+      const userFriends = currentUser?.friends || [];
+
       if (userId) {
         query.userId = userId;
       }
@@ -49,7 +54,15 @@ export default async function handler(req, res) {
         query._id = new ObjectId(postId);
       }
 
-      const postsEntry = await collection.find(query).toArray();
+      query.$or = [
+        { visibility: "public" }, // Show public posts to everyone
+        {
+          visibility: "friends",
+          userId: { $in: userFriends }, // Show 'friends' posts only to user's friends
+        },
+      ];
+
+      const postsEntry = await postsCollection.find(query).toArray();
 
       res.status(200).json(postsEntry);
     } catch (error) {

@@ -17,6 +17,7 @@ export default function AddPost({}) {
   const [selectedImage, setSelectedImage] = useState(null);
   const [modalImage, setModalImage] = useState(null);
   const [isPostSuccess, setIsPostSuccess] = useState(false);
+  const [visibility, setVisibility] = useState("friends");
   const [error, setError] = useState();
   const contentPostRef = useRef();
   const { userId } = useAuth();
@@ -28,6 +29,7 @@ export default function AddPost({}) {
       content: contentPostRef.current.value,
       file: selectedImage,
       likes: [],
+      visibility: visibility,
       timestamp: Date.now(),
     };
 
@@ -197,9 +199,17 @@ export default function AddPost({}) {
                     }
                   }}
                 />
+                <select
+                className="absolute bottom-10 left-14 outline-none border px-2 rounded"
+                  value={visibility}
+                  onChange={(e) => setVisibility(e.target.value)}
+                >
+                  <option value="public">Công khai</option>
+                  <option value="friends">Bạn bè</option>
+                </select>
                 <button
                   onSubmit={handleSubmitPost}
-                  className=" absolute text-pink-500 font-bold bottom-9 right-2"
+                  className="absolute text-pink-500 font-bold bottom-9 right-2"
                 >
                   Đăng
                 </button>

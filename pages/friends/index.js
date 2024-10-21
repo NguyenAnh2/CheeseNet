@@ -1,20 +1,18 @@
 import Layout from "../../components/layout";
-import Heading from "../../components/heading";
 import Head from "next/head";
+import { toast } from "react-toastify";
 import { useAuth } from "../../components/auth";
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import ParentOpenMessage from "../../components/parent_open_message";
-import SideRight from "../../components/sidebar_right";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUserMinus, faUserPlus } from "@fortawesome/free-solid-svg-icons";
 
 export default function Friends() {
   const [users, setUsers] = useState([]);
-  const [friendIds, setFriendIds] = useState([]); // Lưu trữ danh sách bạn bè
-  const [pendingRequests, setPendingRequests] = useState([]); // Lưu trữ danh sách lời mời đang chờ
+  const [friendIds, setFriendIds] = useState([]);
+  const [pendingRequests, setPendingRequests] = useState([]);
   const { userId } = useAuth();
-  const [sentRequests, setSentRequests] = useState([]); // Lưu trữ danh sách lời mời đã gửi
+  const [sentRequests, setSentRequests] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const getUsers = async () => {
@@ -52,13 +50,14 @@ export default function Friends() {
         setFriendIds((prevFriends) =>
           prevFriends.filter((id) => id !== friendId)
         );
-        console.log("Friend removed successfully");
+        console.log("Xóa bạn thành công");
+        toast.success("Xóa bạn thành công");
         setIsModalDelete(!isModalDelete);
       } else {
-        console.error("Failed to remove friend");
+        toast.error("Failed to remove friend");
       }
     } catch (error) {
-      console.error("Error removing friend:", error);
+      toast.error("Error removing friend");
     }
   };
 
@@ -190,6 +189,7 @@ export default function Friends() {
                       alt={user.username}
                       width={60}
                       height={60}
+                      loading="lazy"
                     />
                     <div className="text-lg mx-3">{user.username}</div>
                   </div>

@@ -48,6 +48,7 @@ export default function SideLeft({ users, clickOpenMess }) {
                   width={30}
                   height={30}
                   alt={user.username ? user.name : 'cc'}
+                  loading="lazy"
                 />
                 {user.username}
               </li>

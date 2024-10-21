@@ -411,6 +411,7 @@ export default function Profile() {
                             className="rounded-full mr-3 w-8 h-8 object-cover"
                             width={30}
                             height={30}
+                            loading="lazy"
                           />
                           <p>{user ? user.username : "Unknown User"}</p>
                         </div>
@@ -440,6 +441,7 @@ export default function Profile() {
                           className="w-full block cursor-pointer hover:scale-[1.2] bg-white z-[1000000] transition-all"
                           width={100}
                           height={100}
+                          loading="lazy"
                         />
                       )}
                     </div>

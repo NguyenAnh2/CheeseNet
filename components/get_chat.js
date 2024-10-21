@@ -312,6 +312,7 @@ const GetChat = ({ user1Id, user2Id, flagSend }) => {
                     height={30}
                     className="w-full h-full object-cover hover:scale-[1.2] transition-transform"
                     alt="ccccc"
+                    loading="lazy"
                   />
                 )}
               </div>

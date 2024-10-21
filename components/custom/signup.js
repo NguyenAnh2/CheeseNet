@@ -57,7 +57,7 @@ const SignUp = () => {
             createdAt: Date.now(),
           });
         }
-      }, 10000);
+      }, 5000);
     } catch (error) {
       console.error("Registration error:", error);
       setError(error.message);

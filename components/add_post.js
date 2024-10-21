@@ -189,7 +189,7 @@ export default function AddPost({}) {
                   ref={contentPostRef}
                   rows="2"
                   className="lg:w-[325px] md:w-[246px] w-full overflow-auto text-left p-2 outline-neutral-400 resize-none"
-                  placeholder="Này hôm nay của bạn ra sao?"
+                  placeholder="Này hôm nay của bạn ra sao? Nếu không có ý tưởng hãy thử Chatbox AI."
                   onKeyDown={(e) => {
                     if (e.key === "Enter" && e.ctrlKey) {
                       e.preventDefault();

@@ -15,7 +15,6 @@ export default async function handler(req, res) {
     const response = await fetch(
       `https://api.pinterest.com/v5/search/pins/?query=${encodeURIComponent(searchPinterest)}&access_token=${accessToken}`
     );
-// read_public
     if (!response.ok) {
       throw new Error("Failed to fetch search results");
     }

@@ -50,7 +50,7 @@ export default function SideRight() {
   return (
     <div>
       <div
-        className={`sm:fixed sm:flex sm:right-0 md:w-60 lg:w-80 sm:w-[190px] flex-col h-[calc(100vh-64px)] overflow-y-auto w-[60%] fixed top-[64px] right-0  bottom-0 border-slate-600 shadow-xl bg-white transition-all duration-300 ease-in-out transform ${
+        className={`sm:fixed sm:flex sm:right-0 md:w-60 lg:w-80 sm:w-[190px] flex-col h-[calc(100vh-64px)] overflow-y-auto w-[60%] fixed top-[64px] right-0  bottom-0 border-slate-600 shadow-xl bg-white transition-transform duration-300 ease-in-out z-[10] transform ${
           isOpenRight ? "translate-x-0" : "translate-x-full"
         }`}
       >
@@ -77,30 +77,32 @@ export default function SideRight() {
             </li>
           ))}
         </ul>
-        <form
-          onSubmit={handleSubmitChat}
-          className="fixed bottom-0 w-full rounded-xl h-12 bg-slate-200"
-        >
-          <textarea
-            ref={inputRef}
-            className="absolute w-[90%] h-12 rounded-xl px-3 pt-3 bg-slate-200 overflow-hidden text-left outline-none resize-none"
-            placeholder="Tin nhắn tới Chatbox"
-            rows="1"
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault();
-                handleSubmitChat(e);
-              }
-            }}
-          />
-          <button
-            className="absolute bottom-2/4 translate-y-2/4 right-6"
-            type="submit"
-          >
-            <FontAwesomeIcon icon={faPaperPlane} />
-          </button>
-        </form>
       </div>
+      <form
+        onSubmit={handleSubmitChat}
+        className={`fixed right-0 bottom-0 md:w-60 lg:w-80 sm:w-[190px] rounded-xl h-12 overflow-y-auto w-[60%] bg-slate-200 transform ${
+          isOpenRight ? "translate-x-0" : "translate-x-full delay-100"
+        } `}
+      >
+        <textarea
+          ref={inputRef}
+          className="w-[90%] h-12 rounded-xl px-3 pt-3 bg-slate-200 overflow-hidden text-left outline-none resize-none"
+          placeholder="Tin nhắn tới Chatbox"
+          rows="1"
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault();
+              handleSubmitChat(e);
+            }
+          }}
+        />
+        <button
+          className="absolute bottom-2/4 translate-y-2/4 right-6"
+          type="submit"
+        >
+          <FontAwesomeIcon icon={faPaperPlane} />
+        </button>
+      </form>
       <div className="fixed right-[0] top-[155px] bg-blue-200 hover:bg-blue-400 px-3 py-2 text-xl rounded-s-xl z-[10] cursor-pointer opacity-70">
         {isOpenRight ? (
           <FontAwesomeIcon icon={faArrowRight} onClick={toggleOpenRight} />

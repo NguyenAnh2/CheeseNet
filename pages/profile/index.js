@@ -39,7 +39,7 @@ export default function Profile() {
 
   const fetchUserInfo = async () => {
     try {
-      const response = await fetch(`/api/users?uid=${userId}`)
+      const response = await fetch(`/api/users/get?uid=${userId}`)
         .then((res) => res.json())
         .then((data) => {
           setUser(data);
@@ -92,7 +92,7 @@ export default function Profile() {
       updatedAt: Date.now(),
     };
 
-    const response = await fetch("/api/users", {
+    const response = await fetch("/api/users/post", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -238,8 +238,9 @@ export default function Profile() {
       <Head>
         <title>Profile</title>
       </Head>
-      <Heading />
+      {/* <Heading />
       <ParentOpenMessage />
+      <SideRight /> */}
 
       <TabBar />
 
@@ -502,7 +503,6 @@ export default function Profile() {
           </div>
         </div>
       )}
-      <SideRight />
     </Layout>
   );
 }

@@ -1,16 +1,20 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBookOpen,
+  faHome,
   faMagnifyingGlass,
   faPencil,
+  faUserFriends,
   faVideo,
 } from "@fortawesome/free-solid-svg-icons";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useAuth } from "./auth";
 import Image from "next/image";
+import { useRouter } from "next/router";
 import Link from "next/link";
 
 export default function Heading() {
+  const router = useRouter();
   const { userId } = useAuth();
   const { logout } = useAuth();
   const [user, setUser] = useState([]);
@@ -39,6 +43,22 @@ export default function Heading() {
   useEffect(() => {
     getUser();
   }, [isLoading]);
+  const [isSearch, setIsSearch] = useState(false);
+  const [searchValue, setSearchValue] = useState("");
+
+  const handleIsSearch = () => {
+    setIsSearch(!isSearch);
+  };
+
+  const handleSubmitSearch = async (e) => {
+    e.preventDefault();
+    try {
+      router.push(`/search?query=${searchValue}`);
+    } catch (error) {
+      setError("Failed to fetch posts entries.");
+      console.error("Error fetching posts:", error);
+    }
+  };
 
   return (
     <div className="fixed bg-slate-400 w-full h-16 z-50 top-0">
@@ -46,7 +66,7 @@ export default function Heading() {
         <div className="flex items-center">
           <Link href="/">
             <Image
-              className="rounded-full mx-4 w-10 h-10"
+              className="rounded-full mx-2 w-10 h-10"
               src="/images/icon.jpg"
               width={30}
               height={30}
@@ -54,41 +74,97 @@ export default function Heading() {
             />
           </Link>
           <div className="relative">
-            <input
-              type="text"
-              placeholder="Search on CheeseNet..."
-              className="py-2 px-4 border-none outline-none text-base rounded-full w-full hidden sm:block"
-            />
-            <FontAwesomeIcon
-              width={10}
-              height={10}
-              icon={faMagnifyingGlass}
-              className="absolute sm:right-3 text-red-200 sm:text-slate-500 top-2/4 -translate-y-2/4 cursor-pointer"
-            />
+            <form onSubmit={(e) => handleSubmitSearch(e)}>
+              {isSearch && (
+                <input
+                  type="text"
+                  placeholder="Search on CheeseNet"
+                  className="py-2 px-2 border-none outline-none text-base rounded-full"
+                  onChange={(e) => setSearchValue(e.target.value)}
+                />
+              )}
+              {searchValue ? (
+                <button type="submit">
+                  <FontAwesomeIcon
+                    width={20}
+                    height={20}
+                    icon={faMagnifyingGlass}
+                    className={`absolute ${isSearch ? "right-3" : "right-[-3]"} text-red-200 md:text-slate-500 top-2/4 -translate-y-2/4 cursor-pointer`}
+                  />
+                </button>
+              ) : (
+                <FontAwesomeIcon
+                  width={20}
+                  height={20}
+                  icon={faMagnifyingGlass}
+                  onClick={handleIsSearch}
+                  className={`absolute ${isSearch ? "right-3" : "right-[-3]"} text-red-200 md:text-slate-500 top-2/4 -translate-y-2/4 cursor-pointer`}
+                />
+              )}
+            </form>
           </div>
         </div>
-        <div className="relative flex justify-center items-center w-[30%]">
+        <div className="absolute left-2/4 translate-x-[-50%] flex justify-center items-center lg:w-[40%] w-[28%]">
           <Link
-            href="/study"
-            className="flex flex-col justify-center items-center w-[33%] cursor-pointer text-xl py-2 hover:bg-blue-400 text-red-200"
+            href="/"
+            className="flex flex-col justify-center items-center w-[20%] cursor-pointer text-xl md:py-[22px] md:px-3 lg:py-2 py-[22px] hover:bg-blue-400 text-red-200"
           >
-            <FontAwesomeIcon className="" icon={faBookOpen} width={20} height={20} />
-            <p className="hidden md:block">Học</p>
+            <FontAwesomeIcon
+              className=""
+              icon={faHome}
+              width={20}
+              height={20}
+            />
+            <p className="hidden lg:block lg:text-lg md:text-base">Home</p>
           </Link>
-          <Link
+          {/* <Link
             href="/shorts"
-            className="flex flex-col justify-center items-center w-[33%] cursor-pointer text-xl py-2 hover:bg-blue-400 text-red-200"
+            className="flex flex-col justify-center items-center w-[20%] cursor-pointer text-xl md:py-[22px] md:px-3 lg:py-2 py-[22px] hover:bg-blue-400 text-red-200"
           >
-            <FontAwesomeIcon className="" icon={faVideo} width={20} height={20} />
-            <p className="hidden md:block">Shorts</p>
-          </Link>
+            <FontAwesomeIcon
+              className=""
+              icon={faVideo}
+              width={20}
+              height={20}
+            />
+            <p className="hidden lg:block lg:text-lg md:text-base">Shorts</p>
+          </Link> */}
           <Link
             href="/diary"
-            className="flex flex-col justify-center items-center w-[33%] cursor-pointer text-xl py-2 hover:bg-blue-400 text-red-200"
+            className="flex flex-col justify-center items-center w-[20%] cursor-pointer text-xl md:py-[22px] md:px-3 lg:py-2 py-[22px] hover:bg-blue-400 text-red-200"
             title="Thêm nhật ký"
           >
-            <FontAwesomeIcon className="" icon={faPencil} width={20} height={20} />
-            <p className="hidden md:block">Nhật ký</p>
+            <FontAwesomeIcon
+              className=""
+              icon={faPencil}
+              width={20}
+              height={20}
+            />
+            <p className="hidden lg:block lg:text-lg md:text-base">Diary</p>
+          </Link>
+          <Link
+            href="/news"
+            className="flex flex-col justify-center items-center w-[20%] cursor-pointer text-xl md:py-[22px] md:px-3 lg:py-2 py-[22px] hover:bg-blue-400 text-red-200"
+          >
+            <FontAwesomeIcon
+              className=""
+              icon={faBookOpen}
+              width={20}
+              height={20}
+            />
+            <p className="hidden lg:block lg:text-lg md:text-base">News</p>
+          </Link>
+          <Link
+            href="/friends"
+            className="flex flex-col justify-center items-center w-[20%] cursor-pointer text-xl md:py-[22px] md:px-3 lg:py-2 py-[22px] hover:bg-blue-400 text-red-200"
+          >
+            <FontAwesomeIcon
+              className=""
+              icon={faUserFriends}
+              width={20}
+              height={20}
+            />
+            <p className="hidden lg:block lg:text-lg md:text-base">Friends</p>
           </Link>
         </div>
 
@@ -107,7 +183,9 @@ export default function Heading() {
                     alt={user.username ? user.name : "cc"}
                   />
                 </li>
-                <span className="font-bold mx-3">{user.username}</span>
+                <span className="hidden md:block font-bold mx-3">
+                  {user.username}
+                </span>
               </Link>
               <Link href="login" className="mx-3 font-bold" onClick={logout}>
                 Đăng xuất

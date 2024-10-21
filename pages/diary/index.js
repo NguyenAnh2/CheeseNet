@@ -11,6 +11,8 @@ import { useAuth } from "../../components/auth";
 import { useState, useEffect, useRef, useMemo } from "react";
 import CryptoJS from "crypto-js";
 import crypto from "crypto";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faWarning } from "@fortawesome/free-solid-svg-icons";
 
 export default function Diary() {
   const [user, setUser] = useState([]);
@@ -30,7 +32,7 @@ export default function Diary() {
 
   const getUser = async () => {
     try {
-      const response = await fetch(`/api/users?uid=${userId}`)
+      const response = await fetch(`/api/users/get?uid=${userId}`)
         .then((res) => res.json())
         .then((data) => {
           console.log(data);
@@ -95,7 +97,7 @@ export default function Diary() {
             console.error("Lỗi khi cập nhật dữ liệu firebase: ", error);
           });
 
-        const response = await fetch("/api/users", {
+        const response = await fetch("/api/users/post", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -278,9 +280,10 @@ export default function Diary() {
       <Head>
         <title>Diary</title>
       </Head>
-      <Heading />
+      {/* <Heading />
 
       <ParentOpenMessage />
+      <SideRight /> */}
 
       <TabBar />
 
@@ -324,7 +327,8 @@ export default function Diary() {
       )}
 
       {!userId && (
-        <div className="fixed top-[64px] bottom-0 left-0 right-0 bg-slate-800 opacity-80 z-[1000] flex justify-center items-center">
+        <div className="fixed top-[64px] bottom-0 left-0 right-0 bg-slate-800 opacity-95 z-[1000] flex justify-center items-center">
+          <FontAwesomeIcon icon={faWarning} />
           <div className="text-2xl font-bold text-red-500">Vui lòng đăng nhập để viết nhật ký</div>
         </div>
       )}
@@ -429,7 +433,6 @@ export default function Diary() {
           </button>
         </div>
       )}
-      <SideRight />
     </Layout>
   );
 }

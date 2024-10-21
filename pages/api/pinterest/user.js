@@ -31,7 +31,6 @@ export default async function handler(req, res) {
     );
 
     const tokenBodyText = await tokenResponse.text();
-    console.log("Token Response Body:", tokenBodyText);
 
     if (!tokenResponse.ok) {
       return res.status(tokenResponse.status).json({

@@ -12,7 +12,6 @@ async function connectToDatabase() {
   return client;
 }
 
-
 export default async function handler(req, res) {
   const client = await connectToDatabase();
   const database = client.db("cheese_net");

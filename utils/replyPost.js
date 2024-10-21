@@ -1,6 +1,4 @@
 import { useState } from "react";
-import { fetchPost } from "./fetchPost";
-import { fetchUser } from "./fetchUser";
 import { database } from "../firebase/firebaseConfig";
 import { ref, child, push, set } from "firebase/database";
 import { useAuth } from "../components/auth";

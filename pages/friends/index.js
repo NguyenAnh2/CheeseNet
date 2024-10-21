@@ -53,6 +53,7 @@ export default function Friends() {
           prevFriends.filter((id) => id !== friendId)
         );
         console.log("Friend removed successfully");
+        setIsModalDelete(!isModalDelete);
       } else {
         console.error("Failed to remove friend");
       }
@@ -64,17 +65,21 @@ export default function Friends() {
   // Lấy danh sách bạn bè và lời mời kết bạn
   const getFriendsAndRequests = async () => {
     try {
-      const response = await fetch(`/api/friends/get?userId=${userId}`, {
-        method: "GET",
-      });
+      if (userId) {
+        const response = await fetch(`/api/friends/get?uid=${userId}`, {
+          method: "GET",
+        });
 
-      if (response.ok) {
-        const data = await response.json();
-        setFriendIds(data.friends);
-        setPendingRequests(data.receivedFriendRequests); // Lời mời nhận được
-        setSentRequests(data.sentFriendRequests.map((req) => req.to)); // Lời mời đã gửi
+        if (response.ok) {
+          const data = await response.json();
+          setFriendIds(data.friends);
+          setPendingRequests(data.receivedFriendRequests); // Lời mời nhận được
+          setSentRequests(data.sentFriendRequests.map((req) => req.to)); // Lời mời đã gửi
+        } else {
+          console.error("Error fetching friends");
+        }
       } else {
-        console.error("Error fetching friends");
+        console.error("Missing userId");
       }
     } catch (error) {
       console.error("Failed to fetch friends or requests:", error);
@@ -106,7 +111,7 @@ export default function Friends() {
   const handleFriendRequest = async (fromUserId, action) => {
     try {
       const response = await fetch(`/api/friends/respond`, {
-        method: "POST",
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
@@ -129,7 +134,7 @@ export default function Friends() {
   useEffect(() => {
     getUsers();
     getFriendsAndRequests();
-  }, []);
+  }, [userId]);
 
   const [isModalDelete, setIsModalDelete] = useState(false);
   const [idToDelete, setIdToDelete] = useState();
@@ -170,7 +175,9 @@ export default function Friends() {
             </div>
           </div>
         )}
-        <h1 className="text-3xl font-bold text-pink-300">Bạn bè</h1>
+        <h1 className="text-3xl font-bold text-pink-300 my-4">
+          Gợi ý và danh sách bạn bè
+        </h1>
         {users.map((user) => (
           <div key={user.uid} className="mb-4 w-full">
             {user.uid !== userId && (

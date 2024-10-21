@@ -389,62 +389,70 @@ export default function Profile() {
       <div className="pb-10">
         {posts && posts.length > 0 ? (
           <div>
-            {posts.map((post) => {
-              const isLiked = post.likes.some((like) => like.userId === userId);
-              return (
-                <div className="relative w-[40%] left-[100%] translate-x-[-175%] block border bg-white rounded-lg my-5 pb-3 ">
-                  <div className="flex justify-between items-center mb-5 border-b px-2 py-3">
-                    <div
-                      className="flex flex-col"
-                      title={user && user.username}
-                    >
-                      <div className="flex">
-                        <Image
-                          src={user ? user.avatar : "/images/defaultavatar.jpg"}
-                          alt="avatarUser"
-                          className="rounded-full mr-3 w-8 h-8 object-cover"
-                          width={30}
-                          height={30}
-                        />
-                        <p>{user ? user.username : "Unknown User"}</p>
+            {posts
+              .sort((a, b) => b.timestamp - a.timestamp)
+              .map((post) => {
+                const isLiked = post.likes.some(
+                  (like) => like.userId === userId
+                );
+                return (
+                  <div className="relative w-[40%] left-[100%] translate-x-[-175%] block border bg-white rounded-lg my-5 pb-3 ">
+                    <div className="flex justify-between items-center mb-5 border-b px-2 py-3">
+                      <div
+                        className="flex flex-col"
+                        title={user && user.username}
+                      >
+                        <div className="flex">
+                          <Image
+                            src={
+                              user ? user.avatar : "/images/defaultavatar.jpg"
+                            }
+                            alt="avatarUser"
+                            className="rounded-full mr-3 w-8 h-8 object-cover"
+                            width={30}
+                            height={30}
+                          />
+                          <p>{user ? user.username : "Unknown User"}</p>
+                        </div>
+                        <p className="text-xs mt-3 text-slate-600">
+                          {timeAgo(post.timestamp)}
+                        </p>
                       </div>
-                      <p className="text-xs mt-3 text-slate-600">
-                        {timeAgo(post.timestamp)}
-                      </p>
+                      <div
+                        className="cursor-pointer px-2 py-6"
+                        onClick={() => handleModalDelete(post._id)}
+                      >
+                        <FontAwesomeIcon icon={faTrash} />
+                      </div>
                     </div>
                     <div
-                      className="cursor-pointer px-2 py-6"
-                      onClick={() => handleModalDelete(post._id)}
+                      className={`border-b mb-2 ${post.image ? "mb-20" : "mb-5"} px-3`}
                     >
-                      <FontAwesomeIcon icon={faTrash} />
+                      <div className="mb-5">{post.content}</div>
+                      {post.image && (
+                        <Image
+                          src={
+                            post.image
+                              ? post.image
+                              : "/images/defaultavatar.jpg"
+                          }
+                          alt="imageOfPost"
+                          className="w-full block cursor-pointer hover:scale-[1.2] bg-white z-[1000000] transition-all"
+                          width={100}
+                          height={100}
+                        />
+                      )}
+                    </div>
+                    <div
+                      id={`like_of_${post._id}`}
+                      className={`cursor-pointer w-fit px-2 text-xl ${isLiked ? "text-red-500" : "text-black"}`}
+                      onClick={() => handleLike(post._id)}
+                    >
+                      <FontAwesomeIcon icon={faHeart} />
                     </div>
                   </div>
-                  <div
-                    className={`border-b mb-2 ${post.image ? "mb-20" : "mb-5"} px-3`}
-                  >
-                    <div className="mb-5">{post.content}</div>
-                    {post.image && (
-                      <Image
-                        src={
-                          post.image ? post.image : "/images/defaultavatar.jpg"
-                        }
-                        alt="imageOfPost"
-                        className="w-full block cursor-pointer hover:scale-[1.2] bg-white z-[1000000] transition-all"
-                        width={100}
-                        height={100}
-                      />
-                    )}
-                  </div>
-                  <div
-                    id={`like_of_${post._id}`}
-                    className={`cursor-pointer w-fit px-2 text-xl ${isLiked ? "text-red-500" : "text-black"}`}
-                    onClick={() => handleLike(post._id)}
-                  >
-                    <FontAwesomeIcon icon={faHeart} />
-                  </div>
-                </div>
-              );
-            })}
+                );
+              })}
           </div>
         ) : (
           <p className="relative mt-40 w-[40%] left-[100%] translate-x-[-175%] block">

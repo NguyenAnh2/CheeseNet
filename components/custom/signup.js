@@ -54,6 +54,9 @@ const SignUp = () => {
             avatar: "/images/defaultavatar.jpg",
             diary_password: null,
             phonenumber: null,
+            receivedFriendRequests: [],
+            sentFriendRequests: [],
+            friends: [],
             createdAt: Date.now(),
           });
         }
@@ -82,6 +85,9 @@ const SignUp = () => {
               avatar: "/images/defaultavatar.jpg",
               diary_password: null,
               phonenumber: null,
+              receivedFriendRequests: [],
+              sentFriendRequests: [],
+              friends: [],
               createdAt: Date.now(),
             }),
           });

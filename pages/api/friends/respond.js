@@ -13,6 +13,10 @@ async function connectToDatabase() {
 }
 
 export default async function handler(req, res) {
+  if (req.method !== "PUT") {
+    return res.status(405).json({ error: "Method Not Allowed" });
+  }
+
   const client = await connectToDatabase();
   const database = client.db("cheese_net");
   const usersCollection = database.collection("users");
@@ -25,23 +29,35 @@ export default async function handler(req, res) {
 
   try {
     if (action === "accept") {
-      // Thêm bạn bè vào danh sách của cả hai người dùng
+      // Kiểm tra nếu hai người đã là bạn bè
+      const fromUser = await usersCollection.findOne({ uid: from });
+      const toUser = await usersCollection.findOne({ uid: to });
+
+      if (!fromUser || !toUser) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      if (fromUser.friends.includes(to) || toUser.friends.includes(from)) {
+        return res.status(400).json({ error: "Users are already friends" });
+      }
+
+      // Chấp nhận yêu cầu kết bạn, cập nhật bạn bè cho cả hai người
       await usersCollection.updateOne(
         { uid: from },
         {
           $push: { friends: to },
-          $pull: { sentFriendRequests: { to } },
+          $pull: { sentFriendRequests: { to } }, // Xóa yêu cầu đã gửi
         }
       );
       await usersCollection.updateOne(
         { uid: to },
         {
           $push: { friends: from },
-          $pull: { receivedFriendRequests: { from } },
+          $pull: { receivedFriendRequests: { from } }, // Xóa yêu cầu nhận
         }
       );
     } else if (action === "decline") {
-      // Xóa yêu cầu kết bạn khỏi cả hai người dùng
+      // Từ chối yêu cầu kết bạn, chỉ xóa yêu cầu
       await usersCollection.updateOne(
         { uid: from },
         { $pull: { sentFriendRequests: { to } } }
@@ -56,6 +72,7 @@ export default async function handler(req, res) {
       .status(200)
       .json({ message: `Friend request ${action}ed successfully` });
   } catch (error) {
+    console.error(`Error processing friend request: ${error}`);
     return res
       .status(500)
       .json({ error: `Failed to ${action} friend request` });

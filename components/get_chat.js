@@ -22,6 +22,7 @@ const GetChat = ({ user1Id, user2Id, flagSend }) => {
   const [newContent, setNewContent] = useState("");
   const [isDeletePopupVisible, setDeletePopupVisible] = useState(false);
   const [messageToDelete, setMessageToDelete] = useState(null);
+  const [snapShot, setSnapShot] = useState();
   const [isLoading, setIsLoading] = useState(true);
   const messagesEndRef = useRef(null);
 
@@ -36,6 +37,7 @@ const GetChat = ({ user1Id, user2Id, flagSend }) => {
     const messagesRef = ref(database, `chats/${chatId}/messages`);
     try {
       const snapshot = await get(messagesRef);
+      setSnapShot(snapshot);
       if (snapshot.exists()) {
         const data = snapshot.val();
         const messagesArray = Object.keys(data).map((key) => ({
@@ -53,7 +55,7 @@ const GetChat = ({ user1Id, user2Id, flagSend }) => {
 
   useEffect(() => {
     fetchMessages();
-  }, [chatId, flagSend, newContent, isDeletePopupVisible, messages.content]);
+  }, [chatId, flagSend, newContent, isDeletePopupVisible, snapShot]);
 
   const handleGetUserReceived = async () => {
     try {
@@ -239,9 +241,9 @@ const GetChat = ({ user1Id, user2Id, flagSend }) => {
                   onClick={() => handleOpenModalSelectedPost(message.postId)}
                 >
                   {message.senderId === user1Id && userSend && userReceiver ? (
-                    <span className="text-xs text-slate-400">{`${userSend.username} đã trả lời ${userReceiver.username}`}</span>
+                    <span className="text-xs text-slate-400">{`${userSend.username} đã trả lời`}</span>
                   ) : (
-                    <span className="text-xs text-slate-400">{`${userSend.username} đã trả lời ${userReceiver.username}`}</span>
+                    <span className="text-xs text-slate-400">{`${userSend.username} đã trả lời`}</span>
                   )}
                   <div className="text-xs text-slate-400">(xem chi tiết): </div>
                   <div>{message.content}</div>
@@ -301,10 +303,14 @@ const GetChat = ({ user1Id, user2Id, flagSend }) => {
                 <h2 className="text-xl">{selectedPost[0].content}</h2>
                 {selectedPost[0].image && (
                   <Image
-                    src={selectedPost[0].image ? selectedPost[0].image : '/images/defaultavatar.jpg'}
+                    src={
+                      selectedPost[0].image
+                        ? selectedPost[0].image
+                        : "/images/defaultavatar.jpg"
+                    }
                     width={30}
                     height={30}
-                    className="w-full h-full object-cover hover:scale-[1.2]"
+                    className="w-full h-full object-cover hover:scale-[1.2] transition-transform"
                     alt="ccccc"
                   />
                 )}

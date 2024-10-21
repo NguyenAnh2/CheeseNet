@@ -17,15 +17,15 @@ export default async function handler(req, res) {
   const database = client.db("cheese_net");
   const usersCollection = database.collection("users");
 
-  const { userId } = req.query;
+  const { uid } = req.query;
 
-  if (!userId) {
+  if (!uid) {
     return res.status(400).json({ error: "Missing userId" });
   }
 
   try {
     // Lấy danh sách yêu cầu kết bạn và danh sách bạn bè
-    const user = await usersCollection.findOne({ uid: userId });
+    const user = await usersCollection.findOne({ uid: uid });
 
     if (!user) {
       return res.status(404).json({ error: "User not found" });

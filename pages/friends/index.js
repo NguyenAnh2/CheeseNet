@@ -6,6 +6,9 @@ import { useState, useEffect, useCallback, useMemo } from "react";
 import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUserMinus, faUserPlus } from "@fortawesome/free-solid-svg-icons";
+import Heading from "../../components/heading";
+import ParentOpenMessage from "../../components/parent_open_message";
+import SideRight from "../../components/sidebar_right";
 
 export default function Friends() {
   const [users, setUsers] = useState([]);

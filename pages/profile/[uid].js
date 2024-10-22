@@ -4,6 +4,9 @@ import Layout from "../../components/layout";
 import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeart } from "@fortawesome/free-regular-svg-icons";
+import Heading from "../../components/heading";
+import ParentOpenMessage from "../../components/parent_open_message";
+import SideRight from "../../components/sidebar_right";
 
 export default function UserProfile() {
   const router = useRouter();

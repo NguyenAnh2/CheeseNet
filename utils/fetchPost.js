@@ -1,6 +1,6 @@
 export const fetchPost = async (postId) => {
   try {
-    const response = await fetch(`/api/posts?postId=${postId}`, {
+    const response = await fetch(`/api/posts/get?postId=${postId}`, {
       method: "GET",
     });
 

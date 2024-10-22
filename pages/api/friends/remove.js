@@ -31,14 +31,14 @@ export default async function handler(req, res) {
       await usersCollection.updateOne(
         { uid },
         {
-          $pull: { friends: { friendId } },
+          $pull: { friends: friendId },
         }
       );
 
       await usersCollection.updateOne(
         { uid: friendId },
         {
-          $pull: { friends: { friendId: uid } },
+          $pull: { friends: uid },
         }
       );
 

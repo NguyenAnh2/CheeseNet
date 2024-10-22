@@ -43,6 +43,7 @@ export default function Heading() {
   useEffect(() => {
     getUser();
   }, [isLoading]);
+  
   const [isSearch, setIsSearch] = useState(false);
   const [searchValue, setSearchValue] = useState("");
 

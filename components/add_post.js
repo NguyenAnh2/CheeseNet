@@ -9,8 +9,6 @@ import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/router";
 import Confetti from "react-confetti";
 import { useAuth } from "./auth";
-import Link from "next/link";
-import PinterestSearch from "./custom/search_pinterest";
 
 export default function AddPost({}) {
   const [isPost, setIsPost] = useState(false);
@@ -48,7 +46,7 @@ export default function AddPost({}) {
         if (uploadResponse.ok) {
           newPost.image = uploadData.imageUrl;
 
-          const postResponse = await fetch("/api/posts", {
+          const postResponse = await fetch("/api/posts/post", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -69,7 +67,7 @@ export default function AddPost({}) {
           setError(uploadData.error);
         }
       } else {
-        const postResponse = await fetch("/api/posts", {
+        const postResponse = await fetch("/api/posts/post", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -129,27 +127,27 @@ export default function AddPost({}) {
     setModalImage(null); // Đóng modal
   };
 
-  const router = useRouter();
-  const { code } = router.query;
+  // const router = useRouter();
+  // const { code } = router.query;
 
-  useEffect(() => {
-    const fetchAccessToken = async () => {
-      const response = await fetch(`/api/pinterest/user?code=${code}`);
+  // useEffect(() => {
+  //   const fetchAccessToken = async () => {
+  //     const response = await fetch(`/api/pinterest/user?code=${code}`);
 
-      if (response.ok) {
-        const data = await response.json();
-        const accessToken = data.accessToken;
-        const expiresAt = data.expiresAt;
+  //     if (response.ok) {
+  //       const data = await response.json();
+  //       const accessToken = data.accessToken;
+  //       const expiresAt = data.expiresAt;
 
-        localStorage.setItem("pinterestAccessToken", accessToken);
-        localStorage.setItem("expiresAt", expiresAt);
-      } else {
-        console.error("Failed to fetch access token");
-      }
-    };
+  //       localStorage.setItem("pinterestAccessToken", accessToken);
+  //       localStorage.setItem("expiresAt", expiresAt);
+  //     } else {
+  //       console.error("Failed to fetch access token");
+  //     }
+  //   };
 
-    fetchAccessToken();
-  }, [code]);
+  //   fetchAccessToken();
+  // }, [code]);
 
   return (
     <div className="mobile-w-full relative flex justify-center">
@@ -200,7 +198,7 @@ export default function AddPost({}) {
                   }}
                 />
                 <select
-                className="absolute bottom-10 left-14 outline-none border px-2 rounded"
+                  className="absolute bottom-2 left-2 flex items-center outline-none border px-2 rounded"
                   value={visibility}
                   onChange={(e) => setVisibility(e.target.value)}
                 >
@@ -215,7 +213,7 @@ export default function AddPost({}) {
                 </button>
               </form>
 
-              <PinterestSearch />
+              {/* <PinterestSearch /> */}
 
               <input
                 id="fileImages"

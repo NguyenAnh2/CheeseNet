@@ -34,7 +34,7 @@ export default function UserProfile() {
 
   const fetchPostsOfUser = async () => {
     try {
-      const response = await fetch(`/api/posts?userId=${uid}`)
+      const response = await fetch(`/api/posts/get?userId=${uid}`)
         .then((res) => res.json())
         .then((data) => {
           setPosts(data);
@@ -101,7 +101,7 @@ export default function UserProfile() {
     );
 
     try {
-      const response = await fetch("/api/posts", {
+      const response = await fetch("/api/posts/update", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

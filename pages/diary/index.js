@@ -1,14 +1,11 @@
 import Layout from "../../components/layout";
-import Heading from "../../components/heading";
-import ParentOpenMessage from "../../components/parent_open_message";
-import SideRight from "../../components/sidebar_right";
 import TabBar from "../../components/custom/tabbar";
 import Head from "next/head";
 import Confetti from "react-confetti";
-import { ref, get, update } from "firebase/database";
+import { ref, update } from "firebase/database";
 import { database } from "../../firebase/firebaseConfig";
 import { useAuth } from "../../components/auth";
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import CryptoJS from "crypto-js";
 import crypto from "crypto";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -30,29 +27,46 @@ export default function Diary() {
   const diariesContentDecrypt = [];
   const { userId } = useAuth();
 
-  const getUser = async () => {
+  // const getUser = async () => {
+  //   try {
+  //     const response = await fetch(`/api/users/get?uid=${userId}`)
+  //       .then((res) => res.json())
+  //       .then((data) => {
+  //         console.log(data);
+  //         setUser(data);
+  //         setIsLoading(false);
+  //       })
+  //       .catch(() => {
+  //         const errorData = response.json();
+  //         setError(errorData.error);
+  //         setIsLoading(false);
+  //       });
+  //   } catch (error) {
+  //     setError("Failed to fetch posts entries.");
+  //     console.error("Error fetching posts:", error);
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   getUser();
+  // }, [userId, isLoading]);
+
+  const getUser = useCallback(async () => {
+    setIsLoading(true);
     try {
-      const response = await fetch(`/api/users/get?uid=${userId}`)
-        .then((res) => res.json())
-        .then((data) => {
-          console.log(data);
-          setUser(data);
-          setIsLoading(false);
-        })
-        .catch(() => {
-          const errorData = response.json();
-          setError(errorData.error);
-          setIsLoading(false);
-        });
+      const res = await fetch(`/api/users/get?uid=${userId}`);
+      const data = await res.json();
+      setUser(data);
     } catch (error) {
-      setError("Failed to fetch posts entries.");
-      console.error("Error fetching posts:", error);
+      setError("Failed to fetch user data.");
+    } finally {
+      setIsLoading(false);
     }
-  };
+  }, [userId]);
 
   useEffect(() => {
-    getUser();
-  }, [userId, isLoading]);
+    if (userId) getUser();
+  }, [userId, getUser]);
 
   function hashPassword(password) {
     return CryptoJS.SHA256(password).toString();
@@ -209,12 +223,28 @@ export default function Diary() {
     }
   };
 
-  const fetchDiaryEntries = async () => {
-    try {
-      const response = await fetch(`/api/diary?userId=${userId}`, {
-        method: "GET",
-      });
+  // const fetchDiaryEntries = async () => {
+  //   try {
+  //     const response = await fetch(`/api/diary?userId=${userId}`, {
+  //       method: "GET",
+  //     });
 
+  //     if (response.ok) {
+  //       const entries = await response.json();
+  //       setDiaryEntries(entries);
+  //     } else {
+  //       const errorData = await response.json();
+  //       setError(errorData.error);
+  //     }
+  //   } catch (error) {
+  //     setError("Failed to fetch diary entries.");
+  //     console.error("Error fetching diary:", error);
+  //   }
+  // };
+
+  const fetchDiaryEntries = useCallback(async () => {
+    try {
+      const response = await fetch(`/api/diary?userId=${userId}`);
       if (response.ok) {
         const entries = await response.json();
         setDiaryEntries(entries);
@@ -224,17 +254,12 @@ export default function Diary() {
       }
     } catch (error) {
       setError("Failed to fetch diary entries.");
-      console.error("Error fetching diary:", error);
     }
-  };
+  }, [userId]);
 
-  const diaries = diaryEntries.map(({ iv, encryptedData, ...rest }) => ({
-    content: {
-      iv,
-      encryptedData,
-    },
-    ...rest,
-  }));
+  useEffect(() => {
+    if (secretKey) fetchDiaryEntries();
+  }, [secretKey, fetchDiaryEntries]);
 
   const createdTime = (timestamp) => {
     let date = new Date(timestamp);
@@ -244,31 +269,47 @@ export default function Diary() {
     return `${day}/${month}/${year}`;
   };
 
-  diaries.sort(
-    (a, b) => parseInt(b["timestamp"], 10) - parseInt(a["timestamp"], 10)
-  );
-  diaries.map((diary) => {
-    if (secretKey) {
-      const contentDecrypt = decrypt(
-        diary["content"].iv,
-        diary["content"].encryptedData
-      );
-      const timestamp = createdTime(parseInt(diary["timestamp"], 10));
-
-      diariesContentDecrypt.push({
-        contentDecrypt,
-        timestamp,
-      });
-    }
-  });
-
-  useEffect(() => {
-    fetchDiaryEntries();
-  }, [secretKey]);
-
   const diariesFinaly = useMemo(() => {
-    return diariesContentDecrypt.sort((a, b) => b.timestamp - a.timestamp);
-  }, [diariesContentDecrypt]);
+    return diaryEntries
+      .map(({ iv, encryptedData, timestamp }) => {
+        const contentDecrypt = secretKey ? decrypt(iv, encryptedData) : "";
+        return { contentDecrypt, timestamp: createdTime(timestamp) };
+      })
+      .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+  }, [diaryEntries, secretKey]);
+
+  // const diaries = diaryEntries.map(({ iv, encryptedData, ...rest }) => ({
+  //   content: {
+  //     iv,
+  //     encryptedData,
+  //   },
+  //   ...rest,
+  // }));
+  // diaries.sort(
+  //   (a, b) => parseInt(b["timestamp"], 10) - parseInt(a["timestamp"], 10)
+  // );
+  // diaries.map((diary) => {
+  //   if (secretKey) {
+  //     const contentDecrypt = decrypt(
+  //       diary["content"].iv,
+  //       diary["content"].encryptedData
+  //     );
+  //     const timestamp = createdTime(parseInt(diary["timestamp"], 10));
+
+  //     diariesContentDecrypt.push({
+  //       contentDecrypt,
+  //       timestamp,
+  //     });
+  //   }
+  // });
+
+  // useEffect(() => {
+  //   fetchDiaryEntries();
+  // }, [secretKey]);
+
+  // const diariesFinaly = useMemo(() => {
+  //   return diariesContentDecrypt.sort((a, b) => b.timestamp - a.timestamp);
+  // }, [diariesContentDecrypt]);
 
   const handleDiaryModalSuccess = () => {
     setIsDiarySuccess(false);
@@ -280,11 +321,6 @@ export default function Diary() {
       <Head>
         <title>Diary</title>
       </Head>
-      {/* <Heading />
-
-      <ParentOpenMessage />
-      <SideRight /> */}
-
       <TabBar />
 
       {isMatchPassword && (
@@ -327,15 +363,22 @@ export default function Diary() {
       )}
 
       {!userId && (
-        <div className="fixed top-[64px] bottom-0 left-0 right-0 bg-slate-800 opacity-95 z-[1000] flex justify-center items-center">
-          <FontAwesomeIcon icon={faWarning} />
-          <div className="text-2xl font-bold text-red-500">Vui lòng đăng nhập để viết nhật ký</div>
+        <div className="fixed flex-col top-[64px] bottom-0 left-0 right-0 bg-slate-800 opacity-95 z-[1000] flex justify-center items-center">
+          <FontAwesomeIcon
+            icon={faWarning}
+            className="relative text-yellow-300 "
+            width={30}
+            height={30}
+          />
+          <div className="text-2xl font-bold text-red-500">
+            Vui lòng đăng nhập để viết nhật ký
+          </div>
         </div>
       )}
 
       {!isMatchPassword && user && (
         <div>
-          {(!isLoading && !user.diary_password) ? (
+          {!isLoading && !user.diary_password ? (
             <div className="absolute top-[-100%] right-0 bottom-0 left-0 bg-slate-800 opacity-65">
               <div className="fixed top-[20%] left-2/4 translate-x-[-50%] flex justify-center items-center flex-col">
                 <p className="text-black font-bold text-3xl mb-3">

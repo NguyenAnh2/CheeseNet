@@ -5,6 +5,7 @@ import { useReplyPost } from "../utils/replyPost";
 import Image from "next/image";
 import { useAuth } from "./auth";
 import { useState, useEffect, useRef } from "react";
+import InfiniteScroll from "react-infinite-scroll-component";
 
 export default function GetPosts({}) {
   const [posts, setPosts] = useState([]);
@@ -13,17 +14,36 @@ export default function GetPosts({}) {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [modalImage, setModalImage] = useState(null);
+
+  const [activeReplyPostId, setActiveReplyPostId] = useState(null);
+  const messageToReplyRef = useRef();
+
+  const { loading, handleReplyPost } = useReplyPost();
   const { userId } = useAuth();
 
   const fetchPosts = async () => {
     try {
-      const response = await fetch(`/api/posts`, {
+      const response = await fetch(`/api/posts/get`, {
         method: "GET",
       });
 
       if (response.ok) {
         const entries = await response.json();
-        setPosts(entries);
+        const filteredPosts = entries.filter((post) => {
+          if (post.visibility === "public") {
+            return true;
+          }
+          if (post.visibility === "friends") {
+            return (
+              users.some(
+                (user) =>
+                  user.uid === post.userId && user.friends.includes(userId)
+              ) || post.userId === userId
+            );
+          }
+          return false;
+        });
+        setPosts(filteredPosts);
       } else {
         const errorData = await response.json();
         setError(errorData.error);
@@ -116,7 +136,7 @@ export default function GetPosts({}) {
     );
 
     try {
-      const response = await fetch("/api/posts", {
+      const response = await fetch("/api/posts/update", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -134,11 +154,6 @@ export default function GetPosts({}) {
       console.error("Lỗi:", error);
     }
   };
-
-  const { loading, handleReplyPost } = useReplyPost();
-
-  const [activeReplyPostId, setActiveReplyPostId] = useState(null);
-  const messageToReplyRef = useRef();
 
   const toggleReply = (postId) => {
     if (activeReplyPostId === postId) {
@@ -164,7 +179,7 @@ export default function GetPosts({}) {
           return (
             <div
               key={post._id}
-              className="flex flex-col border rounded-md my-6 sm:w-full"
+              className="flex flex-col border rounded-md my-6 sm:w-full overflow-hidden"
             >
               <div className="flex justify-between mb-5 border-b px-2 py-3">
                 <div className="flex flex-col" title={user && user.username}>
@@ -188,13 +203,13 @@ export default function GetPosts({}) {
                 <div className="mb-2">{post.content}</div>
                 {post.image && (
                   <Image
-                    src={post.image ? post.image : '/images/defaultavatar.jpg'}
+                    src={post.image ? post.image : "/images/defaultavatar.jpg"}
                     alt="imageOfPost"
                     className="w-full block cursor-pointer transition-transform hover:scale-[1.2]"
                     width={100}
                     height={100}
                     onClick={() => openModal(post.image)}
-                    loading="lazy"
+                    // loading="lazy"
                   />
                 )}
               </div>
@@ -209,6 +224,7 @@ export default function GetPosts({}) {
                     alt="Modal Preview"
                     className="max-[50%] max-h-[50%] rounded"
                     onClick={(e) => e.stopPropagation()}
+                    // loading="lazy"
                   />
                   <FontAwesomeIcon
                     icon={faClose}
@@ -226,7 +242,9 @@ export default function GetPosts({}) {
                   >
                     <FontAwesomeIcon icon={faHeart} />
                   </div>
-                  <div className="text-sm text-slate-800">{post.likes.length}</div>
+                  <div className="text-sm text-slate-800">
+                    {post.likes.length}
+                  </div>
                   {userId !== post.userId && (
                     <div
                       className={`cursor-pointer w-fit px-2 text-xl`}

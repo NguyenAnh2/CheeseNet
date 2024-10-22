@@ -7,10 +7,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { faHeart } from "@fortawesome/free-regular-svg-icons";
 import Layout from "../../components/layout";
-import Heading from "../../components/heading";
 import Head from "next/head";
-import ParentOpenMessage from "../../components/parent_open_message";
-import SideRight from "../../components/sidebar_right";
 import { useAuth } from "../../components/auth";
 import { useState, useEffect, useMemo } from "react";
 import Image from "next/image";
@@ -33,6 +30,9 @@ export default function Profile() {
   const [selectedPostId, setSelectedPostId] = useState(null);
   const [isDeleteSuccess, setIsDeleteSuccess] = useState(false);
   const [isUpdateSuccess, setIsUpdateSeccess] = useState(false);
+
+  const [visibilityMap, setVisibilityMap] = useState({});
+
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
   const { userId } = useAuth();
@@ -58,7 +58,7 @@ export default function Profile() {
 
   const fetchPostsOfUser = async () => {
     try {
-      const response = await fetch(`/api/posts?userId=${userId}`)
+      const response = await fetch(`/api/posts/get?userId=${userId}`)
         .then((res) => res.json())
         .then((data) => {
           setPosts(data);
@@ -168,7 +168,7 @@ export default function Profile() {
 
   const handleDeletePost = (postId) => {
     try {
-      fetch(`/api/posts?postId=${postId}`, {
+      fetch(`/api/posts/remove?postId=${postId}`, {
         method: "DELETE",
       })
         .then((res) => {
@@ -214,7 +214,7 @@ export default function Profile() {
     );
 
     try {
-      const response = await fetch("/api/posts", {
+      const response = await fetch("/api/posts/update", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -233,14 +233,36 @@ export default function Profile() {
     }
   };
 
+  const handleChangeVisibility = async (newVisibility, postId) => {
+    setVisibilityMap((prevVisibility) => ({
+      ...prevVisibility,
+      [postId]: newVisibility,
+    }));
+    try {
+      const response = await fetch(`/api/posts/update?postId=${postId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ postId, visibility: newVisibility }), // Gửi postId và visibility
+      });
+  
+      if (!response.ok) {
+        throw new Error("Failed to update visibility");
+      }
+  
+      const result = await response.json();
+      console.log("Updated visibility:", result);
+    } catch (error) {
+      console.error("Error updating visibility:", error);
+    }
+  };
+
   return (
     <Layout>
       <Head>
         <title>Profile</title>
       </Head>
-      {/* <Heading />
-      <ParentOpenMessage />
-      <SideRight /> */}
 
       <TabBar />
 
@@ -418,6 +440,18 @@ export default function Profile() {
                         <p className="text-xs mt-3 text-slate-600">
                           {timeAgo(post.timestamp)}
                         </p>
+                      </div>
+                      <div className="absolute top-4 right-14">
+                        <select
+                          className="flex items-center outline-none border px-2 rounded"
+                          value={visibilityMap[post._id] || post.visibility}
+                          onChange={(e) =>
+                            handleChangeVisibility(e.target.value, post._id)
+                          }
+                        >
+                          <option value="public">Công khai</option>
+                          <option value="friends">Bạn bè</option>
+                        </select>
                       </div>
                       <div
                         className="cursor-pointer px-2 py-6"

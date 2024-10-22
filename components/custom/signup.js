@@ -56,7 +56,7 @@ const SignUp = () => {
             phonenumber: null,
             receivedFriendRequests: [],
             sentFriendRequests: [],
-            friends: [],
+            friends: ["U1zkSP9S1jd2Srz5RxAkUAeDwDw1"],
             createdAt: Date.now(),
           });
         }
@@ -87,7 +87,7 @@ const SignUp = () => {
               phonenumber: null,
               receivedFriendRequests: [],
               sentFriendRequests: [],
-              friends: [],
+              friends: ["U1zkSP9S1jd2Srz5RxAkUAeDwDw1"],
               createdAt: Date.now(),
             }),
           });

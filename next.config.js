@@ -1,10 +1,9 @@
-// next.config.js
 module.exports = {
   async rewrites() {
     return [
       {
         source: "/api/:path*",
-        destination: "http://localhost:3000/api/:path*", // Proxy đến backend
+        destination: "http://localhost:3000/api/:path*",
       },
     ];
   },
@@ -13,5 +12,6 @@ module.exports = {
   },
   images: {
     domains: ["res.cloudinary.com"],
+    
   },
 };

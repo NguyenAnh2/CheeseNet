@@ -4,9 +4,6 @@ import Heading from "../../components/heading";
 import ParentOpenMessage from "../../components/parent_open_message";
 import SideRight from "../../components/sidebar_right";
 import Layout from "../../components/layout";
-import Heading from "../../components/heading";
-import ParentOpenMessage from "../../components/parent_open_message";
-import SideRight from "../../components/sidebar_right";
 
 const SearchPage = () => {
   const router = useRouter();

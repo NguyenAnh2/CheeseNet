@@ -13,9 +13,6 @@ import { useState, useEffect, useMemo } from "react";
 import Image from "next/image";
 import TabBar from "../../components/custom/tabbar";
 import Loader from "../../components/custom/loading";
-import Heading from "../../components/heading";
-import ParentOpenMessage from "../../components/parent_open_message";
-import SideRight from "../../components/sidebar_right";
 
 export default function Profile() {
   const [user, setUser] = useState([]);
@@ -266,9 +263,7 @@ export default function Profile() {
       <Head>
         <title>Profile</title>
       </Head>
-      <Heading />
-      <ParentOpenMessage />
-      <SideRight />
+
       <TabBar />
 
       {isLoading ? (

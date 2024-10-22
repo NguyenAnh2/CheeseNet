@@ -4,10 +4,6 @@ import ParentOpenMessage from "../components/parent_open_message";
 import NewsFeed from "../components/news_feed";
 import SideRight from "../components/sidebar_right";
 import Head from "next/head";
-import "@fortawesome/fontawesome-svg-core/styles.css";
-import { config } from "@fortawesome/fontawesome-svg-core";
-
-config.autoAddCss = false;
 
 export default function Home() {
   return (

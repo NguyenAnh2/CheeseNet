@@ -31,9 +31,9 @@ export default function GetRSS({ feed }) {
       <Head>
         <title>Study</title>
       </Head>
-      <Heading />
+      {/* <Heading />
       <ParentOpenMessage />
-      <SideRight />
+      <SideRight /> */}
       <Sidebar />
       <div className="flex justify-center items-center flex-col relative mt-[20px] left-2/4 -translate-x-2/4 sm:w-[40%] w-[90%]">
         <div>

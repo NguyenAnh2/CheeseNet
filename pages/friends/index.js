@@ -6,9 +6,6 @@ import { useState, useEffect, useCallback, useMemo } from "react";
 import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUserMinus, faUserPlus } from "@fortawesome/free-solid-svg-icons";
-import Heading from "../../components/heading";
-import ParentOpenMessage from "../../components/parent_open_message";
-import SideRight from "../../components/sidebar_right";
 
 export default function Friends() {
   const [users, setUsers] = useState([]);
@@ -218,9 +215,7 @@ export default function Friends() {
       <Head>
         <title>Friends</title>
       </Head>
-      <Heading />
-      <ParentOpenMessage />
-      <SideRight />
+
       <div className="flex justify-center items-center flex-col relative mt-[64px] left-2/4 -translate-x-2/4 sm:w-[40%] w-[90%]">
         {isModalDelete && (
           <div className="absolute top-[100%] bottom-0 right-0 left-0">

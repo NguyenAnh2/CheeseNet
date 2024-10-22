@@ -10,9 +10,6 @@ import CryptoJS from "crypto-js";
 import crypto from "crypto";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faWarning } from "@fortawesome/free-solid-svg-icons";
-import Heading from "../../components/heading";
-import ParentOpenMessage from "../../components/parent_open_message";
-import SideRight from "../../components/sidebar_right";
 
 export default function Diary() {
   const [user, setUser] = useState([]);
@@ -324,9 +321,7 @@ export default function Diary() {
       <Head>
         <title>Diary</title>
       </Head>
-      <Heading />
-      <ParentOpenMessage />
-      <SideRight />
+      
       <TabBar />
 
       {isMatchPassword && (

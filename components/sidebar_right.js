@@ -80,7 +80,7 @@ export default function SideRight() {
       </div>
       <form
         onSubmit={handleSubmitChat}
-        className={`fixed right-0 bottom-0 md:w-60 lg:w-80 sm:w-[190px] rounded-xl h-12 overflow-y-auto w-[60%] bg-slate-200 transform ${
+        className={`fixed right-0 bottom-0 md:w-60 lg:w-80 sm:w-[190px] rounded-xl h-12 overflow-y-auto w-[60%] bg-slate-200 transform z-[1000] ${
           isOpenRight ? "translate-x-0" : "translate-x-full delay-100"
         } `}
       >

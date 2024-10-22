@@ -10,7 +10,7 @@ export default function Home() {
     <Layout>
       <Head>
         <title>ChesseNet</title>
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/icon.png"/>
       </Head>
       <Heading />
       <div className="relative w-full flex pt-16">

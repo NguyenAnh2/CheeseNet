@@ -67,8 +67,8 @@ export default function Heading() {
         <div className="flex items-center">
           <Link href="/">
             <Image
-              className="rounded-full mx-2 w-10 h-10"
-              src="/images/icon.jpg"
+              className="rounded-full mx-2 w-8 h-8"
+              src="/icon.png"
               width={30}
               height={30}
               alt="logoweb"

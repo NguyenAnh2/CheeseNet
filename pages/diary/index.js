@@ -321,6 +321,9 @@ export default function Diary() {
       <Head>
         <title>Diary</title>
       </Head>
+      <Heading />
+      <ParentOpenMessage />
+      <SideRight />
       <TabBar />
 
       {isMatchPassword && (

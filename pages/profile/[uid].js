@@ -124,9 +124,9 @@ export default function UserProfile() {
 
   return (
     <Layout>
-      {/* <Heading />
+      <Heading />
       <ParentOpenMessage />
-      <SideRight /> */}
+      <SideRight />
       {user ? (
         <div className="relative top-32 w-[40%] left-[100%] translate-x-[-175%] h-fit mb-36 duration-300  text-white group cursor-pointer bg-[#DCDFE4] dark:bg-[#22272B] rounded-3xl p-4 hover:bg-blue-200 hover:dark:bg-[#0C66E4]">
           <div className="w-[100%] flex flex-col justify-center items-center">

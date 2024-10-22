@@ -39,9 +39,9 @@ const SearchPage = () => {
 
   return (
     <Layout>
-      {/* <Heading />
+      <Heading />
       <ParentOpenMessage />
-      <SideRight /> */}
+      <SideRight />
       {error && <p>{error}</p>}
       <h1 className="absolute top-[64px] left-[50%] translate-x-[-50%] text-2xl font-bold">
         Kết quả tìm kiếm cho: <span className="text-blue-700">{query}</span>

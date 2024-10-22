@@ -263,7 +263,9 @@ export default function Profile() {
       <Head>
         <title>Profile</title>
       </Head>
-
+      <Heading />
+      <ParentOpenMessage />
+      <SideRight />
       <TabBar />
 
       {isLoading ? (

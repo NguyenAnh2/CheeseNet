@@ -108,9 +108,9 @@ export default function ShortsPage({}) {
 
   return (
     <Layout>
-      {/* <Heading />
+      <Heading />
       <ParentOpenMessage />
-      <SideRight /> */}
+      <SideRight />
       <div className="flex justify-center items-center flex-col relative mt-[64px] left-2/4 -translate-x-2/4 sm:w-[30%] w-[90%]">
         <p className="font-semibold text-2xl text-purple-600 my-4">
           Trending YouTube Shorts

@@ -5,13 +5,13 @@ import {
   faMagnifyingGlass,
   faPencil,
   faUserFriends,
-  faVideo,
 } from "@fortawesome/free-solid-svg-icons";
 import { useState, useEffect, useRef } from "react";
 import { useAuth } from "./auth";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import Link from "next/link";
+import Input from "./custom/input";
 
 export default function Heading() {
   const router = useRouter();
@@ -62,7 +62,7 @@ export default function Heading() {
   };
 
   return (
-    <div className="fixed bg-slate-400 w-full h-16 z-50 top-0">
+    <div className="fixed bg-galaxy-2 w-full h-16 z-50 top-0">
       <div className="flex justify-between items-center h-16">
         <div className="flex items-center">
           <Link href="/">
@@ -76,12 +76,12 @@ export default function Heading() {
             />
           </Link>
           <div className="relative">
-            <form onSubmit={(e) => handleSubmitSearch(e)}>
+            <form className="flex justify-between items-center" onSubmit={(e) => handleSubmitSearch(e)}>
               {isSearch && (
                 <input
                   type="text"
                   placeholder="Search on CheeseNet"
-                  className="py-2 px-2 border-none outline-none text-base rounded-full"
+                  className="inputSearch "
                   onChange={(e) => setSearchValue(e.target.value)}
                 />
               )}
@@ -91,7 +91,7 @@ export default function Heading() {
                     width={20}
                     height={20}
                     icon={faMagnifyingGlass}
-                    className={`absolute ${isSearch ? "right-3" : "right-[-3]"} text-red-200 md:text-slate-500 top-2/4 -translate-y-2/4 cursor-pointer`}
+                    className={`absolute ${isSearch ? "right-3" : "right-[-3]"} text-red-200 md:text-white top-2/4 -translate-y-2/4 cursor-pointer`}
                   />
                 </button>
               ) : (
@@ -109,7 +109,7 @@ export default function Heading() {
         <div className="absolute left-2/4 translate-x-[-50%] flex justify-center items-center lg:w-[40%] w-[28%]">
           <Link
             href="/"
-            className="flex flex-col justify-center items-center w-[20%] cursor-pointer text-xl md:py-[22px] md:px-3 lg:py-2 py-[22px] hover:bg-blue-400 text-red-200"
+            className="flex flex-col justify-center items-center w-[20%] cursor-pointer text-xl md:py-[22px] md:px-3 lg:py-2 py-[22px] hover:bg-blue-400 text-red-200 transition-all"
           >
             <FontAwesomeIcon
               className=""
@@ -117,7 +117,7 @@ export default function Heading() {
               width={20}
               height={20}
             />
-            <p className="hidden lg:block lg:text-lg md:text-base">Home</p>
+            <p className="hidden lg:block lg:text-lg md:text-base">Trang chủ</p>
           </Link>
           {/* <Link
             href="/shorts"
@@ -133,7 +133,7 @@ export default function Heading() {
           </Link> */}
           <Link
             href="/diary"
-            className="flex flex-col justify-center items-center w-[20%] cursor-pointer text-xl md:py-[22px] md:px-3 lg:py-2 py-[22px] hover:bg-blue-400 text-red-200"
+            className="flex flex-col justify-center items-center w-[20%] cursor-pointer text-xl md:py-[22px] md:px-3 lg:py-2 py-[22px] hover:bg-blue-400 text-red-200 transition-all"
             title="Thêm nhật ký"
           >
             <FontAwesomeIcon
@@ -142,11 +142,11 @@ export default function Heading() {
               width={20}
               height={20}
             />
-            <p className="hidden lg:block lg:text-lg md:text-base">Diary</p>
+            <p className="hidden lg:block lg:text-lg md:text-base">Nhật ký</p>
           </Link>
           <Link
             href="/news"
-            className="flex flex-col justify-center items-center w-[20%] cursor-pointer text-xl md:py-[22px] md:px-3 lg:py-2 py-[22px] hover:bg-blue-400 text-red-200"
+            className="flex flex-col justify-center items-center w-[20%] cursor-pointer text-xl md:py-[22px] md:px-3 lg:py-2 py-[22px] hover:bg-blue-400 text-red-200 transition-all"
           >
             <FontAwesomeIcon
               className=""
@@ -154,11 +154,11 @@ export default function Heading() {
               width={20}
               height={20}
             />
-            <p className="hidden lg:block lg:text-lg md:text-base">News</p>
+            <p className="hidden lg:block lg:text-lg md:text-base">Tin Tức</p>
           </Link>
           <Link
             href="/friends"
-            className="flex flex-col justify-center items-center w-[20%] cursor-pointer text-xl md:py-[22px] md:px-3 lg:py-2 py-[22px] hover:bg-blue-400 text-red-200"
+            className="flex flex-col justify-center items-center w-[20%] cursor-pointer text-xl md:py-[22px] md:px-3 lg:py-2 py-[22px] hover:bg-blue-400 text-red-200 transition-all"
           >
             <FontAwesomeIcon
               className=""
@@ -166,7 +166,7 @@ export default function Heading() {
               width={20}
               height={20}
             />
-            <p className="hidden lg:block lg:text-lg md:text-base">Friends</p>
+            <p className="hidden lg:block lg:text-lg md:text-base">Bạn bè</p>
           </Link>
         </div>
 
@@ -182,15 +182,15 @@ export default function Heading() {
                     }
                     width={30}
                     height={30}
-                    alt={user.username ? user.name : "cc"}
+                    alt={user.username ? user.name : "ccccccccc"}
                     loading="lazy"
                   />
                 </li>
-                <span className="hidden md:block font-bold mx-3">
+                <span className="hidden md:block font-semibold mx-3 text-white">
                   {user.username}
                 </span>
               </Link>
-              <Link href="login" className="mx-3 font-bold" onClick={logout}>
+              <Link href="login" className="mx-3 font-semibold text-white" onClick={logout}>
                 Đăng xuất
               </Link>
             </div>

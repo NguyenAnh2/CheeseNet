@@ -1,5 +1,6 @@
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import Head from "next/head";
 import Layout from "../../components/layout";
 import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -7,7 +8,7 @@ import { faHeart } from "@fortawesome/free-regular-svg-icons";
 
 export default function UserProfile() {
   const router = useRouter();
-  const { uid } = router.query; // Lấy uid từ URL
+  const { uid } = router.query;
   const [user, setUser] = useState(null);
   const [posts, setPosts] = useState([]);
   const [error, setError] = useState();
@@ -124,9 +125,10 @@ export default function UserProfile() {
 
   return (
     <Layout>
-      {/* <Heading />
-      <ParentOpenMessage />
-      <SideRight /> */}
+      <Head>
+        <title>{user.username}</title>
+        <link rel="icon" href="/icon.png" />
+      </Head>
       {user ? (
         <div className="relative top-32 w-[40%] left-[100%] translate-x-[-175%] h-fit mb-36 duration-300  text-white group cursor-pointer bg-[#DCDFE4] dark:bg-[#22272B] rounded-3xl p-4 hover:bg-blue-200 hover:dark:bg-[#0C66E4]">
           <div className="w-[100%] flex flex-col justify-center items-center">
@@ -231,7 +233,7 @@ export default function UserProfile() {
                       className={`cursor-pointer w-fit px-2 text-xl ${isLiked ? "text-red-500" : "text-black"}`}
                       onClick={() => handleLike(post._id)}
                     >
-                      <FontAwesomeIcon icon={faHeart} />
+                      <FontAwesomeIcon icon={faHeart} width={18} height={18} />
                     </div>
                   </div>
                 );

@@ -9,7 +9,7 @@ config.autoAddCss = false;
 
 export default function Layout({ children }) {
   return (
-    <div className="relative h-[200vh]">
+    <div className="relative pb-20 font-sans bg-galaxy min-h-screen">
       <Heading />
       <ParentOpenMessage />
       <SideRight />

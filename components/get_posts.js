@@ -5,7 +5,6 @@ import { useReplyPost } from "../utils/replyPost";
 import Image from "next/image";
 import { useAuth } from "./auth";
 import { useState, useEffect, useRef } from "react";
-import InfiniteScroll from "react-infinite-scroll-component";
 
 export default function GetPosts({}) {
   const [posts, setPosts] = useState([]);
@@ -20,43 +19,6 @@ export default function GetPosts({}) {
 
   const { loading, handleReplyPost } = useReplyPost();
   const { userId } = useAuth();
-
-  const fetchPosts = async () => {
-    try {
-      const response = await fetch(`/api/posts/get`, {
-        method: "GET",
-      });
-
-      if (response.ok) {
-        const entries = await response.json();
-        const filteredPosts = entries.filter((post) => {
-          if (post.visibility === "public") {
-            return true;
-          }
-          if (post.visibility === "friends") {
-            return (
-              users.some(
-                (user) =>
-                  user.uid === post.userId && user.friends.includes(userId)
-              ) || post.userId === userId
-            );
-          }
-          return false;
-        });
-        setPosts(filteredPosts);
-      } else {
-        const errorData = await response.json();
-        setError(errorData.error);
-      }
-    } catch (error) {
-      setError("Failed to fetch posts entries.");
-      console.error("Error fetching posts:", error);
-    }
-  };
-
-  useEffect(() => {
-    fetchPosts();
-  }, [userId]);
 
   const getUsers = async () => {
     try {
@@ -81,6 +43,29 @@ export default function GetPosts({}) {
 
   useEffect(() => {
     getUsers();
+  }, [userId]);
+
+  const fetchPosts = async () => {
+    try {
+      const response = await fetch(`/api/posts/get?userId=${userId}`, {
+        method: "GET",
+      });
+
+      if (response.ok) {
+        const entries = await response.json();
+        setPosts(entries);
+      } else {
+        const errorData = await response.json();
+        setError(errorData.error);
+      }
+    } catch (error) {
+      setError("Failed to fetch posts entries.");
+      console.error("Error fetching posts:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchPosts();
   }, [userId]);
 
   const openModal = (image) => {
@@ -170,7 +155,7 @@ export default function GetPosts({}) {
   }, [activeReplyPostId]);
 
   return (
-    <div className="bg-white">
+    <div className="">
       {posts
         .sort((a, b) => b.timestamp - a.timestamp)
         .map((post) => {
@@ -179,7 +164,7 @@ export default function GetPosts({}) {
           return (
             <div
               key={post._id}
-              className="flex flex-col border rounded-md my-6 sm:w-full overflow-hidden"
+              className="card flex flex-col border rounded-md my-6 sm:w-full overflow-hidden"
             >
               <div className="flex justify-between mb-5 border-b px-2 py-3">
                 <div className="flex flex-col" title={user && user.username}>
@@ -192,15 +177,20 @@ export default function GetPosts({}) {
                       height={30}
                       loading="lazy"
                     />
-                    <p>{user ? user.username : "Unknown User"}</p> <br />
+                    <p className="text-xl font-semibold text-white">
+                      {user ? user.username : "Unknown User"}
+                    </p>{" "}
+                    <br />
                   </div>
-                  <p className="text-xs mt-3 text-slate-600">
+                  <p className="text-xs mt-3 text-white">
                     {timeAgo(post.timestamp)}
                   </p>
                 </div>
               </div>
               <div className="border-b mb-2 pb-5 px-3">
-                <div className="mb-2">{post.content}</div>
+                <div className="mb-2 text-lg font-semibold text-white">
+                  {post.content}
+                </div>
                 {post.image && (
                   <Image
                     src={post.image ? post.image : "/images/defaultavatar.jpg"}
@@ -227,6 +217,8 @@ export default function GetPosts({}) {
                     // loading="lazy"
                   />
                   <FontAwesomeIcon
+                    width={18}
+                    height={18}
                     icon={faClose}
                     className="absolute text-white z-[100] text-2xl top-0 right-3 cursor-pointer"
                   />
@@ -237,12 +229,12 @@ export default function GetPosts({}) {
                 <div className="flex items-center mb-2">
                   <div
                     id={`like_of_${post._id}`}
-                    className={`cursor-pointer w-fit px-2 text-xl ${isLiked ? "text-red-500" : "text-black"}`}
+                    className={`cursor-pointer w-fit px-2 text-xl ${isLiked ? "text-red-500" : "text-white"}`}
                     onClick={() => handleLike(post._id)}
                   >
-                    <FontAwesomeIcon icon={faHeart} />
+                    <FontAwesomeIcon icon={faHeart} width={20} height={20} />
                   </div>
-                  <div className="text-sm text-slate-800">
+                  <div className="text-base text-white font-light">
                     {post.likes.length}
                   </div>
                   {userId !== post.userId && (
@@ -250,12 +242,17 @@ export default function GetPosts({}) {
                       className={`cursor-pointer w-fit px-2 text-xl`}
                       onClick={() => toggleReply(post._id)}
                     >
-                      <FontAwesomeIcon icon={faCommentDots} />
+                      <FontAwesomeIcon
+                        icon={faCommentDots}
+                        width={20}
+                        height={20}
+                        className="text-white"
+                      />
                     </div>
                   )}
                   {activeReplyPostId === post._id && (
                     <form
-                      className="relative ml-3 border rounded-lg"
+                      className="relative ml-3 border rounded-lg  overflow-hidden"
                       onSubmit={(e) => {
                         e.preventDefault();
                         handleReplyPost({
@@ -278,7 +275,12 @@ export default function GetPosts({}) {
                         className="absolute top-2/4 translate-y-[-50%] right-2"
                         type="submit"
                       >
-                        <FontAwesomeIcon icon={faPaperPlane} />
+                        <FontAwesomeIcon
+                          icon={faPaperPlane}
+                          width={18}
+                          height={18}
+                          className="text-white"
+                        />
                       </button>
                     </form>
                   )}
@@ -287,6 +289,7 @@ export default function GetPosts({}) {
             </div>
           );
         })}
+      <div className="mb-16"></div>
     </div>
   );
 }

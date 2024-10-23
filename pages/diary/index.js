@@ -2,14 +2,13 @@ import Layout from "../../components/layout";
 import TabBar from "../../components/custom/tabbar";
 import Head from "next/head";
 import Confetti from "react-confetti";
-import { ref, update } from "firebase/database";
-import { database } from "../../firebase/firebaseConfig";
 import { useAuth } from "../../components/auth";
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import CryptoJS from "crypto-js";
 import crypto from "crypto";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faWarning } from "@fortawesome/free-solid-svg-icons";
+import Button from "../../components/custom/button";
 
 export default function Diary() {
   const [user, setUser] = useState([]);
@@ -24,32 +23,7 @@ export default function Diary() {
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const contentDiaryRef = useRef();
-  const diariesContentDecrypt = [];
   const { userId } = useAuth();
-
-  // const getUser = async () => {
-  //   try {
-  //     const response = await fetch(`/api/users/get?uid=${userId}`)
-  //       .then((res) => res.json())
-  //       .then((data) => {
-  //         console.log(data);
-  //         setUser(data);
-  //         setIsLoading(false);
-  //       })
-  //       .catch(() => {
-  //         const errorData = response.json();
-  //         setError(errorData.error);
-  //         setIsLoading(false);
-  //       });
-  //   } catch (error) {
-  //     setError("Failed to fetch posts entries.");
-  //     console.error("Error fetching posts:", error);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   getUser();
-  // }, [userId, isLoading]);
 
   const getUser = useCallback(async () => {
     setIsLoading(true);
@@ -85,8 +59,8 @@ export default function Diary() {
     const inputRefs = group === 1 ? inputRefs1.current : inputRefs2.current;
 
     if (e.key === "Backspace" && index > 0 && e.target.value === "") {
-      inputRefs[index - 1].focus(); // Quay lại ô trước
-      inputRefs[index - 1].value = ""; // Xóa giá trị của ô trước
+      inputRefs[index - 1].focus();
+      inputRefs[index - 1].value = "";
     }
   };
 
@@ -97,19 +71,6 @@ export default function Diary() {
     if (password1 && password2) {
       if (password1 === password2) {
         setIsMatch(true);
-        const updates = {
-          diary_password: hashPassword(password1),
-        };
-
-        const userRef = ref(database, `users/${userId}`);
-
-        update(userRef, updates)
-          .then(() => {
-            alert("Update thành công!");
-          })
-          .catch((error) => {
-            console.error("Lỗi khi cập nhật dữ liệu firebase: ", error);
-          });
 
         const response = await fetch("/api/users/post", {
           method: "POST",
@@ -154,20 +115,17 @@ export default function Diary() {
   };
 
   function encrypt(text) {
-    // Tạo IV ngẫu nhiên
-    const iv = crypto.randomBytes(16); // Độ dài 16 byte (128 bit) cho AES
+    const iv = crypto.randomBytes(16);
 
-    // Tạo cipher
     const cipher = crypto.createCipheriv(
       algorithm,
-      Buffer.from(secretKey, "hex"), // Chuyển đổi secretKey từ hex sang Buffer
+      Buffer.from(secretKey, "hex"),
       iv
     );
 
     let encrypted = cipher.update(text, "utf8", "hex");
     encrypted += cipher.final("hex");
 
-    // Trả về đối tượng chứa IV và dữ liệu đã mã hóa
     return { iv: iv.toString("hex"), encryptedData: encrypted };
   }
 
@@ -223,25 +181,6 @@ export default function Diary() {
     }
   };
 
-  // const fetchDiaryEntries = async () => {
-  //   try {
-  //     const response = await fetch(`/api/diary?userId=${userId}`, {
-  //       method: "GET",
-  //     });
-
-  //     if (response.ok) {
-  //       const entries = await response.json();
-  //       setDiaryEntries(entries);
-  //     } else {
-  //       const errorData = await response.json();
-  //       setError(errorData.error);
-  //     }
-  //   } catch (error) {
-  //     setError("Failed to fetch diary entries.");
-  //     console.error("Error fetching diary:", error);
-  //   }
-  // };
-
   const fetchDiaryEntries = useCallback(async () => {
     try {
       const response = await fetch(`/api/diary?userId=${userId}`);
@@ -271,69 +210,40 @@ export default function Diary() {
 
   const diariesFinaly = useMemo(() => {
     return diaryEntries
-      .map(({ iv, encryptedData, timestamp }) => {
+      .map(({ _id, iv, encryptedData, timestamp }) => {
         const contentDecrypt = secretKey ? decrypt(iv, encryptedData) : "";
-        return { contentDecrypt, timestamp: createdTime(timestamp) };
+        return { _id, contentDecrypt, timestamp: createdTime(timestamp) };
       })
       .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
   }, [diaryEntries, secretKey]);
-
-  // const diaries = diaryEntries.map(({ iv, encryptedData, ...rest }) => ({
-  //   content: {
-  //     iv,
-  //     encryptedData,
-  //   },
-  //   ...rest,
-  // }));
-  // diaries.sort(
-  //   (a, b) => parseInt(b["timestamp"], 10) - parseInt(a["timestamp"], 10)
-  // );
-  // diaries.map((diary) => {
-  //   if (secretKey) {
-  //     const contentDecrypt = decrypt(
-  //       diary["content"].iv,
-  //       diary["content"].encryptedData
-  //     );
-  //     const timestamp = createdTime(parseInt(diary["timestamp"], 10));
-
-  //     diariesContentDecrypt.push({
-  //       contentDecrypt,
-  //       timestamp,
-  //     });
-  //   }
-  // });
-
-  // useEffect(() => {
-  //   fetchDiaryEntries();
-  // }, [secretKey]);
-
-  // const diariesFinaly = useMemo(() => {
-  //   return diariesContentDecrypt.sort((a, b) => b.timestamp - a.timestamp);
-  // }, [diariesContentDecrypt]);
 
   const handleDiaryModalSuccess = () => {
     setIsDiarySuccess(false);
     window.location.reload();
   };
 
+  diariesFinaly.map((diary) => {
+    console.log(diary);
+  });
+
   return (
     <Layout>
       <Head>
-        <title>Diary</title>
+        <title>Nhập ký</title>
+        <link rel="icon" href="/icon.png" />
       </Head>
-      
+
       <TabBar />
 
       {isMatchPassword && (
-        <div className="relative top-[10%] w-full flex flex-col justify-center items-center">
-          <div className="relative top-2/4 flex flex-col w-[80%] justify-between border rounded-md sm:m-5 mt-32 pr-2 sm:pr-6 pb-8 pt-6 bg-white">
-            <form onSubmit={(e) => handleSubmitDiary(e)}>
+        <div className="relative top-[50%] w-full flex flex-col justify-center items-center">
+          <div className="relative bg-galaxy-2 top-[120px] flex flex-col w-[80%] justify-between border rounded-md sm:m-5 mt-32 pr-2 sm:pr-6 pb-8 pt-6 bg-white">
+            <form className="bg-galaxy-2" onSubmit={(e) => handleSubmitDiary(e)}>
               <textarea
                 ref={contentDiaryRef}
                 rows="2"
-                // lg:w-[325px] md:w-[246px]
-                className=" w-full overflow-auto text-left p-2 outline-neutral-400 resize-none"
-                placeholder="Hoặc lưu lại một chút câu chuyện! Yên tâm là không ai có thể đọc chúng. &#x1F609;"
+                className="bg-galaxy-2 w-full overflow-auto text-left p-2 outline-none text-white text-lg font-medium resize-none"
+                placeholder="Cùng lưu lại một chút câu chuyện! Yên tâm là không ai có thể đọc chúng. &#x1F609;"
                 onKeyDown={(e) => {
                   if (e.key === "Enter" && e.ctrlKey) {
                     e.preventDefault();
@@ -341,16 +251,13 @@ export default function Diary() {
                   }
                 }}
               />
-              <button
-                onSubmit={handleSubmitDiary}
-                className="absolute text-pink-500 font-bold right-2 bottom-2"
-              >
-                Gửi gắm
-              </button>
+              <div className="absolute right-2 bottom-2" onSubmit={handleSubmitDiary}>
+                <Button text={'Gửi'}/>
+              </div>
             </form>
           </div>
 
-          <div className="relative w-[80%]">
+          <div className="relative top-[120px] w-[80%]">
             {diariesFinaly.map((diary) => (
               <div className="relative w-fit h-fit mb-7 duration-300  text-black font-semibold group cursor-pointer bg-[#DCDFE4] dark:bg-[#22272B] rounded-3xl p-4 hover:bg-blue-200 hover:dark:bg-[#0C66E4]">
                 <div className="">{diary.timestamp}</div>
@@ -378,9 +285,9 @@ export default function Diary() {
       )}
 
       {!isMatchPassword && user && (
-        <div>
+        <div className="absolute top-[-100%] right-0 bottom-0 left-0 bg-black opacity-80">
           {!isLoading && !user.diary_password ? (
-            <div className="absolute top-[-100%] right-0 bottom-0 left-0 bg-slate-800 opacity-65">
+            <div className="">
               <div className="fixed top-[20%] left-2/4 translate-x-[-50%] flex justify-center items-center flex-col">
                 <p className="text-black font-bold text-3xl mb-3">
                   Tạo password:
@@ -392,7 +299,7 @@ export default function Diary() {
                       type="password"
                       maxLength={1}
                       autoComplete="off"
-                      className="w-16 h-16 border-r-4 px-1 text-2xl custom-input"
+                      className="w-16 h-16 border px-1 text-2xl custom-input"
                       ref={(el) => (inputRefs1.current[index] = el)}
                       onInput={(e) => handleInputChange(e, index, 1)}
                       onKeyDown={(e) => handleKeyDown(e, index, 1)}
@@ -409,7 +316,7 @@ export default function Diary() {
                       type="password"
                       maxLength={1}
                       autoComplete="off"
-                      className="w-16 h-16 border-r-4 px-1 text-2xl custom-input"
+                      className="w-16 h-16 border px-1 text-2xl custom-input"
                       ref={(el) => (inputRefs2.current[index] = el)}
                       onInput={(e) => handleInputChange(e, index, 2)}
                       onKeyDown={(e) => handleKeyDown(e, index, 2)}
@@ -445,7 +352,7 @@ export default function Diary() {
                       type="password"
                       maxLength={1}
                       autoComplete="off"
-                      className="w-16 h-16 border-r-4 px-1 text-2xl custom-input"
+                      className="w-16 h-16 border px-1 text-2xl custom-input"
                       ref={(el) => (inputRefs1.current[index] = el)}
                       onInput={(e) => handleInputChange(e, index, 1)}
                       onKeyDown={(e) => handleKeyDown(e, index, 1)}

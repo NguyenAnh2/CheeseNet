@@ -1,14 +1,10 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faPencil,
-  faPlus,
-  faClose,
-  faImage,
-} from "@fortawesome/free-solid-svg-icons";
-import { useState, useRef, useEffect } from "react";
-import { useRouter } from "next/router";
+import { faPlus, faClose, faImage } from "@fortawesome/free-solid-svg-icons";
+import { useState, useRef } from "react";
 import Confetti from "react-confetti";
+import Button from "./custom/button";
 import { useAuth } from "./auth";
+import ButtonAdd from "./custom/button-add";
 
 export default function AddPost({}) {
   const [isPost, setIsPost] = useState(false);
@@ -25,7 +21,7 @@ export default function AddPost({}) {
     const newPost = {
       userId: userId,
       content: contentPostRef.current.value,
-      file: selectedImage,
+      image: selectedImage,
       likes: [],
       visibility: visibility,
       timestamp: Date.now(),
@@ -66,23 +62,6 @@ export default function AddPost({}) {
           console.error("Error uploading image:", uploadData.error);
           setError(uploadData.error);
         }
-      } else {
-        const postResponse = await fetch("/api/posts/post", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(newPost),
-        });
-
-        if (postResponse.ok) {
-          setIsPost(!isPost);
-          setSelectedImage(null);
-          setIsPostSuccess(true);
-        } else {
-          setError(postResponse.json());
-          console.error("Error sending post:", await postResponse.json());
-        }
       }
     } catch (error) {
       console.error("Error submitting post:", error);
@@ -91,7 +70,7 @@ export default function AddPost({}) {
   };
 
   const handlePostModalSuccess = () => {
-    window.location.href = "/";
+    window.location.reload();
     setIsPostSuccess(false);
   };
 
@@ -127,41 +106,19 @@ export default function AddPost({}) {
     setModalImage(null); // Đóng modal
   };
 
-  // const router = useRouter();
-  // const { code } = router.query;
-
-  // useEffect(() => {
-  //   const fetchAccessToken = async () => {
-  //     const response = await fetch(`/api/pinterest/user?code=${code}`);
-
-  //     if (response.ok) {
-  //       const data = await response.json();
-  //       const accessToken = data.accessToken;
-  //       const expiresAt = data.expiresAt;
-
-  //       localStorage.setItem("pinterestAccessToken", accessToken);
-  //       localStorage.setItem("expiresAt", expiresAt);
-  //     } else {
-  //       console.error("Failed to fetch access token");
-  //     }
-  //   };
-
-  //   fetchAccessToken();
-  // }, [code]);
-
   return (
     <div className="mobile-w-full relative flex justify-center">
       {isPostSuccess && (
         <div className="absolute top-2/4 w-[370px] h-[140px] border shadow-md bg-white rounded-lg px-3 py-3 z-[10000]">
           <p className="font-bold text-xl">
-            Bài viết của bạn đã được đăng lên CheeseNet!!!❤️❤️❤️
+            Bài viết đã có mặt tại CheeseNet! ❤️
           </p>
-          <button
+          <div
+            className="absolute right-2 bottom-2"
             onClick={handlePostModalSuccess}
-            className="border px-3 py-2 rounded text-blue-500 bg-slate-600 absolute right-2 bottom-2 font-semibold"
           >
-            Hiểu rồi!
-          </button>
+            <Button text={"Xác nhận"} />
+          </div>
         </div>
       )}
 
@@ -172,23 +129,23 @@ export default function AddPost({}) {
           {!isPost && (
             <div className="relative left-2/4 -translate-x-2/4 w-fit flex items-center border rounded-md shadow my-6 z-[100]">
               <div
-                className="flex flex-col border-r px-3 py-2 cursor-pointer"
+                className=" cursor-pointer"
                 title="Thêm bài viết"
                 onClick={(e) => setIsPost(!isPost)}
               >
-                <FontAwesomeIcon icon={faPlus} />
-                <p className="hidden md:block">Bài viết</p>
+                {/* <p className="hidden md:block">Đăng bài</p> */}
+                <ButtonAdd />
               </div>
             </div>
           )}
 
           {isPost && (
-            <div className="relative flex flex-col justify-between border rounded-md sm:m-5 mt-5 pr-2 sm:pr-6 pb-16 pt-6 z-[102] bg-white">
-              <form onSubmit={(e) => handleSubmitPost(e)}>
+            <div className="relative flex flex-col justify-between border rounded-md sm:m-5 mt-5 pr-2 sm:pr-6 pb-16 pt-6 z-[102] bg-galaxy-2-2">
+              <form className="" onSubmit={(e) => handleSubmitPost(e)}>
                 <textarea
                   ref={contentPostRef}
                   rows="2"
-                  className="lg:w-[325px] md:w-[246px] w-full overflow-auto text-left p-2 outline-neutral-400 resize-none"
+                  className="bg-galaxy-2-2 lg:w-[325px] md:w-[246px] w-full overflow-auto text-left p-2 outline-neutral-400 resize-none text-white font-normal"
                   placeholder="Này hôm nay của bạn ra sao? Nếu không có ý tưởng hãy thử Chatbox AI."
                   onKeyDown={(e) => {
                     if (e.key === "Enter" && e.ctrlKey) {
@@ -197,23 +154,34 @@ export default function AddPost({}) {
                     }
                   }}
                 />
-                <select
-                  className="absolute bottom-2 left-2 flex items-center outline-none border px-2 rounded"
-                  value={visibility}
-                  onChange={(e) => setVisibility(e.target.value)}
-                >
-                  <option value="public">Công khai</option>
-                  <option value="friends">Bạn bè</option>
-                </select>
+
+                <div className="absolute bottom-8 left-10 ">
+                  <select
+                    className="block appearance-none w-full bg-galaxy text-white font-bold py-2 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-blue-300 cursor-pointer"
+                    value={visibility}
+                    onChange={(e) => setVisibility(e.target.value)}
+                  >
+                    <option
+                      className="bg-galaxy-3 py-2 cursor-pointer"
+                      value="public"
+                    >
+                      Công khai
+                    </option>
+                    <option
+                      className="bg-galaxy-3 py-2 cursor-pointer"
+                      value="friends"
+                    >
+                      Bạn bè
+                    </option>
+                  </select>
+                </div>
                 <button
+                  className="btn absolute translate-y-[100%] top-[6px] left-[100%] translate-x-[-100%] "
                   onSubmit={handleSubmitPost}
-                  className="absolute text-pink-500 font-bold bottom-9 right-2"
                 >
                   Đăng
                 </button>
               </form>
-
-              {/* <PinterestSearch /> */}
 
               <input
                 id="fileImages"
@@ -225,20 +193,24 @@ export default function AddPost({}) {
                 multiple
               />
               <FontAwesomeIcon
+                width={18}
+                height={18}
                 icon={faImage}
                 className="absolute left-2 bottom-10 text-pink-500 cursor-pointer"
                 onClick={handleAddImage}
               />
 
               {selectedImage && (
-                <div className="w-fit relative mt-4">
+                <div className="w-fit relative mt-0 mb-2">
                   <img
                     src={selectedImage}
                     alt="Preview"
-                    className=" mx-3 w-16 h-16 object-cover cursor-pointer rounded"
+                    className="mx-3 w-16 h-16 object-cover cursor-pointer rounded"
                     onClick={() => openModal(selectedImage)}
                   />
                   <FontAwesomeIcon
+                    width={18}
+                    height={18}
                     icon={faClose}
                     onClick={clearImage}
                     className="absolute top-0 right-3 mb-3 cursor-pointer"
@@ -258,6 +230,8 @@ export default function AddPost({}) {
                     onClick={(e) => e.stopPropagation()}
                   />
                   <FontAwesomeIcon
+                    width={18}
+                    height={18}
                     icon={faClose}
                     className="absolute text-white z-[100] text-2xl top-[34%] right-3 cursor-pointer"
                   />
@@ -265,6 +239,8 @@ export default function AddPost({}) {
               )}
 
               <FontAwesomeIcon
+                width={18}
+                height={18}
                 icon={faClose}
                 className="absolute right-2 top-2 cursor-pointer"
                 onClick={handleClosePost}

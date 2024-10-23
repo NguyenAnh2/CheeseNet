@@ -58,7 +58,7 @@ export default function Profile() {
 
   const fetchPostsOfUser = async () => {
     try {
-      const response = await fetch(`/api/posts/get?userId=${userId}`)
+      const response = await fetch(`/api/posts/get_of_user?userId=${userId}`)
         .then((res) => res.json())
         .then((data) => {
           setPosts(data);
@@ -80,7 +80,7 @@ export default function Profile() {
 
   useEffect(() => {
     fetchPostsOfUser();
-  }, [userId, isLoading]);
+  }, [userId, isLoading, isDeleteSuccess]);
 
   const handleSubmitProfile = async (e) => {
     e.preventDefault();
@@ -88,9 +88,29 @@ export default function Profile() {
       uid: userId,
       username: changeUsername || user.username,
       phonenumber: changePhoneNumber || user.phonenumber,
-      avatar: selectedImage || user.avatar,
+      diary_password: user.diary_password,
+      avatar: user.avatar,
+      receivedFriendRequests: user.receivedFriendRequests,
+      sentFriendRequests: user.sentFriendRequests,
+      friends: user.friends,
       updatedAt: Date.now(),
     };
+
+    if (selectedImage) {
+      const uploadResponse = await fetch("/api/upload", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ file: selectedImage }),
+      });
+
+      const uploadData = await uploadResponse.json();
+
+      if (uploadResponse.ok) {
+        updates.avatar = uploadData.imageUrl;
+      }
+    }
 
     const response = await fetch("/api/users/post", {
       method: "POST",
@@ -120,9 +140,9 @@ export default function Profile() {
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setSelectedImage(reader.result); // Lưu URL ảnh để preview
+        setSelectedImage(reader.result);
       };
-      reader.readAsDataURL(file); // Đọc nội dung của file ảnh
+      reader.readAsDataURL(file);
     }
   };
 
@@ -246,11 +266,11 @@ export default function Profile() {
         },
         body: JSON.stringify({ postId, visibility: newVisibility }), // Gửi postId và visibility
       });
-  
+
       if (!response.ok) {
         throw new Error("Failed to update visibility");
       }
-  
+
       const result = await response.json();
       console.log("Updated visibility:", result);
     } catch (error) {
@@ -261,7 +281,8 @@ export default function Profile() {
   return (
     <Layout>
       <Head>
-        <title>Profile</title>
+        <title>Trang cá nhân</title>
+        <link rel="icon" href="/icon.png" />
       </Head>
 
       <TabBar />
@@ -276,15 +297,16 @@ export default function Profile() {
             <div className="w-[100%] flex flex-col justify-center items-center">
               <div>
                 <div className="flex justify-between items-center">
-                  <h1 className="text-3xl font-bold text-pink-300 my-4">
+                  <h1 className="text-3xl font-bold text-pink-300 m-4">
                     Thông tin cá nhân
                   </h1>
                   {(isChangePhoneNumber ||
                     isChangeUsername ||
-                    selectedImage) && (
+                    selectedImage ||
+                    isUpdateSuccess) && (
                     <button
                       onClick={handleSubmitProfile}
-                      className="text-pink-200 bg-blue-600 hover:bg-blue-400 h-fit px-2 py-1 text-xl rounded-md transition-all"
+                      className="text-pink-200 bg-blue-600 hover:bg-blue-400 h-fit px-2 py-1 text-xl rounded-md transition-transform"
                     >
                       Lưu
                     </button>
@@ -305,13 +327,15 @@ export default function Profile() {
                         }
                       />
                     ) : (
-                      <span className="mx-2 font-semibold w-full">
+                      <span className="mx-2 font-semibold w-full md:text-lg">
                         {user.username}
                       </span>
                     )}
                   </div>
                   {isChangeUsername ? (
                     <FontAwesomeIcon
+                      width={20}
+                      height={20}
                       icon={faClose}
                       className="cursor-pointer"
                       onClick={handleIsChangeUsername}
@@ -352,6 +376,8 @@ export default function Profile() {
                   </div>
                   {isChangePhoneNumber ? (
                     <FontAwesomeIcon
+                      width={20}
+                      height={20}
                       icon={faClose}
                       className="cursor-pointer"
                       onClick={handleIsChangePhoneNumber}
@@ -371,6 +397,8 @@ export default function Profile() {
                     <p className="mb-3">Ảnh đại diện</p>
                     {selectedImage && (
                       <FontAwesomeIcon
+                        width={20}
+                        height={20}
                         icon={faClose}
                         className="absolute right-[95px] top-[40px] text-xl cursor-pointer"
                         onClick={cancelChangeAvatar}
@@ -395,7 +423,12 @@ export default function Profile() {
                           onChange={(e) => handleChangeFile(e)}
                           multiple
                         />
-                        <FontAwesomeIcon icon={faCamera} className="w-8 h-8" />
+                        <FontAwesomeIcon
+                          icon={faCamera}
+                          className="w-8 h-8"
+                          width={20}
+                          height={20}
+                        />
                       </div>
                     </div>
                   </div>
@@ -408,7 +441,7 @@ export default function Profile() {
           </div>
         )
       )}
-      <div className="pb-10">
+      <div className="pb-10 ">
         {posts && posts.length > 0 ? (
           <div>
             {posts
@@ -418,10 +451,10 @@ export default function Profile() {
                   (like) => like.userId === userId
                 );
                 return (
-                  <div className="relative w-[40%] left-[100%] translate-x-[-175%] block border bg-white rounded-lg my-5 pb-3 ">
+                  <div className="card relative w-[40%] left-[50%] translate-x-[-50%] block border bg-white rounded-lg my-5 pb-3 ">
                     <div className="flex justify-between items-center mb-5 border-b px-2 py-3">
                       <div
-                        className="flex flex-col"
+                        className="flex flex-col w-full"
                         title={user && user.username}
                       >
                         <div className="flex">
@@ -435,35 +468,54 @@ export default function Profile() {
                             height={30}
                             loading="lazy"
                           />
-                          <p>{user ? user.username : "Unknown User"}</p>
+                          <p className="text-lg font-semibold text-white">
+                            {user ? user.username : "Unknown User"}
+                          </p>
                         </div>
-                        <p className="text-xs mt-3 text-slate-600">
+                        <p className="text-xs mt-3 text-white">
                           {timeAgo(post.timestamp)}
                         </p>
                       </div>
-                      <div className="absolute top-4 right-14">
+                      <div className="absolute top-9 right-14">
                         <select
-                          className="flex items-center outline-none border px-2 rounded"
+                          className="block appearance-none w-full bg-galaxy text-white font-bold py-2 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-blue-300 cursor-pointer"
                           value={visibilityMap[post._id] || post.visibility}
                           onChange={(e) =>
                             handleChangeVisibility(e.target.value, post._id)
                           }
                         >
-                          <option value="public">Công khai</option>
-                          <option value="friends">Bạn bè</option>
+                          <option
+                            className="bg-galaxy-3 py-2 cursor-pointer"
+                            value="public"
+                          >
+                            Công khai
+                          </option>
+                          <option
+                            className="bg-galaxy-3 py-2 cursor-pointer"
+                            value="friends"
+                          >
+                            Bạn bè
+                          </option>
                         </select>
                       </div>
                       <div
-                        className="cursor-pointer px-2 py-6"
+                        className="cursor-pointer px-2 py-6 hover:-translate-y-1 transition-transform"
                         onClick={() => handleModalDelete(post._id)}
                       >
-                        <FontAwesomeIcon icon={faTrash} />
+                        <FontAwesomeIcon
+                          icon={faTrash}
+                          className="text-red-500"
+                          width={20}
+                          height={20}
+                        />
                       </div>
                     </div>
                     <div
                       className={`border-b mb-2 ${post.image ? "mb-20" : "mb-5"} px-3`}
                     >
-                      <div className="mb-5">{post.content}</div>
+                      <div className="mb-5 text-lg font-semibold text-white">
+                        {post.content}
+                      </div>
                       {post.image && (
                         <Image
                           src={
@@ -481,10 +533,10 @@ export default function Profile() {
                     </div>
                     <div
                       id={`like_of_${post._id}`}
-                      className={`cursor-pointer w-fit px-2 text-xl ${isLiked ? "text-red-500" : "text-black"}`}
+                      className={`cursor-pointer w-fit px-2 text-xl ${isLiked ? "text-red-500" : "text-white"}`}
                       onClick={() => handleLike(post._id)}
                     >
-                      <FontAwesomeIcon icon={faHeart} />
+                      <FontAwesomeIcon icon={faHeart} width={20} height={20} />
                     </div>
                   </div>
                 );
@@ -511,39 +563,89 @@ export default function Profile() {
       )}
 
       {isModalDelete && (
-        <div className="fixed top-[30%] right-2/4 translate-x-[50%] bg-white border shadow-xl rounded-lg px-8 pb-10 pt-6">
-          <p className="mb-10">
-            <strong>Bạn có chắc chắn muốn xóa bài biết này không?</strong>
-          </p>
-          <div className="absolute right-2 bottom-2">
-            <button
-              className="red-btn px-2 py-1 font-semibold rounded mx-1"
-              onClick={() => setIsModalDelete(false)}
-            >
-              Hủy
-            </button>
-            <button
-              className="green-btn px-2 py-1 font-semibold rounded mx-1"
-              onClick={(e) => handleDeletePost(selectedPostId)}
-            >
-              Xóa
-            </button>
+        <div class="fixed top-[30%] right-2/4 translate-x-[50%] group select-none w-[250px] flex flex-col p-4 items-center justify-center bg-gray-800 border border-gray-800 shadow-lg rounded-2xl">
+          <div class="">
+            <div class="text-center p-3 flex-auto justify-center">
+              <svg
+                fill="currentColor"
+                viewBox="0 0 20 20"
+                class="group-hover:animate-bounce w-12 h-12 flex items-center text-gray-600 fill-red-500 mx-auto"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  clip-rule="evenodd"
+                  d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                  fill-rule="evenodd"
+                ></path>
+              </svg>
+              <h2 class="text-xl font-bold py-4 text-gray-200">Bạn có chắc?</h2>
+              <p class="font-bold text-sm text-gray-500 px-2">
+                Bạn có chắc chắn muốn xóa bài viết?
+              </p>
+            </div>
+            <div class="p-2 mt-2 text-center space-x-1 md:block">
+              <button
+                onClick={() => setIsModalDelete(false)}
+                class="mb-2 md:mb-0 bg-gray-700 px-5 py-2 text-sm shadow-sm font-medium tracking-wider border-2 border-gray-600 hover:border-gray-700 text-gray-300 rounded-full hover:shadow-lg hover:bg-gray-800 transition ease-in duration-300"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={(e) => handleDeletePost(selectedPostId)}
+                class="bg-red-500 hover:bg-transparent px-5 ml-4 py-2 text-sm shadow-sm hover:shadow-lg font-medium tracking-wider border-2 border-red-500 hover:border-red-500 text-white hover:text-red-500 rounded-full transition ease-in duration-300"
+              >
+                Confirm
+              </button>
+            </div>
           </div>
         </div>
       )}
 
       {isDeleteSuccess && (
-        <div className="fixed top-[30%] right-2/4 translate-x-[50%] bg-white border shadow-xl rounded-lg px-8 pb-10 pt-6">
-          <p className="mb-10">
-            <strong>Vừa xóa bài thành công rồi!</strong>
-          </p>
-          <div className="absolute right-2 bottom-2">
-            <button
-              className="green-btn px-2 py-1 font-semibold rounded mx-1"
-              onClick={() => setIsDeleteSuccess(!isDeleteSuccess)}
+        <div class="card_success fixed top-[30%] right-2/4 translate-x-[50%]">
+          <svg
+            class="wave"
+            viewBox="0 0 1440 320"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M0,256L11.4,240C22.9,224,46,192,69,192C91.4,192,114,224,137,234.7C160,245,183,235,206,213.3C228.6,192,251,160,274,149.3C297.1,139,320,149,343,181.3C365.7,213,389,267,411,282.7C434.3,299,457,277,480,250.7C502.9,224,526,192,549,181.3C571.4,171,594,181,617,208C640,235,663,277,686,256C708.6,235,731,149,754,122.7C777.1,96,800,128,823,165.3C845.7,203,869,245,891,224C914.3,203,937,117,960,112C982.9,107,1006,181,1029,197.3C1051.4,213,1074,171,1097,144C1120,117,1143,107,1166,133.3C1188.6,160,1211,224,1234,218.7C1257.1,213,1280,139,1303,133.3C1325.7,128,1349,192,1371,192C1394.3,192,1417,128,1429,96L1440,64L1440,320L1428.6,320C1417.1,320,1394,320,1371,320C1348.6,320,1326,320,1303,320C1280,320,1257,320,1234,320C1211.4,320,1189,320,1166,320C1142.9,320,1120,320,1097,320C1074.3,320,1051,320,1029,320C1005.7,320,983,320,960,320C937.1,320,914,320,891,320C868.6,320,846,320,823,320C800,320,777,320,754,320C731.4,320,709,320,686,320C662.9,320,640,320,617,320C594.3,320,571,320,549,320C525.7,320,503,320,480,320C457.1,320,434,320,411,320C388.6,320,366,320,343,320C320,320,297,320,274,320C251.4,320,229,320,206,320C182.9,320,160,320,137,320C114.3,320,91,320,69,320C45.7,320,23,320,11,320L0,320Z"
+              fill-opacity="1"
+            ></path>
+          </svg>
+
+          <div class="icon-container">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 512 512"
+              stroke-width="0"
+              fill="currentColor"
+              stroke="currentColor"
+              class="icon"
             >
-              Ok boi
-            </button>
+              <path d="M256 48a208 208 0 1 1 0 416 208 208 0 1 1 0-416zm0 464A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-111 111-47-47c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64c9.4 9.4 24.6 9.4 33.9 0L369 209z"></path>
+            </svg>
+          </div>
+          <div class="message-text-container">
+            <p class="message-text">Thao tác hoàn thành</p>
+            <p class="sub-text">Tất cả đã sẵn sàng</p>
+          </div>
+          <div onClick={() => setIsDeleteSuccess(!isDeleteSuccess)}>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 15 15"
+              stroke-width="0"
+              fill="none"
+              stroke="currentColor"
+              class="cross-icon"
+            >
+              <path
+                fill="currentColor"
+                d="M11.7816 4.03157C12.0062 3.80702 12.0062 3.44295 11.7816 3.2184C11.5571 2.99385 11.193 2.99385 10.9685 3.2184L7.50005 6.68682L4.03164 3.2184C3.80708 2.99385 3.44301 2.99385 3.21846 3.2184C2.99391 3.44295 2.99391 3.80702 3.21846 4.03157L6.68688 7.49999L3.21846 10.9684C2.99391 11.193 2.99391 11.557 3.21846 11.7816C3.44301 12.0061 3.80708 12.0061 4.03164 11.7816L7.50005 8.31316L10.9685 11.7816C11.193 12.0061 11.5571 12.0061 11.7816 11.7816C12.0062 11.557 12.0062 11.193 11.7816 10.9684L8.31322 7.49999L11.7816 4.03157Z"
+                clip-rule="evenodd"
+                fill-rule="evenodd"
+              ></path>
+            </svg>
           </div>
         </div>
       )}

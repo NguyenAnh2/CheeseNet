@@ -1,8 +1,13 @@
+import Head from "next/head";
 import SignIn from "../../components/custom/signin";
 
 export default function LoginPage() {
   return (
     <>
+      <Head>
+        <title>Đăng nhập</title>
+        <link rel="icon" href="/icon.png" />
+      </Head>
       <SignIn />
     </>
   );

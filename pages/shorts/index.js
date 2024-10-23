@@ -1,7 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import Heading from "../../components/heading";
-import ParentOpenMessage from "../../components/parent_open_message";
-import SideRight from "../../components/sidebar_right";
+import Head from "next/head";
 import Layout from "../../components/layout";
 
 export default function ShortsPage({}) {
@@ -108,9 +106,10 @@ export default function ShortsPage({}) {
 
   return (
     <Layout>
-      {/* <Heading />
-      <ParentOpenMessage />
-      <SideRight /> */}
+      <Head>
+        <title>Shorts</title>
+        <link rel="icon" href="/icon.png"/>
+      </Head>
       <div className="flex justify-center items-center flex-col relative mt-[64px] left-2/4 -translate-x-2/4 sm:w-[30%] w-[90%]">
         <p className="font-semibold text-2xl text-purple-600 my-4">
           Trending YouTube Shorts

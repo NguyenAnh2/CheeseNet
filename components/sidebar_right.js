@@ -50,12 +50,12 @@ export default function SideRight() {
   return (
     <div>
       <div
-        className={`sm:fixed sm:flex sm:right-0 md:w-60 lg:w-80 sm:w-[190px] flex-col h-[calc(100vh-64px)] overflow-y-auto w-[60%] fixed top-[64px] right-0  bottom-0 border-slate-600 shadow-xl bg-white transition-transform duration-300 ease-in-out z-[10] transform ${
+        className={`bg-galaxy-3 sm:fixed sm:flex sm:right-0 md:w-60 lg:w-80 sm:w-[190px] flex-col h-[calc(100vh-64px)] overflow-y-auto w-[60%] fixed top-[64px] right-0  bottom-0 border-slate-600 shadow-xl bg-white transition-transform duration-300 ease-in-out z-[10] transform ${
           isOpenRight ? "translate-x-0" : "translate-x-full"
         }`}
       >
         <div className="my-3 border-b pb-2 pl-4 ">
-          <p>Chatbox AI</p>
+          <p className="text-base text-black font-medium">Chatbox AI</p>
         </div>
         <ul className="mb-20">
           {chatHistory.map((chat, index) => (
@@ -100,14 +100,24 @@ export default function SideRight() {
           className="absolute bottom-2/4 translate-y-2/4 right-6"
           type="submit"
         >
-          <FontAwesomeIcon icon={faPaperPlane} />
+          <FontAwesomeIcon icon={faPaperPlane} width={18} height={18} />
         </button>
       </form>
       <div className="fixed right-[0] top-[155px] bg-blue-200 hover:bg-blue-400 px-3 py-2 text-xl rounded-s-xl z-[10] cursor-pointer opacity-70">
         {isOpenRight ? (
-          <FontAwesomeIcon icon={faArrowRight} onClick={toggleOpenRight} />
+          <FontAwesomeIcon
+            icon={faArrowRight}
+            onClick={toggleOpenRight}
+            width={18}
+            height={18}
+          />
         ) : (
-          <FontAwesomeIcon icon={faArrowLeft} onClick={toggleOpenRight} />
+          <FontAwesomeIcon
+            icon={faArrowLeft}
+            onClick={toggleOpenRight}
+            width={18}
+            height={18}
+          />
         )}
       </div>
     </div>

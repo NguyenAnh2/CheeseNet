@@ -1,5 +1,6 @@
 import React from "react";
 import { useState, useEffect } from "react";
+import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useAuth } from "../../components/auth";
@@ -128,13 +129,15 @@ const SignIn = () => {
           <span>Password</span>
           <div className="absolute top-[0%] right-0 w-12 flex justify-center items-center text-black h-full cursor-pointer select-none">
             <FontAwesomeIcon
+              width={18}
+              height={18}
               icon={faEye}
               onClick={ToggleShowPassword}
               className=""
             />
           </div>
         </label>
-        <button className={styles.submit}>Đăng nhập</button>
+        <button className={`${styles.submit} py-3`}>Đăng nhập</button>
         <div className="flex justify-between">
           <div>
             <p className={styles.signin}>

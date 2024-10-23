@@ -1,13 +1,16 @@
 import Message from "./message";
 import SideLeft from "./sidebar_left";
 import { useState, useEffect } from "react";
+import { useAuth } from "./auth";
 
 export default function ParentOpenMessage() {
   const [openMess, setOpenMess] = useState([]);
   const [findIndexUser, setFindIndexUser] = useState([]);
   const [users, setUsers] = useState([]);
   const [toggleMiniState, setToggleMiniState] = useState({});
-  const [error, setError] = useState('')
+  const [error, setError] = useState("");
+  const { userId } = useAuth();
+  const [user, setUser] = useState();
   const [isLoading, setIsLoading] = useState(true);
 
   const getUsers = async () => {
@@ -35,6 +38,16 @@ export default function ParentOpenMessage() {
   useEffect(() => {
     getUsers();
   }, [isLoading]);
+
+  const findUserById = (userId) => {
+    const user = users.find((user) => user.uid === userId);
+    return user;
+  };
+
+  useEffect(() => {
+    const user = findUserById(userId);
+    setUser(user);
+  }, [users]);
 
   useEffect(() => {
     if (users.length > 0) {
@@ -121,7 +134,7 @@ export default function ParentOpenMessage() {
       {isLoading ? (
         <p>Đợi tý nhé...</p>
       ) : (
-        <SideLeft users={users} clickOpenMess={clickOpenMess} />
+        <SideLeft users={users} user={user} clickOpenMess={clickOpenMess} />
       )}
     </div>
   );

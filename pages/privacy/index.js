@@ -7,17 +7,19 @@ export default function Privacy() {
   return (
     <Layout>
       <Head>
-        <title>Privacy</title>
+        <title>Bảo mật và bản quyền</title>
+        <link rel="icon" href="/icon.png"/>
       </Head>
       <Heading />
       <h1 className="relative mt-[64px] pt-6 text-3xl font-bold text-pink-300">
         <Link href="/" className="text-3xl font-bold mx-4">
-          ←
+          ← Home
         </Link>
-        Privacy
       </h1>
-      <h1>Chính Sách Bảo Mật và Quyền Riêng Tư</h1>
-      <ul className="px-3 ">
+      <h1 className="font-bold text-2xl my-3 flex justify-center">
+        Chính Sách Bảo Mật và Quyền Riêng Tư
+      </h1>
+      <ul className="ml-8 px-3">
         <li>
           <h3 className="font-bold text-xl">1. Giới thiệu</h3>
           <div className="px-3">

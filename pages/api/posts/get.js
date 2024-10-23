@@ -15,23 +15,60 @@ async function connectToDatabase() {
 export default async function handler(req, res) {
   if (req.method === "GET") {
     try {
-      const { userId, postId } = req.query;
+      const { userId } = req.query;
+
+      if (!userId) {
+        return res.status(400).json({ error: "User ID is required." });
+      }
+
       const client = await connectToDatabase();
       const database = client.db("cheese_net");
-      const collection = database.collection("posts");
-      let query = {};
 
-      if (userId) {
-        query.userId = userId;
+      // Lấy thông tin người dùng hiện tại từ bảng users
+      const usersCollection = database.collection("users");
+      const currentUser = await usersCollection.findOne({ uid: userId });
+
+      if (!currentUser) {
+        return res.status(404).json({ error: "User not found." });
       }
 
-      if (postId) {
-        query._id = new ObjectId(postId);
-      }
+      const friendsList = currentUser.friends || []; // Lấy danh sách bạn bè
 
-      const result = await collection.find(query).toArray();
+      // Tạo query để lọc bài viết dựa trên visibility
+      const postsCollection = database.collection("posts");
+      const query = {
+        $or: [
+          { visibility: "public" }, // Bài viết public
+          {
+            visibility: "friends", // Bài viết của bạn bè
+            userId: { $in: friendsList },
+          },
+          { userId: userId }, // Bài viết của chính người dùng
+        ],
+      };
 
-      res.status(200).json(result);
+      // Tìm và trả về các bài viết phù hợp
+      const posts = await postsCollection.find(query).toArray();
+
+      res.status(200).json(posts);
+
+      // const { userId, postId } = req.query;
+      // const client = await connectToDatabase();
+      // const database = client.db("cheese_net");
+      // const collection = database.collection("posts");
+      // let query = {};
+
+      // if (userId) {
+      //   query.userId = userId;
+      // }
+
+      // if (postId) {
+      //   query._id = new ObjectId(postId);
+      // }
+
+      // const result = await collection.find(query).toArray();
+
+      // res.status(200).json(result);
     } catch (error) {
       console.error("Error fetching Posts:", error);
       res.status(500).json({ error: "Có lỗi khi lấy thông tin bài viết." });

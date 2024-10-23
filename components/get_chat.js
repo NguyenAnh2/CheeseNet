@@ -2,7 +2,6 @@ import { ref, get, remove, update } from "firebase/database";
 import { useEffect, useState, useRef } from "react";
 import { database } from "../firebase/firebaseConfig";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { fetchUser } from "../utils/fetchUser";
 import {
   faPencil,
   faTrash,
@@ -45,6 +44,7 @@ const GetChat = ({ user1Id, user2Id, flagSend }) => {
           ...data[key],
         }));
         setMessages(messagesArray);
+        console.log("redenr");
       } else {
         setMessages([]);
       }
@@ -55,7 +55,7 @@ const GetChat = ({ user1Id, user2Id, flagSend }) => {
 
   useEffect(() => {
     fetchMessages();
-  }, [chatId, flagSend, newContent, isDeletePopupVisible, snapShot]);
+  }, [chatId, flagSend, newContent, isDeletePopupVisible]);
 
   const handleGetUserReceived = async () => {
     try {
@@ -115,9 +115,6 @@ const GetChat = ({ user1Id, user2Id, flagSend }) => {
 
     fetchUsers();
   }, [user1Id, user2Id]);
-
-  console.log(userReceiver);
-  console.log(userSend);
 
   const handleOpenModalSelectedPost = async (postId) => {
     if (postId) {
@@ -223,13 +220,13 @@ const GetChat = ({ user1Id, user2Id, flagSend }) => {
                   className="mx-1 text-slate-400"
                   onClick={() => handleSaveMessage(message.uid)}
                 >
-                  <FontAwesomeIcon icon={faCheck} />
+                  <FontAwesomeIcon icon={faCheck} width={18} height={18} />
                 </button>
                 <button
                   className="mx-1 text-slate-400"
                   onClick={() => setEditingMessage(null)}
                 >
-                  <FontAwesomeIcon icon={faClose} />
+                  <FontAwesomeIcon icon={faClose} width={18} height={18} />
                 </button>
               </div>
             </div>
@@ -259,13 +256,13 @@ const GetChat = ({ user1Id, user2Id, flagSend }) => {
                       handleEditMessage(message.uid, message.content)
                     }
                   >
-                    <FontAwesomeIcon icon={faPencil} />
+                    <FontAwesomeIcon icon={faPencil} width={18} height={18} />
                   </button>
                   <button
                     className="mx-1 text-slate-400"
                     onClick={() => handleDeleteClick(message.uid)}
                   >
-                    <FontAwesomeIcon icon={faTrash} />
+                    <FontAwesomeIcon icon={faTrash} width={18} height={18} />
                   </button>
                 </div>
               )}

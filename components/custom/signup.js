@@ -1,12 +1,11 @@
 import React from "react";
-import { useState, useEffect } from "react";
-import { database } from "../../firebase/firebaseConfig";
-import { ref, set, get, update, child, remove } from "firebase/database";
+import { useState } from "react";
 import {
   auth,
   createUserWithEmailAndPassword,
   sendEmailVerification,
 } from "../../firebase/firebaseConfig";
+import Head from "next/head";
 import Link from "next/link";
 import styles from "../../pages/signup/SignUp.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -18,7 +17,8 @@ const SignUp = () => {
   const [repassword, setRepassword] = useState("");
   const [username, setUsername] = useState("");
   const [error, setError] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
+  const [showPassword1, setShowPassword1] = useState(false);
+  const [showPassword2, setShowPassword2] = useState(false);
   const [isRegistered, setIsRegistered] = useState(false);
 
   const handleRegister = async (e) => {
@@ -47,32 +47,6 @@ const SignUp = () => {
           alert("Xác thực thành công!");
           setIsRegistered(true);
 
-          set(ref(database, "users/" + user.uid), {
-            username: username,
-            email: email,
-            uid: user.uid,
-            avatar: "/images/defaultavatar.jpg",
-            diary_password: null,
-            phonenumber: null,
-            receivedFriendRequests: [],
-            sentFriendRequests: [],
-            friends: ["U1zkSP9S1jd2Srz5RxAkUAeDwDw1"],
-            createdAt: Date.now(),
-          });
-        }
-      }, 5000);
-    } catch (error) {
-      console.error("Registration error:", error);
-      setError(error.message);
-    }
-  };
-
-  useEffect(() => {
-    const checkEmailVerification = async () => {
-      const user = auth.currentUser;
-
-      if (user) {
-        try {
           const response = await fetch("/api/users/post", {
             method: "POST",
             headers: {
@@ -87,7 +61,7 @@ const SignUp = () => {
               phonenumber: null,
               receivedFriendRequests: [],
               sentFriendRequests: [],
-              friends: ["U1zkSP9S1jd2Srz5RxAkUAeDwDw1"],
+              friends: ["8cvcdVO0GDSOsp4TgqJhy0Hjc6r2"],
               createdAt: Date.now(),
             }),
           });
@@ -98,18 +72,19 @@ const SignUp = () => {
             const errorData = await response.json();
             setError(errorData.error);
           }
-        } catch (error) {
-          console.error("Error calling API:", error);
-          setError("Có lỗi khi lưu thông tin vào MSSQL.");
         }
-      }
-    };
+      }, 5000);
+    } catch (error) {
+      console.error("Registration error:", error);
+      setError(error.message);
+    }
+  };
 
-    checkEmailVerification();
-  }, [isRegistered]);
-
-  const ToggleShowPassword = () => {
-    setShowPassword(!showPassword);
+  const ToggleShowPassword1 = () => {
+    setShowPassword1(!showPassword1);
+  };
+  const ToggleShowPassword2 = () => {
+    setShowPassword2(!showPassword2);
   };
 
   return (
@@ -148,7 +123,7 @@ const SignUp = () => {
         <label className="relative flex">
           <input
             className={styles.input}
-            type={showPassword ? "text" : "password"}
+            type={showPassword1 ? "text" : "password"}
             placeholder=""
             required
             value={password}
@@ -158,8 +133,10 @@ const SignUp = () => {
           <span>Password</span>
           <div className="absolute top-[0%] right-0 w-10 flex justify-center items-center text-black h-full cursor-pointer select-none">
             <FontAwesomeIcon
+              width={18}
+              height={18}
               icon={faEye}
-              onClick={ToggleShowPassword}
+              onClick={ToggleShowPassword1}
               className=""
             />
           </div>
@@ -167,7 +144,7 @@ const SignUp = () => {
         <label className="relative flex">
           <input
             className={styles.input}
-            type="password"
+            type={showPassword2 ? "text" : "password"}
             placeholder=""
             required
             value={repassword}
@@ -177,8 +154,10 @@ const SignUp = () => {
           <span>Nhập lại password</span>
           <div className="absolute top-[0%] right-0 w-10 flex justify-center items-center text-black h-full cursor-pointer select-none">
             <FontAwesomeIcon
+              width={18}
+              height={18}
               icon={faEye}
-              onClick={ToggleShowPassword}
+              onClick={ToggleShowPassword2}
               className=""
             />
           </div>

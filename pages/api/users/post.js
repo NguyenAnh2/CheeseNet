@@ -18,7 +18,10 @@ async function saveUserToMongoDB(
   email,
   avatar,
   phonenumber,
-  diary_password
+  diary_password,
+  receivedFriendRequests,
+  sentFriendRequests,
+  friends,
 ) {
   const client = await connectToDatabase();
   const database = client.db("cheese_net");
@@ -31,6 +34,9 @@ async function saveUserToMongoDB(
     avatar,
     phonenumber,
     diary_password,
+    receivedFriendRequests,
+    sentFriendRequests,
+    friends,
     createdAt: Date.now(),
   });
 
@@ -55,6 +61,9 @@ async function updateUserDiaryInfo(
   username,
   avatar,
   phonenumber,
+  receivedFriendRequests,
+  sentFriendRequests,
+  friends,
   updatedAt
 ) {
   const client = await connectToDatabase();
@@ -68,6 +77,9 @@ async function updateUserDiaryInfo(
         username,
         avatar,
         phonenumber,
+        receivedFriendRequests,
+        sentFriendRequests,
+        friends,
         updatedAt,
       },
     }
@@ -83,9 +95,12 @@ export default async function handler(req, res) {
       username,
       email,
       avatar,
-      phonenumber,
-      updatedAt,
       diary_password,
+      phonenumber,
+      receivedFriendRequests,
+      sentFriendRequests,
+      friends,
+      updatedAt,
     } = req.body;
 
     try {
@@ -96,8 +111,11 @@ export default async function handler(req, res) {
           email,
           avatar,
           phonenumber,
-          updatedAt,
-          diary_password
+          diary_password,
+          receivedFriendRequests,
+          sentFriendRequests,
+          friends,
+          updatedAt
         );
         return res
           .status(201)
@@ -120,6 +138,9 @@ export default async function handler(req, res) {
         username,
         avatar,
         phonenumber,
+        receivedFriendRequests,
+        sentFriendRequests,
+        friends,
         updatedAt
       );
 

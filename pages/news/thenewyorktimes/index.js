@@ -1,9 +1,6 @@
 import Parser from "rss-parser";
 import Layout from "../../../components/layout";
 import Head from "next/head";
-import Heading from "../../../components/heading";
-import ParentOpenMessage from "../../../components/parent_open_message";
-import SideRight from "../../../components/sidebar_right";
 import Sidebar from "../../../components/custom/tabbar_news";
 
 export async function getStaticProps() {
@@ -31,13 +28,11 @@ export default function GetRSS({ feed }) {
   return (
     <Layout>
       <Head>
-        <title>Study</title>
+        <title>The New York Times</title>
+        <link rel="icon" href="/icon.png"/>
       </Head>
-      {/* <Heading />
-      <ParentOpenMessage />
-      <SideRight /> */}
       <Sidebar />
-      <div className="flex justify-center items-center flex-col relative mt-[20px] left-2/4 -translate-x-2/4 sm:w-[40%] w-[90%]">
+      <div className="flex justify-center items-center flex-col relative left-2/4 -translate-x-2/4 sm:w-[40%] w-[90%]">
         <div>
           <h1 className="text-2xl font-bold flex justify-center items-center my-4">
             The New York Times

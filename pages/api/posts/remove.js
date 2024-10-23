@@ -1,4 +1,4 @@
-import { MongoClient } from "mongodb";
+import { MongoClient, ObjectId } from "mongodb";
 
 const uri = process.env.MONGODB_URI;
 let client;
@@ -14,14 +14,18 @@ async function connectToDatabase() {
 
 export default async function handler(req, res) {
   if (req.method === "DELETE") {
+    const { postId } = req.query;
+
     const client = await connectToDatabase();
     const database = client.db("cheese_net");
     const collection = database.collection("posts");
 
-    const { postId } = req.query;
-
     if (!postId) {
       return res.status(400).json({ error: "Post ID is required ", postId });
+    }
+
+    if (!ObjectId.isValid(postId)) {
+      return res.status(400).json({ error: "Invalid post ID format" });
     }
 
     try {
@@ -36,7 +40,6 @@ export default async function handler(req, res) {
       console.error("MongoDB error", error);
       res.status(500).json({
         error: "An error occurred while deleting the post entry.",
-        _id,
       });
     }
   }

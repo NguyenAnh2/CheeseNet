@@ -52,7 +52,7 @@ function Message({
     }
     messRef.current.value = "";
   };
-  
+
   return (
     <div
       id={user.uid}
@@ -62,7 +62,7 @@ function Message({
         <div className="flex items-center">
           <Image
             className="mx-2 rounded-full h-8 w-8 object-cover"
-            src={user.avatar ? user.avatar : '/images/defaultavatar.jpg'}
+            src={user.avatar ? user.avatar : "/images/defaultavatar.jpg"}
             width={30}
             height={30}
             alt="alt"
@@ -74,6 +74,8 @@ function Message({
           {toggleMiniState ? (
             <button onClick={() => miniMessage(user.uid)}>
               <FontAwesomeIcon
+                width={18}
+                height={18}
                 icon={faChevronDown}
                 className="mx-1"
                 color="blue"
@@ -82,6 +84,8 @@ function Message({
           ) : (
             <button onClick={() => miniMessage(user.uid)}>
               <FontAwesomeIcon
+                width={18}
+                height={18}
                 icon={faChevronUp}
                 className="mx-1"
                 color="blue"
@@ -89,7 +93,13 @@ function Message({
             </button>
           )}
           <button onClick={() => removeElementById(user.uid)}>
-            <FontAwesomeIcon icon={faClose} className="mx-2" color="blue" />
+            <FontAwesomeIcon
+              icon={faClose}
+              className="mx-2"
+              color="blue"
+              width={18}
+              height={18}
+            />
           </button>
         </div>
       </div>
@@ -109,7 +119,7 @@ function Message({
         <form
           onSubmit={(e) => handleSubmitMessage(e)}
           id="form-send-message"
-          className="fixed bottom-0 flex bg-slate-200 items-center sm:max-w-[300px] sm:w-full md:max-w-[278px] max-w-[300px] w-full md:w-full transition-all delay-150"
+          className="fixed bottom-0 flex bg-slate-200 items-center sm:max-w-[300px] sm:w-full md:max-w-[277px] max-w-[300px] w-full md:w-full transition-all delay-150"
         >
           <textarea
             ref={messRef}
@@ -125,7 +135,7 @@ function Message({
             }}
           />
           <button className="" type="submit">
-            <FontAwesomeIcon icon={faPaperPlane} />
+            <FontAwesomeIcon icon={faPaperPlane} width={18} height={18} />
           </button>
         </form>
       </div>

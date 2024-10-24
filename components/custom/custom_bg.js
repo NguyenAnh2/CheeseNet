@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "./RandomImageBackground.module.css";
+import styles from "../../styles/Home.module.css";
 
 const images = [
   "/images/b1r.png",
@@ -25,14 +25,16 @@ const repeatImages = (imageList, times) => {
 // Tạo danh sách vị trí ngẫu nhiên không trùng lặp
 const generateUniquePositions = (count) => {
   const positions = [];
-  
+
   while (positions.length < count) {
     const randomTop = Math.random() * 90; // Random top percentage (0% to 90%)
     const randomLeft = Math.random() * 90; // Random left percentage (0% to 90%)
-    
+
     // Kiểm tra vị trí này đã tồn tại chưa
-    const isOverlap = positions.some(pos => 
-      Math.abs(pos.top - randomTop) < 10 && Math.abs(pos.left - randomLeft) < 10
+    const isOverlap = positions.some(
+      (pos) =>
+        Math.abs(pos.top - randomTop) < 10 &&
+        Math.abs(pos.left - randomLeft) < 10
     );
 
     if (!isOverlap) {

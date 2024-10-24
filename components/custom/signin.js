@@ -95,13 +95,13 @@ const SignIn = () => {
   return (
     <div className="flex justify-center items-center mt-16 ">
       <RandomImageBackground />
-      <form className={styles.form} onSubmit={handleLogin}>
-        <p className={styles.title}>Đăng nhập </p>
-        <p className={styles.message}>Đăng nhập và trải nghiệm ứng dụng</p>
+      <form className="form-sign-up" onSubmit={handleLogin}>
+        <p className="title-sign-up">Đăng nhập </p>
+        <p className="message-sign-up">Đăng nhập và trải nghiệm ứng dụng</p>
 
         <label>
           <input
-            className={styles.input}
+            className="input-sign-up"
             type="email"
             placeholder=""
             required
@@ -119,7 +119,7 @@ const SignIn = () => {
 
         <label className="relative flex">
           <input
-            className={styles.input}
+            className="input-sign-up"
             type={showPassword ? "text" : "password"}
             placeholder=""
             required
@@ -138,10 +138,10 @@ const SignIn = () => {
             />
           </div>
         </label>
-        <button className={`${styles.submit} py-3`}>Đăng nhập</button>
+        <button className={`$"submit-sign-up" py-3`}>Đăng nhập</button>
         <div className="flex justify-between">
           <div>
-            <p className={styles.signin}>
+            <p className="signin-sign-up">
               Bạn chưa có tài khoản?{" "}
               <Link className="blue-600 right-0 mr-3 ml-1" href="/signup">
                 Đăng ký

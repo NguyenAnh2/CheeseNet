@@ -90,14 +90,14 @@ const SignUp = () => {
   return (
     <div className="flex justify-center items-center mt-16 ">
       <RandomImageBackground />
-      <form className={styles.form} onSubmit={handleRegister}>
-        <p className={styles.title}>Đăng ký </p>
-        <p className={styles.message}>
+      <form className="form-sign-up" onSubmit={handleRegister}>
+        <p className="title-sign-up">Đăng ký </p>
+        <p className="message-sign-up">
           Đăng ký để trải nghiệm toàn bộ ứng dụng
         </p>
         <label>
           <input
-            className={styles.input}
+            className="input-sign-up"
             type="text"
             placeholder=""
             required
@@ -110,7 +110,7 @@ const SignUp = () => {
 
         <label>
           <input
-            className={styles.input}
+            className="input-sign-up"
             type="email"
             placeholder=""
             required
@@ -123,7 +123,7 @@ const SignUp = () => {
 
         <label className="relative flex">
           <input
-            className={styles.input}
+            className="input-sign-up"
             type={showPassword1 ? "text" : "password"}
             placeholder=""
             required
@@ -144,7 +144,7 @@ const SignUp = () => {
         </label>
         <label className="relative flex">
           <input
-            className={styles.input}
+            className="input-sign-up"
             type={showPassword2 ? "text" : "password"}
             placeholder=""
             required
@@ -163,8 +163,8 @@ const SignUp = () => {
             />
           </div>
         </label>
-        <button className={styles.submit}>Đăng ký</button>
-        <p className={styles.signin}>
+        <button className="submit-sign-up">Đăng ký</button>
+        <p className="signin-sign-up">
           Bạn đã có tài khoản?{" "}
           <Link className="blue-600 right-0 mr-3 ml-1" href="/login">
             Đăng nhập

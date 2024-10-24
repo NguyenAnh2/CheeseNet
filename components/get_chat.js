@@ -60,7 +60,7 @@ const GetChat = ({ user1Id, user2Id, flagSend }) => {
   const handleGetUserReceived = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch(`/api/users/?uid=${user2Id}`, {
+      const response = await fetch(`/api/users/get?uid=${user2Id}`, {
         method: "GET",
       });
 
@@ -217,16 +217,16 @@ const GetChat = ({ user1Id, user2Id, flagSend }) => {
               </form>
               <div className="flex absolute left-[-23%] top-[50%] -translate-y-2/4">
                 <button
-                  className="mx-1 text-slate-400"
+                  className="mx-1 text-[#001F3F]"
                   onClick={() => handleSaveMessage(message.uid)}
                 >
-                  <FontAwesomeIcon icon={faCheck} width={18} height={18} />
+                  <FontAwesomeIcon icon={faCheck} width={16} height={16} />
                 </button>
                 <button
-                  className="mx-1 text-slate-400"
+                  className="mx-1 text-[#001F3F]"
                   onClick={() => setEditingMessage(null)}
                 >
-                  <FontAwesomeIcon icon={faClose} width={18} height={18} />
+                  <FontAwesomeIcon icon={faClose} width={14} height={14} />
                 </button>
               </div>
             </div>
@@ -251,18 +251,18 @@ const GetChat = ({ user1Id, user2Id, flagSend }) => {
               {message.senderId === user1Id && (
                 <div className="flex absolute left-[-23%] top-[50%] -translate-y-2/4">
                   <button
-                    className="mx-1 text-slate-400"
+                    className="mx-1 text-[#001F3F]"
                     onClick={() =>
                       handleEditMessage(message.uid, message.content)
                     }
                   >
-                    <FontAwesomeIcon icon={faPencil} width={18} height={18} />
+                    <FontAwesomeIcon icon={faPencil} width={14} height={14} />
                   </button>
                   <button
-                    className="mx-1 text-slate-400"
+                    className="mx-1 text-[#001F3F]"
                     onClick={() => handleDeleteClick(message.uid)}
                   >
-                    <FontAwesomeIcon icon={faTrash} width={18} height={18} />
+                    <FontAwesomeIcon icon={faTrash} width={14} height={14} />
                   </button>
                 </div>
               )}
@@ -272,13 +272,40 @@ const GetChat = ({ user1Id, user2Id, flagSend }) => {
       ))}
       <div ref={messagesEndRef} />
       {isDeletePopupVisible && (
-        <div className="popup-overlay">
-          <div className="popup-content">
-            <p>Bạn có chắc chắn muốn xóa tin nhắn này không?</p>
-            <button className="" onClick={confirmDelete}>
-              Xác nhận
-            </button>
-            <button onClick={() => setDeletePopupVisible(false)}>Hủy</button>
+        <div class="fixed top-[30%] right-2/4 translate-x-[50%] group select-none w-[250px] flex flex-col p-4 items-center justify-center bg-gray-800 border border-gray-800 shadow-lg rounded-2xl">
+          <div class="">
+            <div class="text-center p-3 flex-auto justify-center">
+              <svg
+                fill="currentColor"
+                viewBox="0 0 20 20"
+                class="group-hover:animate-bounce w-12 h-12 flex items-center text-gray-600 fill-red-500 mx-auto"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  clip-rule="evenodd"
+                  d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                  fill-rule="evenodd"
+                ></path>
+              </svg>
+              <h2 class="text-xl font-bold py-4 text-gray-200">Bạn có chắc?</h2>
+              <p class="font-bold text-sm text-gray-500 px-2">
+                Bạn có chắc chắn muốn xóa bài viết?
+              </p>
+            </div>
+            <div class="p-2 mt-2 text-center space-x-1 md:block">
+              <button
+                onClick={() => setDeletePopupVisible(false)}
+                class="mb-2 md:mb-0 bg-gray-700 px-5 py-2 text-sm shadow-sm font-medium tracking-wider border-2 border-gray-600 hover:border-gray-700 text-gray-300 rounded-full hover:shadow-lg hover:bg-gray-800 transition ease-in duration-300"
+              >
+                Hủy
+              </button>
+              <button
+                onClick={confirmDelete}
+                class="bg-red-500 hover:bg-transparent px-5 ml-4 py-2 text-sm shadow-sm hover:shadow-lg font-medium tracking-wider border-2 border-red-500 hover:border-red-500 text-white hover:text-red-500 rounded-full transition ease-in duration-300"
+              >
+                Xác nhận
+              </button>
+            </div>
           </div>
         </div>
       )}

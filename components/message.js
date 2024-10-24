@@ -7,7 +7,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import Image from "next/image";
 import { useState, useRef } from "react";
-import { useAuth } from "./auth";
+import { useGlobal } from "./global_context";
 import { database } from "../firebase/firebaseConfig";
 import { ref, child, set, push } from "firebase/database";
 import GetChat from "./get_chat";
@@ -20,7 +20,7 @@ function Message({
   toggleMiniState,
 }) {
   const messRef = useRef();
-  const { userId } = useAuth();
+  const { userId } = useGlobal();
   const chatId =
     userId > user.uid ? `${userId}_${user.uid}` : `${user.uid}_${userId}`;
   const [flagSend, setFlagSend] = useState(false);
@@ -106,7 +106,7 @@ function Message({
 
       <div
         id={`inner_message_${user.uid}`}
-        className={`relative bg-slate-50 transition-all duration-300 overflow-y-scroll pt-4 pb-14 ${
+        className={`relative bg-galaxy-3 transition-all duration-300 overflow-y-scroll pt-4 pb-14 ${
           toggleMiniState[user.uid] !== undefined && toggleMiniState[user.uid]
             ? "hidden"
             : "h-[312px]"

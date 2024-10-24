@@ -19,7 +19,7 @@ export default function Privacy() {
       <h1 className="font-bold text-2xl my-3 flex justify-center">
         Chính Sách Bảo Mật và Quyền Riêng Tư
       </h1>
-      <ul className="ml-8 px-3">
+      <ul className="ml-8 px-3 text-black bg-white">
         <li>
           <h3 className="font-bold text-xl">1. Giới thiệu</h3>
           <div className="px-3">

@@ -7,43 +7,44 @@ import {
   faUserFriends,
 } from "@fortawesome/free-solid-svg-icons";
 import { useState, useEffect, useRef } from "react";
-import { useAuth } from "./auth";
+import { useGlobal } from "./global_context";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import Link from "next/link";
-import Input from "./custom/input";
 
-export default function Heading() {
+export default function Heading({}) {
   const router = useRouter();
-  const { userId } = useAuth();
-  const { logout } = useAuth();
-  const [user, setUser] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  // const { userId } = useGlobal();
+  const { logout } = useGlobal();
+  // const [user, setUser] = useState([]);
+  const { user } = useGlobal();
+  // const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
+  // console.log(userId);
 
-  const getUser = async () => {
-    try {
-      const response = await fetch(`/api/users/get?uid=${userId}`)
-        .then((res) => res.json())
-        .then((data) => {
-          setUser(data);
-          setIsLoading(false);
-        })
-        .catch(() => {
-          const errorData = response.json();
-          setError(errorData.error);
-          setIsLoading(true);
-        });
-    } catch (error) {
-      setError("Failed to fetch posts entries.");
-      console.error("Error fetching posts:", error);
-    }
-  };
+  // const getUser = async () => {
+  //   try {
+  //     const response = await fetch(`/api/users/get?uid=${userId}`)
+  //       .then((res) => res.json())
+  //       .then((data) => {
+  //         setUser(data);
+  //         setIsLoading(false);
+  //       })
+  //       .catch(() => {
+  //         const errorData = response.json();
+  //         setError(errorData.error);
+  //         setIsLoading(true);
+  //       });
+  //   } catch (error) {
+  //     setError("Failed to fetch posts entries.");
+  //     console.error("Error fetching posts:", error);
+  //   }
+  // };
 
-  useEffect(() => {
-    getUser();
-  }, [isLoading]);
-  
+  // useEffect(() => {
+  //   getUser();
+  // }, [isLoading]);
+
   const [isSearch, setIsSearch] = useState(false);
   const [searchValue, setSearchValue] = useState("");
 
@@ -62,7 +63,7 @@ export default function Heading() {
   };
 
   return (
-    <div className="fixed bg-galaxy-2 w-full h-16 z-50 top-0">
+    <div className="fixed bg-galaxy-2 w-full h-16 z-50 top-0 border-b">
       <div className="flex justify-between items-center h-16">
         <div className="flex items-center">
           <Link href="/">
@@ -76,7 +77,10 @@ export default function Heading() {
             />
           </Link>
           <div className="relative">
-            <form className="flex justify-between items-center" onSubmit={(e) => handleSubmitSearch(e)}>
+            <form
+              className="flex justify-between items-center"
+              onSubmit={(e) => handleSubmitSearch(e)}
+            >
               {isSearch && (
                 <input
                   type="text"
@@ -91,7 +95,7 @@ export default function Heading() {
                     width={20}
                     height={20}
                     icon={faMagnifyingGlass}
-                    className={`absolute ${isSearch ? "right-3" : "right-[-3]"} text-red-200 md:text-white top-2/4 -translate-y-2/4 cursor-pointer`}
+                    className={`absolute ${isSearch ? "right-3" : "right-[-3]"} text-[#001F3F] font-medium md:text-white top-2/4 -translate-y-2/4 cursor-pointer`}
                   />
                 </button>
               ) : (
@@ -100,7 +104,7 @@ export default function Heading() {
                   height={20}
                   icon={faMagnifyingGlass}
                   onClick={handleIsSearch}
-                  className={`absolute ${isSearch ? "right-3" : "right-[-3]"} text-red-200 md:text-slate-500 top-2/4 -translate-y-2/4 cursor-pointer`}
+                  className={`absolute ${isSearch ? "right-3" : "right-[-3]"} text-[#001F3F] font-medium md:text-slate-500 top-2/4 -translate-y-2/4 cursor-pointer`}
                 />
               )}
             </form>
@@ -109,7 +113,7 @@ export default function Heading() {
         <div className="absolute left-2/4 translate-x-[-50%] flex justify-center items-center lg:w-[40%] w-[28%]">
           <Link
             href="/"
-            className="flex flex-col justify-center items-center w-[20%] cursor-pointer text-xl md:py-[22px] md:px-3 lg:py-2 py-[22px] hover:bg-blue-400 text-red-200 transition-all"
+            className="flex flex-col justify-center items-center w-[20%] cursor-pointer text-xl md:py-[22px] md:px-3 lg:py-2 py-[22px] hover:bg-[#F5F5DC] text-[#001F3F] font-medium transition-all"
           >
             <FontAwesomeIcon
               className=""
@@ -119,21 +123,9 @@ export default function Heading() {
             />
             <p className="hidden lg:block lg:text-lg md:text-base">Trang chủ</p>
           </Link>
-          {/* <Link
-            href="/shorts"
-            className="flex flex-col justify-center items-center w-[20%] cursor-pointer text-xl md:py-[22px] md:px-3 lg:py-2 py-[22px] hover:bg-blue-400 text-red-200"
-          >
-            <FontAwesomeIcon
-              className=""
-              icon={faVideo}
-              width={20}
-              height={20}
-            />
-            <p className="hidden lg:block lg:text-lg md:text-base">Shorts</p>
-          </Link> */}
           <Link
             href="/diary"
-            className="flex flex-col justify-center items-center w-[20%] cursor-pointer text-xl md:py-[22px] md:px-3 lg:py-2 py-[22px] hover:bg-blue-400 text-red-200 transition-all"
+            className="flex flex-col justify-center items-center w-[20%] cursor-pointer text-xl md:py-[22px] md:px-3 lg:py-2 py-[22px] hover:bg-[#F5F5DC] text-[#001F3F] font-medium transition-all"
             title="Thêm nhật ký"
           >
             <FontAwesomeIcon
@@ -146,7 +138,7 @@ export default function Heading() {
           </Link>
           <Link
             href="/news"
-            className="flex flex-col justify-center items-center w-[20%] cursor-pointer text-xl md:py-[22px] md:px-3 lg:py-2 py-[22px] hover:bg-blue-400 text-red-200 transition-all"
+            className="flex flex-col justify-center items-center w-[20%] cursor-pointer text-xl md:py-[22px] md:px-3 lg:py-2 py-[22px] hover:bg-[#F5F5DC] text-[#001F3F] font-medium transition-all"
           >
             <FontAwesomeIcon
               className=""
@@ -158,7 +150,7 @@ export default function Heading() {
           </Link>
           <Link
             href="/friends"
-            className="flex flex-col justify-center items-center w-[20%] cursor-pointer text-xl md:py-[22px] md:px-3 lg:py-2 py-[22px] hover:bg-blue-400 text-red-200 transition-all"
+            className="flex flex-col justify-center items-center w-[20%] cursor-pointer text-xl md:py-[22px] md:px-3 lg:py-2 py-[22px] hover:bg-[#F5F5DC] text-[#001F3F] font-medium transition-all"
           >
             <FontAwesomeIcon
               className=""
@@ -171,7 +163,7 @@ export default function Heading() {
         </div>
 
         <ul className="flex">
-          {user && !isLoading ? (
+          {user ? (
             <div className="flex items-center">
               <Link href="profile" className="flex items-center">
                 <li className={``}>
@@ -190,7 +182,11 @@ export default function Heading() {
                   {user.username}
                 </span>
               </Link>
-              <Link href="login" className="mx-3 font-semibold text-white" onClick={logout}>
+              <Link
+                href="login"
+                className="mx-3 font-semibold text-white"
+                onClick={logout}
+              >
                 Đăng xuất
               </Link>
             </div>

@@ -1,14 +1,15 @@
-import { faClose, faPaperPlane } from "@fortawesome/free-solid-svg-icons";
+import { faClose, faPaperPlane, faWarning } from "@fortawesome/free-solid-svg-icons";
 import { faHeart, faCommentDots } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useReplyPost } from "../utils/replyPost";
 import Image from "next/image";
-import { useAuth } from "./auth";
+import { useGlobal } from "./global_context";
 import { useState, useEffect, useRef } from "react";
+import LoadingPage from "./custom/loading-page";
 
 export default function GetPosts({}) {
-  const [posts, setPosts] = useState([]);
-  const [users, setUsers] = useState([]);
+  // const [posts, setPosts] = useState([]);
+  // const [users, setUsers] = useState([]);
   const [currentTime, setCurrentTime] = useState(Date.now());
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(true);
@@ -18,55 +19,57 @@ export default function GetPosts({}) {
   const messageToReplyRef = useRef();
 
   const { loading, handleReplyPost } = useReplyPost();
-  const { userId } = useAuth();
+  const { userId } = useGlobal();
+  const { users } = useGlobal();
+  const { postsOfUser } = useGlobal();
 
-  const getUsers = async () => {
-    try {
-      const response = await fetch(`/api/users/get`, {
-        method: "GET",
-      });
+  // const getUsers = async () => {
+  //   try {
+  //     const response = await fetch(`/api/users/get`, {
+  //       method: "GET",
+  //     });
 
-      if (response.ok) {
-        const entries = await response.json();
-        setUsers(entries);
-      } else {
-        const errorData = await response.json();
-        setError(errorData.error);
-      }
-      setIsLoading(false);
-    } catch (error) {
-      setError("Failed to fetch posts entries.");
-      console.error("Error fetching posts:", error);
-      setIsLoading(false);
-    }
-  };
+  //     if (response.ok) {
+  //       const entries = await response.json();
+  //       setUsers(entries);
+  //     } else {
+  //       const errorData = await response.json();
+  //       setError(errorData.error);
+  //     }
+  //     setIsLoading(false);
+  //   } catch (error) {
+  //     setError("Failed to fetch posts entries.");
+  //     console.error("Error fetching posts:", error);
+  //     setIsLoading(false);
+  //   }
+  // };
 
-  useEffect(() => {
-    getUsers();
-  }, [userId]);
+  // useEffect(() => {
+  //   getUsers();
+  // }, [userId]);
 
-  const fetchPosts = async () => {
-    try {
-      const response = await fetch(`/api/posts/get?userId=${userId}`, {
-        method: "GET",
-      });
+  // const fetchPosts = async () => {
+  //   try {
+  //     const response = await fetch(`/api/posts/get?userId=${userId}`, {
+  //       method: "GET",
+  //     });
 
-      if (response.ok) {
-        const entries = await response.json();
-        setPosts(entries);
-      } else {
-        const errorData = await response.json();
-        setError(errorData.error);
-      }
-    } catch (error) {
-      setError("Failed to fetch posts entries.");
-      console.error("Error fetching posts:", error);
-    }
-  };
+  //     if (response.ok) {
+  //       const entries = await response.json();
+  //       setPosts(entries);
+  //     } else {
+  //       const errorData = await response.json();
+  //       setError(errorData.error);
+  //     }
+  //   } catch (error) {
+  //     setError("Failed to fetch posts entries.");
+  //     console.error("Error fetching posts:", error);
+  //   }
+  // };
 
-  useEffect(() => {
-    fetchPosts();
-  }, [userId]);
+  // useEffect(() => {
+  //   fetchPosts();
+  // }, [userId]);
 
   const openModal = (image) => {
     setModalImage(image);
@@ -154,141 +157,157 @@ export default function GetPosts({}) {
     }
   }, [activeReplyPostId]);
 
+  console.log(postsOfUser);
+
   return (
     <div className="">
-      {posts
-        .sort((a, b) => b.timestamp - a.timestamp)
-        .map((post) => {
-          const user = users.find((user) => user.uid === post.userId);
-          const isLiked = post.likes.some((like) => like.userId === userId);
-          return (
-            <div
-              key={post._id}
-              className="card flex flex-col border rounded-md my-6 sm:w-full overflow-hidden"
-            >
-              <div className="flex justify-between mb-5 border-b px-2 py-3">
-                <div className="flex flex-col" title={user && user.username}>
-                  <div className="flex">
-                    <Image
-                      src={user ? user.avatar : "/images/defaultavatar.jpg"}
-                      alt="avatarUser"
-                      className="rounded-full mr-3 w-8 h-8 object-cover"
-                      width={30}
-                      height={30}
-                      loading="lazy"
-                    />
-                    <p className="text-xl font-semibold text-white">
-                      {user ? user.username : "Unknown User"}
-                    </p>{" "}
-                    <br />
-                  </div>
-                  <p className="text-xs mt-3 text-white">
-                    {timeAgo(post.timestamp)}
-                  </p>
-                </div>
-              </div>
-              <div className="border-b mb-2 pb-5 px-3">
-                <div className="mb-2 text-lg font-semibold text-white">
-                  {post.content}
-                </div>
-                {post.image && (
-                  <Image
-                    src={post.image ? post.image : "/images/defaultavatar.jpg"}
-                    alt="imageOfPost"
-                    className="w-full block cursor-pointer transition-transform hover:scale-[1.2]"
-                    width={100}
-                    height={100}
-                    onClick={() => openModal(post.image)}
-                    // loading="lazy"
-                  />
-                )}
-              </div>
-
-              {modalImage && (
-                <div
-                  className="fixed inset-x-[-116%] inset-y-custom-modal pt-40 flex items-center justify-center bg-black bg-opacity-30 z-[100] cursor-pointer"
-                  onClick={closeModal}
-                >
-                  <img
-                    src={modalImage}
-                    alt="Modal Preview"
-                    className="max-[50%] max-h-[50%] rounded"
-                    onClick={(e) => e.stopPropagation()}
-                    // loading="lazy"
-                  />
-                  <FontAwesomeIcon
-                    width={18}
-                    height={18}
-                    icon={faClose}
-                    className="absolute text-white z-[100] text-2xl top-0 right-3 cursor-pointer"
-                  />
-                </div>
-              )}
-
-              <div className="flex flex-col">
-                <div className="flex items-center mb-2">
-                  <div
-                    id={`like_of_${post._id}`}
-                    className={`cursor-pointer w-fit px-2 text-xl ${isLiked ? "text-red-500" : "text-white"}`}
-                    onClick={() => handleLike(post._id)}
-                  >
-                    <FontAwesomeIcon icon={faHeart} width={20} height={20} />
-                  </div>
-                  <div className="text-base text-white font-light">
-                    {post.likes.length}
-                  </div>
-                  {userId !== post.userId && (
-                    <div
-                      className={`cursor-pointer w-fit px-2 text-xl`}
-                      onClick={() => toggleReply(post._id)}
-                    >
-                      <FontAwesomeIcon
-                        icon={faCommentDots}
-                        width={20}
-                        height={20}
-                        className="text-white"
+      {postsOfUser && Array.isArray(postsOfUser) && postsOfUser.length > 0 ? (
+        postsOfUser
+          .sort((a, b) => b.timestamp - a.timestamp)
+          .map((post) => {
+            const user = users.find((user) => user.uid === post.userId);
+            const isLiked = post.likes.some((like) => like.userId === userId);
+            return (
+              <div
+                key={post._id}
+                className="card flex flex-col border rounded-md my-6 sm:w-full overflow-hidden"
+              >
+                <div className="flex justify-between mb-5 border-b px-2 py-3">
+                  <div className="flex flex-col" title={user && user.username}>
+                    <div className="flex">
+                      <Image
+                        src={user ? user.avatar : "/images/defaultavatar.jpg"}
+                        alt="avatarUser"
+                        className="rounded-full mr-3 w-8 h-8 object-cover"
+                        width={30}
+                        height={30}
+                        loading="lazy"
                       />
+                      <p className="text-xl font-semibold text-[#001F3F]">
+                        {user ? user.username : "Unknown User"}
+                      </p>{" "}
+                      <br />
                     </div>
+                    <p className="text-xs mt-3 text-[#001F3F]">
+                      {timeAgo(post.timestamp)}
+                    </p>
+                  </div>
+                </div>
+                <div className="border-b mb-2 pb-5 px-3">
+                  <div className="mb-2 text-lg font-semibold text-[#001F3F]">
+                    {post.content}
+                  </div>
+                  {post.image && (
+                    <Image
+                      src={
+                        post.image ? post.image : "/images/defaultavatar.jpg"
+                      }
+                      alt="imageOfPost"
+                      className="w-full block cursor-pointer transition-transform hover:scale-[1.2]"
+                      width={100}
+                      height={100}
+                      onClick={() => openModal(post.image)}
+                      // loading="lazy"
+                    />
                   )}
-                  {activeReplyPostId === post._id && (
-                    <form
-                      className="relative ml-3 border rounded-lg  overflow-hidden"
-                      onSubmit={(e) => {
-                        e.preventDefault();
-                        handleReplyPost({
-                          postId: post._id,
-                          userIdOwnPost: post.userId,
-                          messageToReply: messageToReplyRef.current.value,
-                        });
-                        toggleReply(post._id);
-                        messageToReplyRef.current.value = "";
-                      }}
+                </div>
+
+                {modalImage && (
+                  <div
+                    className="fixed inset-x-[-116%] inset-y-custom-modal pt-40 flex items-center justify-center bg-black bg-opacity-30 z-[100] cursor-pointer"
+                    onClick={closeModal}
+                  >
+                    <img
+                      src={modalImage}
+                      alt="Modal Preview"
+                      className="max-[50%] max-h-[50%] rounded"
+                      onClick={(e) => e.stopPropagation()}
+                      // loading="lazy"
+                    />
+                    <FontAwesomeIcon
+                      width={18}
+                      height={18}
+                      icon={faClose}
+                      className="absolute text-white z-[100] text-2xl top-0 right-3 cursor-pointer"
+                    />
+                  </div>
+                )}
+
+                <div className="flex flex-col">
+                  <div className="flex items-center mb-2">
+                    <div
+                      id={`like_of_${post._id}`}
+                      className={`cursor-pointer w-fit px-2 text-xl ${isLiked ? "text-red-500" : "text-[#001F3F]"}`}
+                      onClick={() => handleLike(post._id)}
                     >
-                      <input
-                        type="text"
-                        name="replyMessage"
-                        className="relative outline-none px-2 py-1 w-[80%]"
-                        placeholder="Trả lời tin"
-                        ref={messageToReplyRef}
-                      />
-                      <button
-                        className="absolute top-2/4 translate-y-[-50%] right-2"
-                        type="submit"
+                      <FontAwesomeIcon icon={faHeart} width={20} height={20} />
+                    </div>
+                    <div className="text-base text-[#001F3F] font-[400]">
+                      {post.likes.length}
+                    </div>
+                    {userId !== post.userId && (
+                      <div
+                        className={`cursor-pointer w-fit px-2 text-xl`}
+                        onClick={() => toggleReply(post._id)}
                       >
                         <FontAwesomeIcon
-                          icon={faPaperPlane}
-                          width={18}
-                          height={18}
-                          className="text-white"
+                          icon={faCommentDots}
+                          width={20}
+                          height={20}
+                          className="text-[#001F3F]"
                         />
-                      </button>
-                    </form>
-                  )}
+                      </div>
+                    )}
+                    {activeReplyPostId === post._id && (
+                      <form
+                        className="relative ml-3 border rounded-full  overflow-hidden"
+                        onSubmit={(e) => {
+                          e.preventDefault();
+                          handleReplyPost({
+                            postId: post._id,
+                            userIdOwnPost: post.userId,
+                            messageToReply: messageToReplyRef.current.value,
+                          });
+                          toggleReply(post._id);
+                          messageToReplyRef.current.value = "";
+                        }}
+                      >
+                        <input
+                          type="text"
+                          name="replyMessage"
+                          className="inputSearch relative outline-none px-2 py-1 w-[80%]"
+                          placeholder="Trả lời tin"
+                          ref={messageToReplyRef}
+                        />
+                        <button
+                          className="absolute top-2/4 translate-y-[-50%] right-2"
+                          type="submit"
+                        >
+                          <FontAwesomeIcon
+                            icon={faPaperPlane}
+                            width={18}
+                            height={18}
+                            className="text-white"
+                          />
+                        </button>
+                      </form>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })
+      ) : userId ? (
+        <div className="flex justify-center items-center">
+          <LoadingPage />
+        </div>
+      ) : (
+        <div className="fixed flex flex-col items-center left-2/4 translate-x-[-50%] w-full text-2xl text-white font-bold">
+          <FontAwesomeIcon icon={faWarning} width={30} height={30} className="text-yellow-400 mb-4"/>
+          Vui lòng đăng nhập!
+        </div>
+      )}
+
       <div className="mb-16"></div>
     </div>
   );

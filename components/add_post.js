@@ -1,9 +1,9 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus, faClose, faImage } from "@fortawesome/free-solid-svg-icons";
+import { faClose, faImage } from "@fortawesome/free-solid-svg-icons";
 import { useState, useRef } from "react";
 import Confetti from "react-confetti";
 import Button from "./custom/button";
-import { useAuth } from "./auth";
+import { useGlobal } from "./global_context";
 import ButtonAdd from "./custom/button-add";
 
 export default function AddPost({}) {
@@ -14,10 +14,11 @@ export default function AddPost({}) {
   const [visibility, setVisibility] = useState("friends");
   const [error, setError] = useState();
   const contentPostRef = useRef();
-  const { userId } = useAuth();
+  const { userId } = useGlobal();
 
   const handleSubmitPost = async (e) => {
     e.preventDefault();
+
     const newPost = {
       userId: userId,
       content: contentPostRef.current.value,
@@ -27,6 +28,7 @@ export default function AddPost({}) {
       timestamp: Date.now(),
     };
 
+    console.log(newPost);
     try {
       if (selectedImage) {
         const uploadResponse = await fetch("/api/upload", {
@@ -61,6 +63,22 @@ export default function AddPost({}) {
         } else {
           console.error("Error uploading image:", uploadData.error);
           setError(uploadData.error);
+        }
+      } else {
+        const postResponse = await fetch("/api/posts/post", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(newPost),
+        });
+
+        if (postResponse.ok) {
+          setIsPost(!isPost);
+          setIsPostSuccess(true);
+        } else {
+          setError(postResponse.json());
+          console.error("Error sending post:", await postResponse.json());
         }
       }
     } catch (error) {
@@ -109,7 +127,7 @@ export default function AddPost({}) {
   return (
     <div className="mobile-w-full relative flex justify-center">
       {isPostSuccess && (
-        <div className="absolute top-2/4 w-[370px] h-[140px] border shadow-md bg-white rounded-lg px-3 py-3 z-[10000]">
+        <div className="bg-galaxy-2 absolute top-2/4 w-[370px] h-[140px] border shadow-md text-white rounded-lg px-3 py-3 z-[10000]">
           <p className="font-bold text-xl">
             Bài viết đã có mặt tại CheeseNet! ❤️
           </p>
@@ -133,20 +151,19 @@ export default function AddPost({}) {
                 title="Thêm bài viết"
                 onClick={(e) => setIsPost(!isPost)}
               >
-                {/* <p className="hidden md:block">Đăng bài</p> */}
                 <ButtonAdd />
               </div>
             </div>
           )}
 
           {isPost && (
-            <div className="relative flex flex-col justify-between border rounded-md sm:m-5 mt-5 pr-2 sm:pr-6 pb-16 pt-6 z-[102] bg-galaxy-2-2">
+            <div className="relative flex flex-col justify-between border rounded-md sm:m-5 mt-5 pr-2 sm:pr-6 pb-16 pt-6 z-[102] bg-galaxy-2">
               <form className="" onSubmit={(e) => handleSubmitPost(e)}>
                 <textarea
                   ref={contentPostRef}
                   rows="2"
-                  className="bg-galaxy-2-2 lg:w-[325px] md:w-[246px] w-full overflow-auto text-left p-2 outline-neutral-400 resize-none text-white font-normal"
-                  placeholder="Này hôm nay của bạn ra sao? Nếu không có ý tưởng hãy thử Chatbox AI."
+                  className="bg-galaxy-2 lg:w-[325px] md:w-[246px] w-full overflow-auto text-left p-2 outline-neutral-400 resize-none text-black font-normal border"
+                  placeholder="Ngày hôm nay của bạn ra sao? Nếu không có ý tưởng hãy thử Chatbox AI."
                   onKeyDown={(e) => {
                     if (e.key === "Enter" && e.ctrlKey) {
                       e.preventDefault();
@@ -157,18 +174,18 @@ export default function AddPost({}) {
 
                 <div className="absolute bottom-8 left-10 ">
                   <select
-                    className="block appearance-none w-full bg-galaxy text-white font-bold py-2 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-blue-300 cursor-pointer"
+                    className="block appearance-none w-full bg-galaxy text-[#001F3F] font-bold py-2 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-blue-300 cursor-pointer"
                     value={visibility}
                     onChange={(e) => setVisibility(e.target.value)}
                   >
                     <option
-                      className="bg-galaxy-3 py-2 cursor-pointer"
+                      className="py-2 cursor-pointer"
                       value="public"
                     >
                       Công khai
                     </option>
                     <option
-                      className="bg-galaxy-3 py-2 cursor-pointer"
+                      className="py-2 cursor-pointer"
                       value="friends"
                     >
                       Bạn bè

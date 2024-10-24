@@ -5,7 +5,7 @@ import Layout from "../../components/layout";
 
 const SearchPage = () => {
   const router = useRouter();
-  const { query } = router.query; // Lấy giá trị query
+  const { query } = router.query; 
 
   const [user, setUser] = useState(null);
   const [error, setError] = useState(null);
@@ -42,15 +42,15 @@ const SearchPage = () => {
         <link rel="icon" href="/icon.png"/>
       </Head>
       {error && <p>{error}</p>}
-      <h1 className="absolute top-[64px] left-[50%] translate-x-[-50%] text-2xl font-bold text-white">
-        Kết quả tìm kiếm cho: <span className="text-blue-500">{query}</span>
+      <h1 className="absolute top-[64px] mt-3 left-[50%] translate-x-[-50%] text-2xl font-bold text-[#001F3F]">
+        Kết quả tìm kiếm cho: <span className="text-yellow-400">{query}</span>
       </h1>
       {user ? (
-        <div className="relative top-32 w-[40%] left-[100%] translate-x-[-175%] h-fit mb-36 duration-300  text-white group cursor-pointer bg-[#DCDFE4] dark:bg-[#22272B] rounded-3xl p-4 hover:bg-blue-200 hover:dark:bg-[#0C66E4]">
+        <div className="relative top-32 w-[40%] left-[100%] translate-x-[-175%] h-fit mb-36 duration-300  text-[#001F3F] group cursor-pointer bg-[#ccdf7b] dark:bg-[#22272B] rounded-3xl p-4 hover:bg-[#e6ff78] hover:dark:bg-[#0C66E4]">
           <div className="w-[100%] flex flex-col justify-center items-center">
             <div>
               <div className="flex justify-between items-center">
-                <h1 className="text-3xl font-bold text-pink-300 my-4">
+                <h1 className="text-3xl font-bold text-[#001F3F] my-4">
                   Thông tin cá nhân
                 </h1>
               </div>
@@ -72,7 +72,7 @@ const SearchPage = () => {
               <div className="flex flex-col">
                 <div className="flex flex-col py-2 relative">
                   <p className="mb-3">Ảnh đại diện</p>
-                  <div className="relative w-60 h-60 object-cover cursor-pointer rounded-full overflow-hidden">
+                  <div className="relative w-60 h-60 object-cover cursor-pointer rounded-full overflow-hidden flex justify-center">
                     <img src={user.avatar} alt="Preview" className="" />
                   </div>
                 </div>

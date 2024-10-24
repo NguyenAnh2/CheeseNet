@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { database } from "../firebase/firebaseConfig";
 import { ref, child, push, set } from "firebase/database";
-import { useAuth } from "../components/auth";
+import { useGlobal } from "../components/global_context";
 
 export const useReplyPost = () => {
   const [loading, setLoading] = useState(false);
-  const { userId } = useAuth();
+  const { userId } = useGlobal();
 
   const handleReplyPost = async ({ postId, userIdOwnPost, messageToReply }) => {
     setLoading(true);

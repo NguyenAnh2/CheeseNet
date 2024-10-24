@@ -5,11 +5,11 @@ import {
   createUserWithEmailAndPassword,
   sendEmailVerification,
 } from "../../firebase/firebaseConfig";
-import Head from "next/head";
 import Link from "next/link";
 import styles from "../../pages/signup/SignUp.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye } from "@fortawesome/free-solid-svg-icons";
+import RandomImageBackground from "./custom_bg";
 
 const SignUp = () => {
   const [email, setEmail] = useState("");
@@ -89,6 +89,7 @@ const SignUp = () => {
 
   return (
     <div className="flex justify-center items-center mt-16 ">
+      <RandomImageBackground />
       <form className={styles.form} onSubmit={handleRegister}>
         <p className={styles.title}>Đăng ký </p>
         <p className={styles.message}>

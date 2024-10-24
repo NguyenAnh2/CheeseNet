@@ -1,18 +1,18 @@
 import React from "react";
 import { useState, useEffect } from "react";
-import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useAuth } from "../../components/auth";
+import { useGlobal } from "../../components/global_context";
 import { sendPasswordResetEmail } from "firebase/auth";
 import { auth } from "../../firebase/firebaseConfig";
 import styles from "../../pages/signup/SignUp.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye } from "@fortawesome/free-solid-svg-icons";
+import RandomImageBackground from "./custom_bg";
 
 const SignIn = () => {
   const router = useRouter();
-  const { login } = useAuth();
+  const { login } = useGlobal();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -94,6 +94,7 @@ const SignIn = () => {
 
   return (
     <div className="flex justify-center items-center mt-16 ">
+      <RandomImageBackground />
       <form className={styles.form} onSubmit={handleLogin}>
         <p className={styles.title}>Đăng nhập </p>
         <p className={styles.message}>Đăng nhập và trải nghiệm ứng dụng</p>

@@ -1,6 +1,5 @@
 import Image from "next/image";
-import { useState, useEffect } from "react";
-import { useAuth } from "./auth";
+import { useState, useEffect, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight, faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 
@@ -19,17 +18,43 @@ export default function SideLeft({ users, user, clickOpenMess }) {
     setIsOpenLeft(!isOpenLeft);
   };
 
+  const sideLefttRef = useRef(null);
+
+  // Sự kiện đóng khi click bên ngoài SideRight
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      // Kiểm tra nếu bấm ra ngoài SideRight và SideRight đang mở
+      if (
+        sideLefttRef.current &&
+        !sideLefttRef.current.contains(event.target) &&
+        isOpenLeft
+      ) {
+        setIsOpenLeft(false);
+      }
+    };
+
+    // Thêm event listener khi click vào tài liệu
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      // Loại bỏ sự kiện khi component unmount
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isOpenLeft]);
+
   const liStyles =
     "flex items-center py-3 pl-3 text-sm hover:bg-blue-400 cursor-pointer select-none text-sm rounded";
   return (
-    <div className="relative z-10">
+    <div className="relative z-10" ref={sideLefttRef}>
       <div
         className={` bg-galaxy-2 sm:fixed sm:flex lg:w-80 md:w-60 sm:w-[190px] sm:z-0 flex-col fixed top-[64px] max-w-[500px] w-[60%] h-[calc(100vh-64px)] overflow-y-auto pl-4 left-0 bottom-0 border-r bg-white transition-all duration-300 ease-in-out transform ${
           isOpenLeft ? "translate-x-0" : "-translate-x-full"
         }`}
       >
         <div className="flex justify-between items-center my-3 border-b pb-2">
-          <p className="text-lg font-semibold text-white">Danh sách bạn bè</p>
+          <p className="text-lg font-semibold text-[#001F3F]">
+            Danh sách bạn bè
+          </p>
         </div>
         <ul>
           {filterUsers &&
@@ -51,7 +76,7 @@ export default function SideLeft({ users, user, clickOpenMess }) {
                     alt={user.username ? user.name : "ccc"}
                     loading="lazy"
                   />
-                  <p className="text-base text-white font-medium">
+                  <p className="text-base text-[#001F3F] font-medium">
                     {user.username}
                   </p>
                 </li>

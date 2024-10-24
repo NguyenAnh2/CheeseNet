@@ -2,7 +2,7 @@ import Layout from "../../components/layout";
 import TabBar from "../../components/custom/tabbar";
 import Head from "next/head";
 import Confetti from "react-confetti";
-import { useAuth } from "../../components/auth";
+import { useGlobal } from "../../components/global_context";
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import CryptoJS from "crypto-js";
 import crypto from "crypto";
@@ -11,7 +11,7 @@ import { faWarning } from "@fortawesome/free-solid-svg-icons";
 import Button from "../../components/custom/button";
 
 export default function Diary() {
-  const [user, setUser] = useState([]);
+  // const [user, setUser] = useState([]);
   const [isMatchPassword, setIsMatchPassword] = useState(false);
   const [isDiarySuccess, setIsDiarySuccess] = useState(false);
   const [diaryEntries, setDiaryEntries] = useState([]);
@@ -23,24 +23,25 @@ export default function Diary() {
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const contentDiaryRef = useRef();
-  const { userId } = useAuth();
+  const { userId } = useGlobal();
+  const { user } = useGlobal();
 
-  const getUser = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const res = await fetch(`/api/users/get?uid=${userId}`);
-      const data = await res.json();
-      setUser(data);
-    } catch (error) {
-      setError("Failed to fetch user data.");
-    } finally {
-      setIsLoading(false);
-    }
-  }, [userId]);
+  // const getUser = useCallback(async () => {
+  //   setIsLoading(true);
+  //   try {
+  //     const res = await fetch(`/api/users/get?uid=${userId}`);
+  //     const data = await res.json();
+  //     setUser(data);
+  //   } catch (error) {
+  //     setError("Failed to fetch user data.");
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // }, [userId]);
 
-  useEffect(() => {
-    if (userId) getUser();
-  }, [userId, getUser]);
+  // useEffect(() => {
+  //   if (userId) getUser();
+  // }, [userId, getUser]);
 
   function hashPassword(password) {
     return CryptoJS.SHA256(password).toString();
@@ -229,20 +230,23 @@ export default function Diary() {
   return (
     <Layout>
       <Head>
-        <title>Nhập ký</title>
+        <title>Nhật ký</title>
         <link rel="icon" href="/icon.png" />
       </Head>
 
       <TabBar />
 
       {isMatchPassword && (
-        <div className="relative top-[50%] w-full flex flex-col justify-center items-center">
-          <div className="relative bg-galaxy-2 top-[120px] flex flex-col w-[80%] justify-between border rounded-md sm:m-5 mt-32 pr-2 sm:pr-6 pb-8 pt-6 bg-white">
-            <form className="bg-galaxy-2" onSubmit={(e) => handleSubmitDiary(e)}>
+        <div className="relative  w-full flex flex-col justify-center items-center">
+          <div className="relative bg-galaxy-2 top-[120px] flex flex-col w-[80%] justify-between border rounded-md sm:m-5 mt-32 pr-2 sm:pr-6 pb-8 pt-6 ">
+            <form
+              className="bg-galaxy-2"
+              onSubmit={(e) => handleSubmitDiary(e)}
+            >
               <textarea
                 ref={contentDiaryRef}
                 rows="2"
-                className="bg-galaxy-2 w-full overflow-auto text-left p-2 outline-none text-white text-lg font-medium resize-none"
+                className="bg-galaxy-2 outline border w-full overflow-auto text-left p-2 outline-none text-black text-lg font-medium resize-none rounded-e-md"
                 placeholder="Cùng lưu lại một chút câu chuyện! Yên tâm là không ai có thể đọc chúng. &#x1F609;"
                 onKeyDown={(e) => {
                   if (e.key === "Enter" && e.ctrlKey) {
@@ -251,8 +255,11 @@ export default function Diary() {
                   }
                 }}
               />
-              <div className="absolute right-2 bottom-2" onSubmit={handleSubmitDiary}>
-                <Button text={'Gửi'}/>
+              <div
+                className="absolute right-2 bottom-2"
+                onSubmit={handleSubmitDiary}
+              >
+                <Button text={"Gửi"} />
               </div>
             </form>
           </div>
@@ -285,11 +292,11 @@ export default function Diary() {
       )}
 
       {!isMatchPassword && user && (
-        <div className="absolute top-[-100%] right-0 bottom-0 left-0 bg-black opacity-80">
+        <div className="absolute top-[-100%] right-0 bottom-0 left-0">
           {!isLoading && !user.diary_password ? (
             <div className="">
               <div className="fixed top-[20%] left-2/4 translate-x-[-50%] flex justify-center items-center flex-col">
-                <p className="text-black font-bold text-3xl mb-3">
+                <p className="text-white font-bold text-3xl mb-3">
                   Tạo password:
                 </p>
                 <div className="flex">
@@ -306,7 +313,7 @@ export default function Diary() {
                     />
                   ))}
                 </div>
-                <p className="text-black font-bold text-3xl mb-3 mt-5">
+                <p className="text-white font-bold text-3xl mb-3 mt-5">
                   Nhập lại password:
                 </p>
                 <div className="flex">
@@ -340,9 +347,9 @@ export default function Diary() {
               </div>
             </div>
           ) : (
-            <div className="absolute top-[-100%] right-0 bottom-0 left-0 bg-slate-800 opacity-65">
+            <div className="absolute top-[-100%] right-0 bottom-0 left-0 ">
               <div className="fixed top-[20%] left-2/4 translate-x-[-50%] flex justify-center items-center flex-col">
-                <p className="text-black font-bold text-3xl mb-3">
+                <p className="text-white font-bold text-3xl mb-3">
                   Nhập password:
                 </p>
                 <div className="flex">

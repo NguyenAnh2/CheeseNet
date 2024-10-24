@@ -34,7 +34,7 @@ export default function GetRSS({ feed }) {
       <Sidebar />
       <div className="flex justify-center items-center flex-col relative left-2/4 -translate-x-2/4 sm:w-[40%] w-[90%]">
         <div>
-          <h1 className="text-2xl font-bold flex justify-center items-center my-4">
+          <h1 className="text-2xl font-bold flex justify-center items-center my-4 text-white">
             The New York Times
           </h1>
           <ul className="w-full">
@@ -42,9 +42,9 @@ export default function GetRSS({ feed }) {
               feed.items.map((item) => (
                 <li
                   key={item.link}
-                  className="my-3 border rounded-md bg-white shadow-md w-full h-fit px-3 py-5 hover:opacity-85 flex flex-col"
+                  className="my-3 border rounded-md bg-galaxy-2 shadow-md w-full h-fit px-3 py-5 hover:opacity-85 flex flex-col"
                 >
-                  <h2 className="font-bold text-xl mb-2">{item.title}</h2>
+                  <h2 className="font-bold text-xl mb-2 text-[#001F3F]">{item.title}</h2>
                   {item['media:content'] && item['media:content'].url && (
                     <img
                       className="mx-3 mb-2"

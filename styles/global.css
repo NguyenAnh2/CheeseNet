@@ -281,11 +281,11 @@ img {
 
 /* BUTTON */
 .btn {
-  --border-color: linear-gradient(-45deg, #ffae00, #7e03aa, #00fffb);
+  --border-color: linear-gradient(-45deg, #ffae00, #b0db4b, #70fffd);
   --border-width: 0.125em;
   --curve-size: 0.5em;
   --blur: 30px;
-  --bg: #080312;
+  --bg: #001F3F;
   --color: #afffff;
   color: var(--color);
   cursor: pointer;
@@ -297,7 +297,6 @@ img {
   padding: 0.2em 1.3em;
   font-size: 14px;
   border: 0;
-  text-transform: uppercase;
   box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.6);
   clip-path: polygon(
     /* Top-left */ 0% var(--curve-size),
@@ -385,36 +384,34 @@ img {
   height: 40px;
   padding: 10px;
   /* text-align: center; */
-  border: 2px solid white;
+  border: 2px solid lightyellow;
   border-radius: 9999px;
   /* box-shadow: 3px 3px 2px rgb(249, 255, 85); */
 }
 
 .inputSearch:focus {
-  color: rgb(0, 255, 255);
+  color: #FFD700;
   background-color: #212121;
-  outline-color: rgb(0, 255, 255);
-  box-shadow: -3px -3px 15px rgb(0, 255, 255);
+  outline-color: #FFD700;
+  box-shadow: -3px -3px 15px #FFD700;
   transition: 0.1s;
   transition-property: box-shadow;
 }
 
 /* CARD */
-/* From Uiverse.io by Tiagoadag */ 
-/* From Uiverse.io by adamgiebl */ 
 .card {
   /* width: 190px; */
   height: fit-content;
   border-radius: 20px;
   padding: 5px;
   box-shadow: rgba(151, 65, 252, 0.2) 0 15px 30px -5px;
-  background-image: linear-gradient(144deg,#AF40FF, #5B42F3 50%,#00DDEB); 
+  background-image: linear-gradient(144deg,#e9ff85, #8c974e 50%,#fffb24); 
   background-size: 300% 300%;
   transition: background-position 0.5s ease;
 }
 
 .card:hover {
-  animation: gradientAnimation 2s ease infinite;
+  animation: gradientAnimation 4s ease infinite;
 }
 
 .card__content {
@@ -426,13 +423,13 @@ img {
 
  /* BACKGROUND GALAXY*/
 .bg-galaxy-2 {
-  background: linear-gradient(120deg, #2b2d42, #8d99ae, #979797);
+  background: linear-gradient(120deg, #FFF9B0, #ebd978, #f0c77a);
 }
 .bg-galaxy-2-2 {
-  background: linear-gradient(135deg, #2b2d42, #8d99ae, #696969);
+  background: linear-gradient(135deg, #2b2d42, #c1ce82, #c8e03d);
 }
 .bg-galaxy-3 {
-  background: linear-gradient(-120deg, #bcc1fd, #deeba6, #f59f9f);
+  background: linear-gradient(-120deg, #FFFACD, #ffea72, #f0b92e);
 }
 
 @keyframes gradientAnimation {
@@ -448,12 +445,12 @@ img {
 }
 
 .bg-galaxy-motion {
-  background: linear-gradient(270deg, #222227, #98a164, #6382a8, #ac6974);
+  background: linear-gradient(270deg, #222227, #70a164, #add46f, #e2ee38);
   background-size: 400% 400%;
   animation: gradientAnimation 12s ease infinite;
 }
 .bg-galaxy {
-  background: linear-gradient(270deg, #222227, #98a164, #6382a8, #ac6974);
+  background: linear-gradient(270deg, #222227, #70a164, #add46f, #e2ee38);
   background-size: 400% 400%;
 }
 
@@ -662,4 +659,291 @@ img {
   height: 18px;
   color: #555;
   cursor: pointer;
+}
+
+/*ADD BTN*/
+
+.wrapperAddBtn {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 32px;
+  height: 32px;
+}
+
+.circle-add-btn {
+  display: block;
+  position: relative;
+  padding: 0;
+  z-index: 98;
+  margin: 0 auto;
+  -webkit-box-shadow: 0 6px 10px 0 rgba(0, 0, 0, 0.3);
+  box-shadow: 0 6px 10px 0 rgba(0, 0, 0, 0.3);
+  border-radius: 50%;
+  height: 46px;
+  width: 46px;
+  background-color: #c6e030;
+  transition: 0.2s;
+  text-align: center;
+}
+
+.circle-add-btn:active {
+  transform: scale(0.9);
+  box-shadow: 0 2px 15px 0 rgba(0, 0, 0, 0.3);
+}
+
+.circle-add-btn:hover {
+  cursor: pointer;
+  background-color: #dad26a;
+  transform: rotate(90deg);
+  transition: 0.2s ease-in-out;
+  box-shadow: 0 8px 15px 0 rgba(0, 0, 0, 0.3);
+}
+
+.circle-add-btn .svg {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-left: -15px;
+  margin-top: -15px;
+  width: 30px;
+  height: 30px;
+  transition: 0.5s;
+  transform: rotate(180deg);
+}
+
+.sub-circle-add-btn {
+  z-index: 0;
+  position: absolute;
+  height: 40px;
+  width: 40px;
+  overflow: hidden;
+  border-radius: 50%;
+  transition: 0.3s;
+  transform: scale(0.5);
+  opacity: 0;
+  padding: 0;
+  margin: 0;
+  box-shadow: 0 6px 10px 0 rgba(0, 0, 0, 0.3);
+  border: none;
+}
+
+.sub-circle-add-btn label {
+  background-color: #f50057;
+  display: block;
+  color: white;
+  width: 100%;
+  height: 100%;
+  line-height: 40px;
+  transition: 0.5s;
+}
+
+.sub-circle-add-btn label:hover {
+  cursor: pointer;
+  background-color: #606fc7;
+}
+
+.subs-btn-add {
+  left: -20px;
+  top: -50px;
+  width: 40px;
+  height: 40px;
+  text-align: center;
+  z-index: 0;
+  margin: 0 auto;
+  position: relative;
+}
+
+.hidden-sub-trigger {
+  display: none;
+}
+
+.hidden-sub-trigger:checked ~ label {
+  background-color: #606fc7;
+}
+
+.hidden-trigger-add-btn {
+  display: none;
+}
+
+.hidden-trigger-add-btn:checked ~ .circle-add-btn {
+  transform: scale(0.9);
+  cursor: pointer;
+  background-color: #606fc7;
+  box-shadow: 0 8px 15px 0 rgba(0, 0, 0, 0.1);
+}
+
+.hidden-trigger-add-btn:checked ~ .circle-add-btn .svg {
+  transform: rotate(45deg);
+}
+
+.hidden-trigger-add-btn:checked ~ .subs-btn-add button:nth-of-type(1) {
+  transform: translate(0px, -100px) scale(1);
+  opacity: 1;
+  transition: 0.1s;
+}
+
+.hidden-trigger-add-btn:checked ~ .subs-btn-add button:nth-of-type(2) {
+  transform: translate(75px, -75px) scale(1);
+  opacity: 1;
+  transition: 0.2s;
+}
+
+.hidden-trigger-add-btn:checked ~ .subs-btn-add button:nth-of-type(3) {
+  transform: translate(100px, 0px) scale(1);
+  opacity: 1;
+  transition: 0.3s;
+}
+
+.hidden-trigger-add-btn:checked ~ .subs-btn-add button:nth-of-type(4) {
+  transform: translate(75px, 75px) scale(1);
+  opacity: 1;
+  transition: 0.4s;
+}
+
+.hidden-trigger-add-btn:checked ~ .subs-btn-add button:nth-of-type(5) {
+  transform: translate(0px, 100px) scale(1);
+  opacity: 1;
+  transition: 0.5s;
+}
+
+.hidden-trigger-add-btn:checked ~ .subs-btn-add button:nth-of-type(6) {
+  transform: translate(-75px, 75px) scale(1);
+  opacity: 1;
+  transition: 0.6s;
+}
+
+.hidden-trigger-add-btn:checked ~ .subs-btn-add button:nth-of-type(7) {
+  transform: translate(-100px, 0px) scale(1);
+  opacity: 1;
+  transition: 0.7s;
+}
+
+.hidden-trigger-add-btn:checked ~ .subs-btn-add button:nth-of-type(8) {
+  transform: translate(-75px, -75px) scale(1);
+  opacity: 1;
+  transition: 0.8s;
+}
+
+
+/* LOADING PAGE */ 
+.loader-page {
+  width: 80px;
+  height: 50px;
+  position: relative;
+}
+
+.loader-page-text {
+  position: absolute;
+  top: 0;
+  padding: 0;
+  margin: 0;
+  color: #c8b6ff;
+  animation: text_713 3.5s ease both infinite;
+  font-size: 0.8rem;
+  letter-spacing: 1px;
+}
+
+.load {
+  background-color: #9a79ff;
+  border-radius: 50px;
+  display: block;
+  height: 16px;
+  width: 16px;
+  bottom: 0;
+  position: absolute;
+  transform: translateX(64px);
+  animation: loading_713 3.5s ease both infinite;
+}
+
+.load-page::before {
+  position: absolute;
+  content: "";
+  width: 100%;
+  height: 100%;
+  background-color: #d1c2ff;
+  border-radius: inherit;
+  animation: loading2_713 3.5s ease both infinite;
+}
+
+@keyframes text_713 {
+  0% {
+    letter-spacing: 1px;
+    transform: translateX(0px);
+  }
+
+  40% {
+    letter-spacing: 2px;
+    transform: translateX(26px);
+  }
+
+  80% {
+    letter-spacing: 1px;
+    transform: translateX(32px);
+  }
+
+  90% {
+    letter-spacing: 2px;
+    transform: translateX(0px);
+  }
+
+  100% {
+    letter-spacing: 1px;
+    transform: translateX(0px);
+  }
+}
+
+@keyframes loading_713 {
+  0% {
+    width: 16px;
+    transform: translateX(0px);
+  }
+
+  40% {
+    width: 100%;
+    transform: translateX(0px);
+  }
+
+  80% {
+    width: 16px;
+    transform: translateX(64px);
+  }
+
+  90% {
+    width: 100%;
+    transform: translateX(0px);
+  }
+
+  100% {
+    width: 16px;
+    transform: translateX(0px);
+  }
+}
+
+@keyframes loading2_713 {
+  0% {
+    transform: translateX(0px);
+    width: 16px;
+  }
+
+  40% {
+    transform: translateX(0%);
+    width: 80%;
+  }
+
+  80% {
+    width: 100%;
+    transform: translateX(0px);
+  }
+
+  90% {
+    width: 80%;
+    transform: translateX(15px);
+  }
+
+  100% {
+    transform: translateX(0px);
+    width: 16px;
+  }
 }

@@ -35,7 +35,7 @@ export default function UserProfile() {
 
   const fetchPostsOfUser = async () => {
     try {
-      const response = await fetch(`/api/posts/get?userId=${uid}`)
+      const response = await fetch(`/api/posts/get_of_user?userId=${uid}`)
         .then((res) => res.json())
         .then((data) => {
           setPosts(data);
@@ -130,11 +130,11 @@ export default function UserProfile() {
         <link rel="icon" href="/icon.png" />
       </Head>
       {user ? (
-        <div className="relative top-32 w-[40%] left-[100%] translate-x-[-175%] h-fit mb-36 duration-300  text-white group cursor-pointer bg-[#DCDFE4] dark:bg-[#22272B] rounded-3xl p-4 hover:bg-blue-200 hover:dark:bg-[#0C66E4]">
+        <div className="relative top-32 w-[40%] left-[100%] translate-x-[-175%] h-fit mb-36 duration-300  text-[#001F3F] group cursor-pointer bg-[#ccdf7b] dark:bg-[#22272B] rounded-3xl p-4 hover:bg-[#e6ff78] hover:dark:bg-[#0C66E4]">
           <div className="w-[100%] flex flex-col justify-center items-center">
             <div>
               <div className="flex justify-between items-center">
-                <h1 className="text-3xl font-bold text-pink-300 my-4">
+                <h1 className="text-3xl font-bold text-[#001F3F] my-4">
                   Thông tin cá nhân của {user.username}
                 </h1>
               </div>
@@ -185,7 +185,7 @@ export default function UserProfile() {
               .map((post) => {
                 const isLiked = post.likes.some((like) => like.userId === uid);
                 return (
-                  <div className="relative w-[40%] left-[100%] translate-x-[-175%] block border bg-white rounded-lg my-5 pb-3 ">
+                  <div className="card relative w-[40%] left-[100%] translate-x-[-175%] block border  rounded-lg my-5 pb-3 ">
                     <div className="flex justify-between items-center mb-5 border-b px-2 py-3">
                       <div
                         className="flex flex-col"
@@ -202,7 +202,7 @@ export default function UserProfile() {
                             height={30}
                             loading="lazy"
                           />
-                          <p>{user ? user.username : "Unknown User"}</p>
+                          <p className="text-[#001F3F] font-semibold text-base ">{user ? user.username : "Unknown User"}</p>
                         </div>
                         <p className="text-xs mt-3 text-slate-600">
                           {timeAgo(post.timestamp)}
@@ -212,7 +212,7 @@ export default function UserProfile() {
                     <div
                       className={`border-b mb-2 ${post.image ? "mb-20" : "mb-5"} px-3`}
                     >
-                      <div className="mb-5">{post.content}</div>
+                      <div className="mb-5 text-[#001F3F] font-semibold text-base ">{post.content}</div>
                       {post.image && (
                         <Image
                           src={
@@ -240,7 +240,7 @@ export default function UserProfile() {
               })}
           </div>
         ) : (
-          <p className="relative mt-40 w-[40%] left-[100%] translate-x-[-175%] block">
+          <p className="relative mt-40 w-[40%] left-[100%] translate-x-[-175%] block font-bold text-[#001F3F]">
             Bài viết trống
           </p>
         )}

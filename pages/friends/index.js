@@ -1,48 +1,38 @@
 import Layout from "../../components/layout";
 import Head from "next/head";
-import { useAuth } from "../../components/auth";
+import { useGlobal } from "../../components/global_context";
 import { useState, useEffect, useCallback, useMemo } from "react";
 import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faUserFriends,
-  faUserMinus,
-  faUserPlus,
-  faWarning,
-} from "@fortawesome/free-solid-svg-icons";
+import { faUserFriends, faWarning } from "@fortawesome/free-solid-svg-icons";
 import Button from "../../components/custom/button";
+import LoadingPage from "../../components/custom/loading-page";
 
 export default function Friends() {
-  const [users, setUsers] = useState([]);
+  // const [users, setUsers] = useState([]);
   const [friendIds, setFriendIds] = useState([]);
   const [pendingRequests, setPendingRequests] = useState([]);
   const [sentRequests, setSentRequests] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState();
-  const { userId } = useAuth();
+  const { userId } = useGlobal();
+  const { users } = useGlobal();
 
-  // Tối ưu hóa các fetch calls với Promise.all
   const getInitialData = async () => {
     try {
       setIsLoading(true);
 
-      const [usersResponse, friendsResponse] = await Promise.all([
-        fetch("/api/users/get", { method: "GET" }),
-        fetch(`/api/friends/get?uid=${userId}`, { method: "GET" }),
-      ]);
+      const friendsResponse = await fetch(`/api/friends/get?uid=${userId}`);
 
-      if (usersResponse.ok && friendsResponse.ok) {
-        const usersData = await usersResponse.json();
+      if (friendsResponse.ok) {
         const friendsData = await friendsResponse.json();
 
-        setUsers(usersData);
         setFriendIds(friendsData.friends);
         setPendingRequests(friendsData.receivedFriendRequests);
         setSentRequests(friendsData.sentFriendRequests.map((req) => req.to));
       } else {
-        const usersError = await usersResponse.json();
         const friendsError = await friendsResponse.json();
-        console.error(usersError.error, friendsError.error);
+        console.error(friendsError.error);
       }
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -142,77 +132,80 @@ export default function Friends() {
 
   // Dùng useMemo để giảm số lần tạo lại các phần tử giao diện
   const userElements = useMemo(() => {
-    return users.map((user) => (
-      <div key={user.uid} className="mb-4 ">
-        {user.uid !== userId && user.uid !== "8cvcdVO0GDSOsp4TgqJhy0Hjc6r2" && (
-          <div className="flex items-center justify-between border p-4 rounded-lg">
-            <Link href={`/profile/${user.uid}`}>
-              <div className="flex items-center">
-                <img
-                  className="rounded w-16 h-16 object-cover"
-                  src={user.avatar}
-                  alt={user.username}
-                  width={60}
-                  height={60}
-                  loading="lazy"
-                />
-                <div className="text-lg mx-3">{user.username}</div>
-              </div>
-            </Link>
-            <div className="">
-              {friendIds && friendIds.includes(user.uid) ? (
-                <div>
-                  <span className="text-green-500">
-                    <FontAwesomeIcon
-                      icon={faUserFriends}
-                      width={30}
-                      height={30}
+    return (
+      users &&
+      users.map((user) => (
+        <div key={user.uid} className="mb-4 ">
+          {user.uid !== userId &&
+            user.uid !== "8cvcdVO0GDSOsp4TgqJhy0Hjc6r2" && (
+              <div className="flex items-center justify-between border p-4 rounded-lg bg-galaxy-2">
+                <Link href={`/profile/${user.uid}`}>
+                  <div className="flex items-center">
+                    <img
+                      className="rounded w-16 h-16 object-cover"
+                      src={user.avatar}
+                      alt={user.username}
+                      width={60}
+                      height={60}
+                      loading="lazy"
                     />
-                  </span>
-                  <button
-                    onClick={() => setModalDelete(user.uid)}
-                    className=" mx-3"
-                  >
-                    ❌
-                  </button>
+                    <div className="text-lg mx-3">{user.username}</div>
+                  </div>
+                </Link>
+                <div className="">
+                  {friendIds && friendIds.includes(user.uid) ? (
+                    <div>
+                      <span className="text-green-500">
+                        <FontAwesomeIcon
+                          icon={faUserFriends}
+                          width={30}
+                          height={30}
+                        />
+                      </span>
+                      <button
+                        onClick={() => setModalDelete(user.uid)}
+                        className=" mx-3"
+                      >
+                        ❌
+                      </button>
+                    </div>
+                  ) : pendingRequests &&
+                    pendingRequests.some((req) => req.from === user.uid) ? (
+                    <div className="flex">
+                      <button
+                        className="mx-3"
+                        onClick={() => handleFriendRequest(user.uid, "accept")}
+                      >
+                        <Button text={"✔️"} />
+                      </button>
+                      <button
+                        className=""
+                        onClick={() => handleFriendRequest(user.uid, "decline")}
+                      >
+                        <Button text={"❌"} />
+                      </button>
+                    </div>
+                  ) : sentRequests.includes(user.uid) ? (
+                    <button
+                      className=""
+                      onClick={() => toggleFriendRequest(user.uid)}
+                    >
+                      <Button text={"➖"} />
+                    </button>
+                  ) : (
+                    <button
+                      className=""
+                      onClick={() => toggleFriendRequest(user.uid)}
+                    >
+                      <Button text={"➕"} />
+                    </button>
+                  )}
                 </div>
-              ) : pendingRequests &&
-                pendingRequests.some((req) => req.from === user.uid) ? (
-                <div className="flex">
-                  <button
-                    className="mx-3"
-                    onClick={() => handleFriendRequest(user.uid, "accept")}
-                  >
-                    <Button text={"✔️"} />
-                  </button>
-                  <button
-                    className=""
-                    onClick={() => handleFriendRequest(user.uid, "decline")}
-                  >
-                    <Button text={"❌"} />
-                  </button>
-                </div>
-              ) : sentRequests.includes(user.uid) ? (
-                <button
-                  className=""
-                  onClick={() => toggleFriendRequest(user.uid)}
-                >
-                  <Button text={"➖"} />
-                </button>
-              ) : (
-                // bg-blue-500 text-white px-3 py-1 rounded
-                <button
-                  className=""
-                  onClick={() => toggleFriendRequest(user.uid)}
-                >
-                  <Button text={"➕"} />
-                </button>
-              )}
-            </div>
-          </div>
-        )}
-      </div>
-    ));
+              </div>
+            )}
+        </div>
+      ))
+    );
   }, [
     users,
     userId,
@@ -271,12 +264,10 @@ export default function Friends() {
         <h1 className="text-3xl text-center font-semibold mt-4 mb-6">
           Danh sách bạn bè
         </h1>
-        {userId ? (
+        {userId && (
           <div className="w-[80%]">
-            {isLoading ? <p>Đang tải dữ liệu...</p> : userElements}
+            {isLoading ? <LoadingPage /> : userElements}
           </div>
-        ) : (
-          <p>Vui lòng đăng nhập</p>
         )}
       </div>
     </Layout>

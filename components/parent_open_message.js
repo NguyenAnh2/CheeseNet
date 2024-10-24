@@ -1,73 +1,74 @@
 import Message from "./message";
 import SideLeft from "./sidebar_left";
 import { useState, useEffect } from "react";
-import { useAuth } from "./auth";
+import { useGlobal } from "./global_context";
 
 export default function ParentOpenMessage() {
   const [openMess, setOpenMess] = useState([]);
   const [findIndexUser, setFindIndexUser] = useState([]);
-  const [users, setUsers] = useState([]);
+  // const [users, setUsers] = useState([]);
   const [toggleMiniState, setToggleMiniState] = useState({});
   const [error, setError] = useState("");
-  const { userId } = useAuth();
+  const { userId } = useGlobal();
+  const { users } = useGlobal();
   const [user, setUser] = useState();
-  const [isLoading, setIsLoading] = useState(true);
 
-  const getUsers = async () => {
-    try {
-      const response = await fetch(`/api/users/get`, {
-        method: "GET",
-      });
+  // const getUsers = async () => {
+  //   try {
+  //     const response = await fetch(`/api/users/get`, {
+  //       method: "GET",
+  //     });
 
-      if (response.ok) {
-        const entries = await response.json();
-        setUsers(entries);
-        setIsLoading(true);
-      } else {
-        const errorData = await response.json();
-        setError(errorData.error);
-        setIsLoading(true);
-      }
-      setIsLoading(false);
-    } catch (error) {
-      setError("Failed to fetch posts entries.");
-      console.error("Error fetching posts:", error);
-      setIsLoading(false);
-    }
-  };
-  useEffect(() => {
-    getUsers();
-  }, [isLoading]);
+  //     if (response.ok) {
+  //       const entries = await response.json();
+  //       setUsers(entries);
+  //       setIsLoading(true);
+  //     } else {
+  //       const errorData = await response.json();
+  //       setError(errorData.error);
+  //       setIsLoading(true);
+  //     }
+  //     setIsLoading(false);
+  //   } catch (error) {
+  //     setError("Failed to fetch posts entries.");
+  //     console.error("Error fetching posts:", error);
+  //     setIsLoading(false);
+  //   }
+  // };
+  // useEffect(() => {
+  //   getUsers();
+  // }, [isLoading]);
 
   const findUserById = (userId) => {
+    if (!users) return null;
     const user = users.find((user) => user.uid === userId);
     return user;
   };
 
   useEffect(() => {
-    const user = findUserById(userId);
+    const user = userId ? findUserById(userId) : [];
     setUser(user);
   }, [users]);
 
   useEffect(() => {
-    if (users.length > 0) {
+    if (users && users.length > 0) {
       const initialState = users.reduce((acc, user) => {
         acc[user.uid] = true;
         return acc;
       }, {});
       setToggleMiniState(initialState);
     }
-  }, [users.length]);
+  }, [users]);
 
   const clickOpenMess = (key) => {
     if (!openMess.includes(key)) {
-      if (openMess.length < 1) {
+      if (openMess.length < 1 && users) {
         setOpenMess([...openMess, key]);
         setFindIndexUser([
           ...findIndexUser,
           users.findIndex((user) => user.uid === key),
         ]);
-      } else if (openMess.length === 1) {
+      } else if (openMess.length === 1 && users) {
         openMess.shift();
         findIndexUser.shift();
         setOpenMess([...openMess, key]);
@@ -120,22 +121,24 @@ export default function ParentOpenMessage() {
     <div className="z-10">
       {findIndexUser && (
         <div className="max-w-[302px] w-full fixed flex mx-3 bottom-0 transition-all z-[1000]">
-          {findIndexUser.map((indexUser) => (
-            <Message
-              user={users[indexUser]}
-              openMess={openMess}
-              removeElementById={removeElementById}
-              miniMessage={miniMessage}
-              toggleMiniState={toggleMiniState[users[indexUser].uid]}
-            />
-          ))}
+          {findIndexUser.map((indexUser) =>
+            users[indexUser] ? (
+              <Message
+                user={users[indexUser]}
+                openMess={openMess}
+                removeElementById={removeElementById}
+                miniMessage={miniMessage}
+                toggleMiniState={toggleMiniState[users[indexUser].uid]}
+              />
+            ) : null
+          )}
         </div>
       )}
-      {isLoading ? (
-        <p>Đợi tý nhé...</p>
-      ) : (
-        <SideLeft users={users} user={user} clickOpenMess={clickOpenMess} />
-      )}
+      <SideLeft
+        users={users ? users : []}
+        user={user}
+        clickOpenMess={clickOpenMess}
+      />
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faPaperPlane,
@@ -8,12 +8,13 @@ import {
 
 export default function SideRight() {
   const inputRef = useRef();
+  const sideRightRef = useRef(null);
   const [chatHistory, setChatHistory] = useState([]);
   const [isOpenRight, setIsOpenRight] = useState(false);
   const styleSendMessage =
-    "relative w-3/4 inline-block break-words -right-9 border bg-slate-100 rounded-lg px-3 mx-3 my-1";
+    "relative w-3/4 font-medium text-base text-[#001F3F] inline-block break-words -right-9 border bg-slate-100 rounded-lg px-3 mx-3 my-1";
   const styleResponMessage =
-    "w-3/4 right-0 border bg-red-100 rounded-lg px-3 mx-1 my-2";
+    "w-3/4 font-medium text-base text-[#001F3F] right-0 border bg-red-100 rounded-lg px-3 mx-1 my-2";
 
   const handleSubmitChat = async (e) => {
     e.preventDefault();
@@ -44,11 +45,37 @@ export default function SideRight() {
   };
 
   const toggleOpenRight = () => {
-    setIsOpenRight(!isOpenRight);
+    setIsOpenRight(false);
   };
 
+  const toggleCloseRight = () => {
+    setIsOpenRight(true);
+  };
+
+  // Sự kiện đóng khi click bên ngoài SideRight
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      // Kiểm tra nếu bấm ra ngoài SideRight và SideRight đang mở
+      if (
+        sideRightRef.current &&
+        !sideRightRef.current.contains(event.target) &&
+        isOpenRight
+      ) {
+        setIsOpenRight(false);
+      }
+    };
+
+    // Thêm event listener khi click vào tài liệu
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      // Loại bỏ sự kiện khi component unmount
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isOpenRight]);
+
   return (
-    <div>
+    <div ref={sideRightRef}>
       <div
         className={`bg-galaxy-3 sm:fixed sm:flex sm:right-0 md:w-60 lg:w-80 sm:w-[190px] flex-col h-[calc(100vh-64px)] overflow-y-auto w-[60%] fixed top-[64px] right-0  bottom-0 border-slate-600 shadow-xl bg-white transition-transform duration-300 ease-in-out z-[10] transform ${
           isOpenRight ? "translate-x-0" : "translate-x-full"
@@ -114,7 +141,7 @@ export default function SideRight() {
         ) : (
           <FontAwesomeIcon
             icon={faArrowLeft}
-            onClick={toggleOpenRight}
+            onClick={toggleCloseRight}
             width={18}
             height={18}
           />

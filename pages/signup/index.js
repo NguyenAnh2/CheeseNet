@@ -3,7 +3,7 @@ import Head from "next/head";
 
 const RegisterForm = () => {
   return (
-    <div className="">
+    <div className="overflow-hidden">
       <Head>
         <title>Đăng ký</title>
         <link rel="icon" href="/icon.png"/>

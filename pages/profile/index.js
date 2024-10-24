@@ -8,14 +8,15 @@ import {
 import { faHeart } from "@fortawesome/free-regular-svg-icons";
 import Layout from "../../components/layout";
 import Head from "next/head";
-import { useAuth } from "../../components/auth";
+import { useGlobal } from "../../components/global_context";
 import { useState, useEffect, useMemo } from "react";
 import Image from "next/image";
 import TabBar from "../../components/custom/tabbar";
 import Loader from "../../components/custom/loading";
+import Button from "../../components/custom/button";
 
 export default function Profile() {
-  const [user, setUser] = useState([]);
+  // const [user, setUser] = useState([]);
   const [posts, setPosts] = useState([]);
 
   const [selectedImage, setSelectedImage] = useState(null);
@@ -35,26 +36,31 @@ export default function Profile() {
 
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
-  const { userId } = useAuth();
+  const { userId } = useGlobal();
+  const { user } = useGlobal();
 
-  const fetchUserInfo = async () => {
-    try {
-      const response = await fetch(`/api/users/get?uid=${userId}`)
-        .then((res) => res.json())
-        .then((data) => {
-          setUser(data);
-          setIsLoading(false);
-        })
-        .catch(() => {
-          const errorData = response.json();
-          setError(errorData.error);
-          setIsLoading(true);
-        });
-    } catch (error) {
-      setError("Failed to fetch posts entries.");
-      console.error("Error fetching posts:", error);
-    }
-  };
+  // const fetchUserInfo = async () => {
+  //   try {
+  //     const response = await fetch(`/api/users/get?uid=${userId}`)
+  //       .then((res) => res.json())
+  //       .then((data) => {
+  //         setUser(data);
+  //         setIsLoading(false);
+  //       })
+  //       .catch(() => {
+  //         const errorData = response.json();
+  //         setError(errorData.error);
+  //         setIsLoading(true);
+  //       });
+  //   } catch (error) {
+  //     setError("Failed to fetch posts entries.");
+  //     console.error("Error fetching posts:", error);
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   fetchUserInfo();
+  // }, [userId, isLoading, isUpdateSuccess]);
 
   const fetchPostsOfUser = async () => {
     try {
@@ -74,9 +80,6 @@ export default function Profile() {
       console.error("Error fetching posts:", error);
     }
   };
-  useEffect(() => {
-    fetchUserInfo();
-  }, [userId, isLoading, isUpdateSuccess]);
 
   useEffect(() => {
     fetchPostsOfUser();
@@ -288,27 +291,24 @@ export default function Profile() {
       <TabBar />
 
       {isLoading ? (
-        <div className="relative top-32 w-[40%] left-[100%] translate-x-[-175%] h-fit mb-36 duration-300  text-white group cursor-pointer bg-[#DCDFE4] dark:bg-[#22272B] rounded-3xl p-4 hover:bg-blue-200 hover:dark:bg-[#0C66E4]">
+        <div className="relative top-32 w-[40%] left-[100%] translate-x-[-175%] h-fit mb-36 duration-300  text-[#001F3F] group cursor-pointer bg-[#ecff97] dark:bg-[#22272B] rounded-3xl p-4 hover:bg-[#e6ff78] hover:dark:bg-[#0C66E4]">
           <Loader />
         </div>
       ) : (
         user && (
-          <div className="relative top-32 w-[40%] left-[100%] translate-x-[-175%] h-fit mb-36 duration-300  text-white group cursor-pointer bg-[#DCDFE4] dark:bg-[#22272B] rounded-3xl p-4 hover:bg-blue-200 hover:dark:bg-[#0C66E4]">
+          <div className="relative top-32 w-[40%] left-[100%] translate-x-[-175%] h-fit mb-36 duration-300  text-[#001F3F] group cursor-pointer bg-[#ccdf7b] dark:bg-[#22272B] rounded-3xl p-4 hover:bg-[#e6ff78] hover:dark:bg-[#0C66E4]">
             <div className="w-[100%] flex flex-col justify-center items-center">
               <div>
                 <div className="flex justify-between items-center">
-                  <h1 className="text-3xl font-bold text-pink-300 m-4">
+                  <h1 className="text-3xl font-bold text-[#001F3F] m-4">
                     Thông tin cá nhân
                   </h1>
                   {(isChangePhoneNumber ||
                     isChangeUsername ||
                     selectedImage ||
                     isUpdateSuccess) && (
-                    <button
-                      onClick={handleSubmitProfile}
-                      className="text-pink-200 bg-blue-600 hover:bg-blue-400 h-fit px-2 py-1 text-xl rounded-md transition-transform"
-                    >
-                      Lưu
+                    <button onClick={handleSubmitProfile} className="">
+                      <Button text={"Lưu"}></Button>
                     </button>
                   )}
                 </div>
@@ -319,7 +319,7 @@ export default function Profile() {
                       <input
                         type="text"
                         defaultValue={user.username}
-                        className="border border-slate-300 p-2 mx-2 rounded text-black"
+                        className="inputSearch border border-slate-300 p-2 mx-2 rounded text-white font-medium"
                         name="changeUsername"
                         onChange={(e) =>
                           e.target.value !== user.username &&
@@ -361,7 +361,7 @@ export default function Profile() {
                       <input
                         type="text"
                         defaultValue={user.phonenumber}
-                        className="border border-slate-300 p-2 mx-2 rounded text-black"
+                        className="inputSearch border border-slate-300 p-2 mx-2 rounded text-white font-medium"
                         name="changePhoneNumber"
                         onChange={(e) =>
                           e.target.value !== user.phonenumber &&
@@ -404,7 +404,7 @@ export default function Profile() {
                         onClick={cancelChangeAvatar}
                       />
                     )}
-                    <div className="relative w-60 h-60 object-cover cursor-pointer rounded-full overflow-hidden">
+                    <div className="relative w-60 h-60 object-cover cursor-pointer rounded-full overflow-hidden flex justify-center">
                       <img
                         src={selectedImage || user.avatar}
                         alt="Preview"
@@ -468,17 +468,17 @@ export default function Profile() {
                             height={30}
                             loading="lazy"
                           />
-                          <p className="text-lg font-semibold text-white">
+                          <p className="text-lg font-semibold text-[#001F3F]">
                             {user ? user.username : "Unknown User"}
                           </p>
                         </div>
-                        <p className="text-xs mt-3 text-white">
+                        <p className="text-xs mt-3 text-[#001F3F]">
                           {timeAgo(post.timestamp)}
                         </p>
                       </div>
                       <div className="absolute top-9 right-14">
                         <select
-                          className="block appearance-none w-full bg-galaxy text-white font-bold py-2 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-blue-300 cursor-pointer"
+                          className="block appearance-none w-full bg-galaxy text-[#001F3F] font-bold py-2 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-blue-300 cursor-pointer"
                           value={visibilityMap[post._id] || post.visibility}
                           onChange={(e) =>
                             handleChangeVisibility(e.target.value, post._id)
@@ -513,7 +513,7 @@ export default function Profile() {
                     <div
                       className={`border-b mb-2 ${post.image ? "mb-20" : "mb-5"} px-3`}
                     >
-                      <div className="mb-5 text-lg font-semibold text-white">
+                      <div className="mb-5 text-lg font-semibold text-[#001F3F]">
                         {post.content}
                       </div>
                       {post.image && (
@@ -533,7 +533,7 @@ export default function Profile() {
                     </div>
                     <div
                       id={`like_of_${post._id}`}
-                      className={`cursor-pointer w-fit px-2 text-xl ${isLiked ? "text-red-500" : "text-white"}`}
+                      className={`cursor-pointer w-fit px-2 text-xl ${isLiked ? "text-red-500" : "text-[#001F3F]"}`}
                       onClick={() => handleLike(post._id)}
                     >
                       <FontAwesomeIcon icon={faHeart} width={20} height={20} />

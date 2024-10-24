@@ -34,7 +34,7 @@ export default function News({ feed }) {
       <Sidebar />
       <div className="flex justify-center items-center flex-col relative left-2/4 -translate-x-2/4 sm:w-[40%] w-[90%]">
         <div>
-          <h1 className="text-2xl font-bold flex justify-center items-center my-4">
+          <h1 className="text-2xl font-bold flex justify-center items-center my-4 text-white">
             Tin tức mới nhất từ VN Express
           </h1>
           <ul className="w-full">
@@ -42,10 +42,10 @@ export default function News({ feed }) {
               feed.items.map((item) => (
                 <li
                   key={item.link}
-                  className="my-3 border rounded-md bg-white shadow-md w-full h-fit px-3 py-5 hover:opacity-85 flex justify-between"
+                  className="my-3 border rounded-md bg-galaxy-2 shadow-md w-full h-fit px-3 py-5 hover:opacity-85 flex justify-between"
                 >
                   <a href={item.link} target="_blank" rel="noopener noreferrer">
-                    <h2 className="font-bold text-xl mb-6">{item.title}</h2>
+                    <h2 className="font-bold text-xl mb-6 text-[#001F3F]">{item.title}</h2>
                     <p className="text-sm text-blue-600">Xem thêm</p>
                   </a>
                   {item.enclosure && item.enclosure.url && (

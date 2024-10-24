@@ -6,7 +6,6 @@ import {
   sendEmailVerification,
 } from "../../firebase/firebaseConfig";
 import Link from "next/link";
-import styles from "../../pages/signup/SignUp.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye } from "@fortawesome/free-solid-svg-icons";
 import RandomImageBackground from "./custom_bg";

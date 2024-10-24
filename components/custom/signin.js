@@ -5,7 +5,6 @@ import { useRouter } from "next/router";
 import { useGlobal } from "../../components/global_context";
 import { sendPasswordResetEmail } from "firebase/auth";
 import { auth } from "../../firebase/firebaseConfig";
-import styles from "../../pages/signup/SignUp.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye } from "@fortawesome/free-solid-svg-icons";
 import RandomImageBackground from "./custom_bg";

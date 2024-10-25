@@ -158,7 +158,7 @@ export default function UserProfile() {
               <div className="flex flex-col">
                 <div className="flex flex-col py-2 relative">
                   <p className="mb-3">Ảnh đại diện</p>
-                  <div className="relative w-60 h-60 object-cover cursor-pointer rounded-full overflow-hidden">
+                  <div className="relative w-60 h-60 object-cover cursor-pointer rounded-full overflow-hidden flex justify-center">
                     <img
                       src={user.avatar || "/images/defaultavatar.jpg"}
                       alt="Preview"

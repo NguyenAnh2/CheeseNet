@@ -55,7 +55,7 @@ const GetChat = ({ user1Id, user2Id, flagSend }) => {
 
   useEffect(() => {
     fetchMessages();
-  }, [chatId, flagSend, newContent, isDeletePopupVisible]);
+  }, [chatId, flagSend, newContent, isDeletePopupVisible, messages.length]);
 
   const handleGetUserReceived = async () => {
     try {

@@ -14,37 +14,9 @@ import Link from "next/link";
 
 export default function Heading({}) {
   const router = useRouter();
-  // const { userId } = useGlobal();
   const { logout } = useGlobal();
-  // const [user, setUser] = useState([]);
   const { user } = useGlobal();
-  // const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
-  // console.log(userId);
-
-  // const getUser = async () => {
-  //   try {
-  //     const response = await fetch(`/api/users/get?uid=${userId}`)
-  //       .then((res) => res.json())
-  //       .then((data) => {
-  //         setUser(data);
-  //         setIsLoading(false);
-  //       })
-  //       .catch(() => {
-  //         const errorData = response.json();
-  //         setError(errorData.error);
-  //         setIsLoading(true);
-  //       });
-  //   } catch (error) {
-  //     setError("Failed to fetch posts entries.");
-  //     console.error("Error fetching posts:", error);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   getUser();
-  // }, [isLoading]);
-
   const [isSearch, setIsSearch] = useState(false);
   const [searchValue, setSearchValue] = useState("");
 
@@ -178,13 +150,13 @@ export default function Heading({}) {
                     loading="lazy"
                   />
                 </li>
-                <span className="hidden md:block font-semibold mx-3 text-white">
+                <span className="hidden md:block font-semibold mx-3 text-[#001F3F]">
                   {user.username}
                 </span>
               </Link>
               <Link
                 href="login"
-                className="mx-3 font-semibold text-white"
+                className="mx-3 font-semibold text-[#001F3F]"
                 onClick={logout}
               >
                 Đăng xuất

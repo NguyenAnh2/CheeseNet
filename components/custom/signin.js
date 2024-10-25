@@ -137,7 +137,7 @@ const SignIn = () => {
             />
           </div>
         </label>
-        <button className={`$"submit-sign-up" py-3`}>Đăng nhập</button>
+        <button className={`submit-sign-up`}>Đăng nhập</button>
         <div className="flex justify-between">
           <div>
             <p className="signin-sign-up">

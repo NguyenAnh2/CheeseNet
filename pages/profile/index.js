@@ -16,51 +16,21 @@ import Loader from "../../components/custom/loading";
 import Button from "../../components/custom/button";
 
 export default function Profile() {
-  // const [user, setUser] = useState([]);
   const [posts, setPosts] = useState([]);
-
   const [selectedImage, setSelectedImage] = useState(null);
-
   const [isChangeUsername, setIsChangeUsername] = useState(false);
   const [changeUsername, setChangeUsername] = useState();
-
   const [isChangePhoneNumber, setIsChangePhoneNumber] = useState(false);
   const [changePhoneNumber, setChangePhoneNumber] = useState();
-
   const [isModalDelete, setIsModalDelete] = useState(false);
   const [selectedPostId, setSelectedPostId] = useState(null);
   const [isDeleteSuccess, setIsDeleteSuccess] = useState(false);
   const [isUpdateSuccess, setIsUpdateSeccess] = useState(false);
-
   const [visibilityMap, setVisibilityMap] = useState({});
-
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
   const { userId } = useGlobal();
   const { user } = useGlobal();
-
-  // const fetchUserInfo = async () => {
-  //   try {
-  //     const response = await fetch(`/api/users/get?uid=${userId}`)
-  //       .then((res) => res.json())
-  //       .then((data) => {
-  //         setUser(data);
-  //         setIsLoading(false);
-  //       })
-  //       .catch(() => {
-  //         const errorData = response.json();
-  //         setError(errorData.error);
-  //         setIsLoading(true);
-  //       });
-  //   } catch (error) {
-  //     setError("Failed to fetch posts entries.");
-  //     console.error("Error fetching posts:", error);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   fetchUserInfo();
-  // }, [userId, isLoading, isUpdateSuccess]);
 
   const fetchPostsOfUser = async () => {
     try {
@@ -287,16 +257,15 @@ export default function Profile() {
         <title>Trang cá nhân</title>
         <link rel="icon" href="/icon.png" />
       </Head>
-
       <TabBar />
-
+      #FFF9B0, #ebd978, #f0c77a
       {isLoading ? (
-        <div className="relative top-32 w-[40%] left-[100%] translate-x-[-175%] h-fit mb-36 duration-300  text-[#001F3F] group cursor-pointer bg-[#ecff97] dark:bg-[#22272B] rounded-3xl p-4 hover:bg-[#e6ff78] hover:dark:bg-[#0C66E4]">
+        <div className="relative top-32 w-[40%] left-[100%] translate-x-[-175%] h-fit mb-36 duration-300  text-[#001F3F] group cursor-pointer bg-[#FFF9B0] dark:bg-[#22272B] rounded-3xl p-4 hover:bg-[#ebd978] hover:dark:bg-[#0C66E4]">
           <Loader />
         </div>
       ) : (
         user && (
-          <div className="relative top-32 w-[40%] left-[100%] translate-x-[-175%] h-fit mb-36 duration-300  text-[#001F3F] group cursor-pointer bg-[#ccdf7b] dark:bg-[#22272B] rounded-3xl p-4 hover:bg-[#e6ff78] hover:dark:bg-[#0C66E4]">
+          <div className="relative top-32 w-[40%] left-[100%] translate-x-[-175%] h-fit mb-36 duration-300  text-[#001F3F] group cursor-pointer bg-[#FFF9B0] dark:bg-[#22272B] rounded-3xl p-4 hover:bg-[#ebd978] hover:dark:bg-[#0C66E4]">
             <div className="w-[100%] flex flex-col justify-center items-center">
               <div>
                 <div className="flex justify-between items-center">
@@ -548,7 +517,6 @@ export default function Profile() {
           </p>
         )}
       </div>
-
       {isUpdateSuccess && (
         <div className="fixed top-[30%] left-[50%] translate-x-[-50%] w-56 h-32 px-3 py-5 rounded-md shadow-md border border-slate-600 bg-white">
           Thành công rực rỡ!!
@@ -561,7 +529,6 @@ export default function Profile() {
           </button>
         </div>
       )}
-
       {isModalDelete && (
         <div class="fixed top-[30%] right-2/4 translate-x-[50%] group select-none w-[250px] flex flex-col p-4 items-center justify-center bg-gray-800 border border-gray-800 shadow-lg rounded-2xl">
           <div class="">
@@ -600,7 +567,6 @@ export default function Profile() {
           </div>
         </div>
       )}
-
       {isDeleteSuccess && (
         <div class="card_success fixed top-[30%] right-2/4 translate-x-[50%]">
           <svg

@@ -49,7 +49,7 @@ const RandomImageBackground = () => {
   const positions = generateUniquePositions(repeatedImages.length); // Tạo danh sách vị trí không trùng
 
   return (
-    <div className='background-custom-bg'>
+    <div className="background-custom-bg">
       {repeatedImages.map((src, index) => {
         const randomRotation = Math.floor(Math.random() * 360);
         const position = positions[index]; // Lấy vị trí ngẫu nhiên nhưng không trùng
@@ -59,7 +59,7 @@ const RandomImageBackground = () => {
             key={index}
             src={src}
             alt={`image-${index}`}
-            className='image-custom-bg'
+            className="image-custom-bg"
             style={{
               transform: `rotate(${randomRotation}deg)`,
               top: `${position.top}%`,
@@ -72,4 +72,4 @@ const RandomImageBackground = () => {
   );
 };
 
-export default RandomImageBackground;
+export default React.memo(RandomImageBackground);

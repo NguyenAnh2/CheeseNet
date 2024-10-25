@@ -117,11 +117,11 @@ export default function AddPost({}) {
   };
 
   const openModal = (image) => {
-    setModalImage(image); // Cập nhật ảnh được chọn cho modal
+    setModalImage(image);
   };
 
   const closeModal = () => {
-    setModalImage(null); // Đóng modal
+    setModalImage(null);
   };
 
   return (

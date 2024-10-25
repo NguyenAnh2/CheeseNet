@@ -11,7 +11,6 @@ import { faWarning } from "@fortawesome/free-solid-svg-icons";
 import Button from "../../components/custom/button";
 
 export default function Diary() {
-  // const [user, setUser] = useState([]);
   const [isMatchPassword, setIsMatchPassword] = useState(false);
   const [isDiarySuccess, setIsDiarySuccess] = useState(false);
   const [diaryEntries, setDiaryEntries] = useState([]);
@@ -25,23 +24,6 @@ export default function Diary() {
   const contentDiaryRef = useRef();
   const { userId } = useGlobal();
   const { user } = useGlobal();
-
-  // const getUser = useCallback(async () => {
-  //   setIsLoading(true);
-  //   try {
-  //     const res = await fetch(`/api/users/get?uid=${userId}`);
-  //     const data = await res.json();
-  //     setUser(data);
-  //   } catch (error) {
-  //     setError("Failed to fetch user data.");
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // }, [userId]);
-
-  // useEffect(() => {
-  //   if (userId) getUser();
-  // }, [userId, getUser]);
 
   function hashPassword(password) {
     return CryptoJS.SHA256(password).toString();

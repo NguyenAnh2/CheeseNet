@@ -9,7 +9,6 @@ import Button from "../../components/custom/button";
 import LoadingPage from "../../components/custom/loading-page";
 
 export default function Friends() {
-  // const [users, setUsers] = useState([]);
   const [friendIds, setFriendIds] = useState([]);
   const [pendingRequests, setPendingRequests] = useState([]);
   const [sentRequests, setSentRequests] = useState([]);

@@ -405,7 +405,7 @@ img {
   border-radius: 20px;
   padding: 5px;
   box-shadow: rgba(151, 65, 252, 0.2) 0 15px 30px -5px;
-  background-image: linear-gradient(144deg,#e9ff85, #8c974e 50%,#fffb24); 
+  background-image: linear-gradient(144deg,#FFF9B0, #ebd978, #f0c77a); 
   background-size: 300% 300%;
   transition: background-position 0.5s ease;
 }
@@ -445,12 +445,12 @@ img {
 }
 
 .bg-galaxy-motion {
-  background: linear-gradient(270deg, #222227, #70a164, #add46f, #e2ee38);
+  background: linear-gradient(270deg, #222227, #FFF9B0, #ebd978, #f0c77a);
   background-size: 400% 400%;
   animation: gradientAnimation 12s ease infinite;
 }
 .bg-galaxy {
-  background: linear-gradient(270deg, #222227, #70a164, #add46f, #e2ee38);
+  background: linear-gradient(270deg, #222227, #FFF9B0, #ebd978, #f0c77a);
   background-size: 400% 400%;
 }
 

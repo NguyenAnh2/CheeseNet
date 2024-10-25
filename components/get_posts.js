@@ -1,4 +1,8 @@
-import { faClose, faPaperPlane, faWarning } from "@fortawesome/free-solid-svg-icons";
+import {
+  faClose,
+  faPaperPlane,
+  faWarning,
+} from "@fortawesome/free-solid-svg-icons";
 import { faHeart, faCommentDots } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useReplyPost } from "../utils/replyPost";
@@ -8,68 +12,14 @@ import { useState, useEffect, useRef } from "react";
 import LoadingPage from "./custom/loading-page";
 
 export default function GetPosts({}) {
-  // const [posts, setPosts] = useState([]);
-  // const [users, setUsers] = useState([]);
   const [currentTime, setCurrentTime] = useState(Date.now());
-  const [error, setError] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
   const [modalImage, setModalImage] = useState(null);
-
   const [activeReplyPostId, setActiveReplyPostId] = useState(null);
   const messageToReplyRef = useRef();
-
   const { loading, handleReplyPost } = useReplyPost();
   const { userId } = useGlobal();
   const { users } = useGlobal();
   const { postsOfUser } = useGlobal();
-
-  // const getUsers = async () => {
-  //   try {
-  //     const response = await fetch(`/api/users/get`, {
-  //       method: "GET",
-  //     });
-
-  //     if (response.ok) {
-  //       const entries = await response.json();
-  //       setUsers(entries);
-  //     } else {
-  //       const errorData = await response.json();
-  //       setError(errorData.error);
-  //     }
-  //     setIsLoading(false);
-  //   } catch (error) {
-  //     setError("Failed to fetch posts entries.");
-  //     console.error("Error fetching posts:", error);
-  //     setIsLoading(false);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   getUsers();
-  // }, [userId]);
-
-  // const fetchPosts = async () => {
-  //   try {
-  //     const response = await fetch(`/api/posts/get?userId=${userId}`, {
-  //       method: "GET",
-  //     });
-
-  //     if (response.ok) {
-  //       const entries = await response.json();
-  //       setPosts(entries);
-  //     } else {
-  //       const errorData = await response.json();
-  //       setError(errorData.error);
-  //     }
-  //   } catch (error) {
-  //     setError("Failed to fetch posts entries.");
-  //     console.error("Error fetching posts:", error);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   fetchPosts();
-  // }, [userId]);
 
   const openModal = (image) => {
     setModalImage(image);
@@ -303,7 +253,12 @@ export default function GetPosts({}) {
         </div>
       ) : (
         <div className="fixed flex flex-col items-center left-2/4 translate-x-[-50%] w-full text-2xl text-white font-bold">
-          <FontAwesomeIcon icon={faWarning} width={30} height={30} className="text-yellow-400 mb-4"/>
+          <FontAwesomeIcon
+            icon={faWarning}
+            width={30}
+            height={30}
+            className="text-yellow-400 mb-4"
+          />
           Vui lòng đăng nhập!
         </div>
       )}

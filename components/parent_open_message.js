@@ -6,38 +6,11 @@ import { useGlobal } from "./global_context";
 export default function ParentOpenMessage() {
   const [openMess, setOpenMess] = useState([]);
   const [findIndexUser, setFindIndexUser] = useState([]);
-  // const [users, setUsers] = useState([]);
   const [toggleMiniState, setToggleMiniState] = useState({});
   const [error, setError] = useState("");
   const { userId } = useGlobal();
   const { users } = useGlobal();
   const [user, setUser] = useState();
-
-  // const getUsers = async () => {
-  //   try {
-  //     const response = await fetch(`/api/users/get`, {
-  //       method: "GET",
-  //     });
-
-  //     if (response.ok) {
-  //       const entries = await response.json();
-  //       setUsers(entries);
-  //       setIsLoading(true);
-  //     } else {
-  //       const errorData = await response.json();
-  //       setError(errorData.error);
-  //       setIsLoading(true);
-  //     }
-  //     setIsLoading(false);
-  //   } catch (error) {
-  //     setError("Failed to fetch posts entries.");
-  //     console.error("Error fetching posts:", error);
-  //     setIsLoading(false);
-  //   }
-  // };
-  // useEffect(() => {
-  //   getUsers();
-  // }, [isLoading]);
 
   const findUserById = (userId) => {
     if (!users) return null;

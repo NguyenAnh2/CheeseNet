@@ -50,14 +50,14 @@ export default function Heading({}) {
           </Link>
           <div className="relative">
             <form
-              className="flex justify-between items-center"
+              className="flex justify-between items-center z-[1000]"
               onSubmit={(e) => handleSubmitSearch(e)}
             >
               {isSearch && (
                 <input
                   type="text"
                   placeholder="Search on CheeseNet"
-                  className="inputSearch "
+                  className="inputSearch"
                   onChange={(e) => setSearchValue(e.target.value)}
                 />
               )}

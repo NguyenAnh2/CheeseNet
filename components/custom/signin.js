@@ -146,15 +146,6 @@ const SignIn = () => {
                 Đăng ký
               </Link>{" "}
             </p>
-            <div className="flex relative right-0 bottom-0 my-1">
-              <p className="">Đăng nhập với </p>
-              <p
-                className="text-blue-600 right-0 mx-2"
-                // onClick={() => handleLoginGoogle()}
-              >
-                Google
-              </p>
-            </div>
           </div>
           <button
             type="button"

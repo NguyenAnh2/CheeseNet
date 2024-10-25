@@ -34,6 +34,30 @@ export default function Heading({}) {
     }
   };
 
+  const isSearchRef = useRef(null);
+
+  // Sự kiện đóng khi click bên ngoài SideRight
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      // Kiểm tra nếu bấm ra ngoài SideRight và SideRight đang mở
+      if (
+        isSearchRef.current &&
+        !isSearchRef.current.contains(event.target) &&
+        isSearch
+      ) {
+        setIsSearch(false);
+      }
+    };
+
+    // Thêm event listener khi click vào tài liệu
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      // Loại bỏ sự kiện khi component unmount
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isSearch]);
+
   return (
     <div className="fixed bg-galaxy-2 w-full h-16 z-50 top-0 border-b">
       <div className="flex justify-between items-center h-16">
@@ -48,13 +72,14 @@ export default function Heading({}) {
               loading="lazy"
             />
           </Link>
-          <div className="relative">
+          <div className="relative  z-[1000]">
             <form
-              className="flex justify-between items-center z-[1000]"
+              className="flex justify-between items-center"
               onSubmit={(e) => handleSubmitSearch(e)}
             >
               {isSearch && (
                 <input
+                  ref={isSearchRef}
                   type="text"
                   placeholder="Search on CheeseNet"
                   className="inputSearch"

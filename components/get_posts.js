@@ -107,8 +107,6 @@ export default function GetPosts({}) {
     }
   }, [activeReplyPostId]);
 
-  console.log(postsOfUser);
-
   return (
     <div className="">
       {postsOfUser && Array.isArray(postsOfUser) && postsOfUser.length > 0 ? (

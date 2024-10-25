@@ -13,12 +13,13 @@ export default function AddPost({}) {
   const [isPostSuccess, setIsPostSuccess] = useState(false);
   const [visibility, setVisibility] = useState("friends");
   const [error, setError] = useState();
+  const [isLoading, setIsLoading] = useState(false);
   const contentPostRef = useRef();
   const { userId } = useGlobal();
 
   const handleSubmitPost = async (e) => {
     e.preventDefault();
-
+    setIsLoading(true);
     const newPost = {
       userId: userId,
       content: contentPostRef.current.value,
@@ -56,9 +57,11 @@ export default function AddPost({}) {
             setIsPost(!isPost);
             setSelectedImage(null);
             setIsPostSuccess(true);
+            setIsLoading(false);
           } else {
             setError(postResponse.json());
             console.error("Error sending post:", await postResponse.json());
+            setIsLoading(false);
           }
         } else {
           console.error("Error uploading image:", uploadData.error);
@@ -76,14 +79,17 @@ export default function AddPost({}) {
         if (postResponse.ok) {
           setIsPost(!isPost);
           setIsPostSuccess(true);
+          setIsLoading(false);
         } else {
           setError(postResponse.json());
           console.error("Error sending post:", await postResponse.json());
+          setIsLoading(false);
         }
       }
     } catch (error) {
       console.error("Error submitting post:", error);
       setError(error);
+      setIsLoading(false);
     }
   };
 
@@ -178,26 +184,28 @@ export default function AddPost({}) {
                     value={visibility}
                     onChange={(e) => setVisibility(e.target.value)}
                   >
-                    <option
-                      className="py-2 cursor-pointer"
-                      value="public"
-                    >
+                    <option className="py-2 cursor-pointer" value="public">
                       Công khai
                     </option>
-                    <option
-                      className="py-2 cursor-pointer"
-                      value="friends"
-                    >
+                    <option className="py-2 cursor-pointer" value="friends">
                       Bạn bè
                     </option>
                   </select>
                 </div>
-                <button
-                  className="btn absolute translate-y-[100%] top-[6px] left-[100%] translate-x-[-100%] "
-                  onSubmit={handleSubmitPost}
-                >
-                  Đăng
-                </button>
+                {!isLoading ? (
+                  <button
+                    className="btn absolute translate-y-[100%] top-[6px] left-[100%] translate-x-[-100%] "
+                    onSubmit={handleSubmitPost}
+                  >
+                    Đăng
+                  </button>
+                ) : (
+                  <div className="bg-yellow-600 absolute top-2/4 w-[100%] h-[150px] border shadow-md text-white rounded-lg px-3 py-3 z-[10000] flex justify-center items-center">
+                    <p className="absolute font-bold text-xl ">
+                      Bài viết đang tải lên CheeseNet...
+                    </p>
+                  </div>
+                )}
               </form>
 
               <input

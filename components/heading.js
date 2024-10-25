@@ -20,10 +20,6 @@ export default function Heading({}) {
   const [isSearch, setIsSearch] = useState(false);
   const [searchValue, setSearchValue] = useState("");
 
-  const handleIsSearch = () => {
-    setIsSearch(!isSearch);
-  };
-
   const handleSubmitSearch = async (e) => {
     e.preventDefault();
     try {
@@ -100,7 +96,7 @@ export default function Heading({}) {
                   width={20}
                   height={20}
                   icon={faMagnifyingGlass}
-                  onClick={handleIsSearch}
+                  onClick={() => setIsSearch(!isSearch)}
                   className={`absolute ${isSearch ? "right-3" : "right-[-3]"} text-[#001F3F] font-medium md:text-slate-500 top-2/4 -translate-y-2/4 cursor-pointer`}
                 />
               )}

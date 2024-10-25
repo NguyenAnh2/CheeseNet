@@ -19,12 +19,13 @@ export default function ButtonAdd() {
             href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAQAAAD9CzEMAAAAbElEQVR4Ae3XwQnFQAiE4eVVsGAP1mkPFjwvQvYSWCQYCYGZv4Dv5MGB5ghcIiDQI+kCftCzNsAR8y5gYu2rwCBAgMBTgEC3rek2yQEtAZoDjso8AyaKexmIDJUZD40AAQIE0gwx449GgMC9/t0b7GTsa7J+AAAAAElFTkSuQmCC"
             height="32"
             width="32"
+            alt="ButtonAdd"
           />
         </svg>
       </label>
 
       <div className="subs-btn-add">
-        <button className="sub-circle-add-btn">
+        <button className="sub-circle-add-btn"> 
           <input
             className="hidden-sub-trigger"
             id="sub1"
@@ -34,7 +35,7 @@ export default function ButtonAdd() {
           />
           <label htmlFor="sub1" />
         </button>
-        <button className="sub-circle-add-btn">
+        <button className="sub-circle-add-btn"> 
           <input
             className="hidden-sub-trigger"
             id="sub2"
@@ -44,7 +45,7 @@ export default function ButtonAdd() {
           />
           <label htmlFor="sub2" />
         </button>
-        <button className="sub-circle-add-btn">
+        <button className="sub-circle-add-btn"> 
           <input
             className="hidden-sub-trigger"
             id="sub3"
@@ -54,7 +55,7 @@ export default function ButtonAdd() {
           />
           <label htmlFor="sub3" />
         </button>
-        <button className="sub-circle-add-btn">
+        <button className="sub-circle-add-btn"> 
           <input
             className="hidden-sub-trigger"
             id="sub4"
@@ -64,7 +65,7 @@ export default function ButtonAdd() {
           />
           <label htmlFor="sub4" />
         </button>
-        <button className="sub-circle-add-btn">
+        <button className="sub-circle-add-btn"> 
           <input
             className="hidden-sub-trigger"
             id="sub5"
@@ -74,7 +75,7 @@ export default function ButtonAdd() {
           />
           <label htmlFor="sub5" />
         </button>
-        <button className="sub-circle-add-btn">
+        <button className="sub-circle-add-btn"> 
           <input
             className="hidden-sub-trigger"
             id="sub6"
@@ -84,7 +85,7 @@ export default function ButtonAdd() {
           />
           <label htmlFor="sub6" />
         </button>
-        <button className="sub-circle-add-btn">
+        <button className="sub-circle-add-btn"> 
           <input
             className="hidden-sub-trigger"
             id="sub7"
@@ -94,7 +95,7 @@ export default function ButtonAdd() {
           />
           <label htmlFor="sub7" />
         </button>
-        <button className="sub-circle-add-btn">
+        <button className="sub-circle-add-btn"> 
           <input
             className="hidden-sub-trigger"
             id="sub8"

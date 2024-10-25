@@ -55,7 +55,7 @@ export default function Heading({}) {
   }, [isSearch]);
 
   return (
-    <div className="fixed bg-galaxy-2 w-full h-16 z-50 top-0 border-b">
+    <div className="fixed bg-galaxy-2 w-full h-16 z-50 top-0 border-b overflow-hidden">
       <div className="flex justify-between items-center h-16">
         <div className="flex items-center">
           <Link href="/">

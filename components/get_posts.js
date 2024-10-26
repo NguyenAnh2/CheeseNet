@@ -20,6 +20,7 @@ export default function GetPosts({}) {
   const { userId } = useGlobal();
   const { users } = useGlobal();
   const { postsOfUser } = useGlobal();
+  const { updatePostLikes } = useGlobal();
 
   const openModal = (image) => {
     setModalImage(image);
@@ -53,41 +54,26 @@ export default function GetPosts({}) {
   }, []);
 
   const handleLike = async (postId) => {
-    setPosts((prevPosts) =>
-      prevPosts.map((post) => {
-        if (post._id === postId) {
-          const isLiked = post.likes.some((like) => like.userId === userId);
-          if (isLiked) {
-            return {
-              ...post,
-              likes: post.likes.filter((like) => like.userId !== userId),
-            };
-          } else {
-            return {
-              ...post,
-              likes: [...post.likes, { userId, like_at: Date.now() }],
-            };
-          }
-        }
-        return post;
-      })
-    );
+    const post = postsOfUser.find((post) => post._id === postId);
+    if (!post) return;
 
+    const isLiked = post.likes.some((like) => like.userId === userId);
+    const updatedLikes = isLiked
+      ? post.likes.filter((like) => like.userId !== userId)
+      : [...post.likes, { userId, like_at: Date.now() }];
+
+    // Cập nhật trong context
+    updatePostLikes(postId, updatedLikes);
+
+    // Call API để cập nhật server
     try {
       const response = await fetch("/api/posts/update", {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          postId: postId,
-          userId: userId,
-        }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ postId, userId }),
       });
-
-      if (!response.ok) {
+      if (!response.ok)
         console.error("Lỗi khi like/unlike:", await response.json());
-      }
     } catch (error) {
       console.error("Lỗi:", error);
     }

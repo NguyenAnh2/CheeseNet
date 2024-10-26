@@ -1,22 +1,25 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faClose, faImage } from "@fortawesome/free-solid-svg-icons";
-import { useState, useRef } from "react";
+import { faClose, faImage, faSearch } from "@fortawesome/free-solid-svg-icons";
+import { useState, useEffect, useRef } from "react";
 import Confetti from "react-confetti";
 import Button from "./custom/button";
-import { useGlobal } from "./global_context";
 import ButtonAdd from "./custom/button-add";
+import { useGlobal } from "./global_context";
 
 export default function AddPost({}) {
+  // #region Biến
   const [isPost, setIsPost] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [modalImage, setModalImage] = useState(null);
   const [isPostSuccess, setIsPostSuccess] = useState(false);
   const [visibility, setVisibility] = useState("friends");
+  const [isFindingImage, setIsFindingImage] = useState(false);
   const [error, setError] = useState();
   const [isLoading, setIsLoading] = useState(false);
   const contentPostRef = useRef();
   const { userId } = useGlobal();
 
+  // #region Hàm xử lý
   const handleSubmitPost = async (e) => {
     e.preventDefault();
     setIsLoading(true);
@@ -130,6 +133,43 @@ export default function AddPost({}) {
     setModalImage(null);
   };
 
+  const [searchValueImage, setSearchValueImage] = useState();
+  const [photos, setPhotos] = useState([]);
+  const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(false);
+
+  const fetchPhotos = async () => {
+    setLoading(true);
+    const response = await fetch(
+      `/api/unsplash?keyword=${searchValueImage}&page=${page}&per_page=10`
+    );
+    const data = await response.json();
+    if (data) {
+      setPhotos((prevPhotos) =>
+        page === 1 ? data.results : [...prevPhotos, ...data.results]
+      );
+    }
+    setLoading(false);
+  };
+
+  const searchOnUnsplash = async (e) => {
+    e.preventDefault();
+    setPage(1);
+    setPhotos([]);
+    fetchPhotos();
+  };
+
+  const loadMorePhotos = () => {
+    setPage((prevPage) => prevPage + 1);
+    fetchPhotos();
+  };
+
+  const handleChooseImageSearch = (photoUrls) => {
+    setPhotos([]);
+    setSelectedImage(photoUrls);
+    setIsFindingImage(false);
+  };
+
   return (
     <div className="mobile-w-full relative flex justify-center">
       {isPostSuccess && (
@@ -163,7 +203,7 @@ export default function AddPost({}) {
           )}
 
           {isPost && (
-            <div className="relative flex flex-col justify-between border rounded-md sm:m-5 mt-5 pr-2 sm:pr-6 pb-16 pt-6 z-[102] bg-galaxy-2">
+            <div className="relative flex flex-col justify-between border rounded-md sm:m-5 mt-5 pr-2 sm:pr-6 pb-32 pt-6 z-[102] bg-galaxy-2">
               <form className="" onSubmit={(e) => handleSubmitPost(e)}>
                 <textarea
                   ref={contentPostRef}
@@ -178,7 +218,7 @@ export default function AddPost({}) {
                   }}
                 />
 
-                <div className="absolute bottom-8 left-10 ">
+                <div className="absolute bottom-[88px] left-10 ">
                   <select
                     className="block appearance-none w-full bg-galaxy text-[#001F3F] font-bold py-2 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-blue-300 cursor-pointer"
                     value={visibility}
@@ -221,12 +261,79 @@ export default function AddPost({}) {
                 width={18}
                 height={18}
                 icon={faImage}
-                className="absolute left-2 bottom-10 text-pink-500 cursor-pointer"
+                className="absolute left-2 bottom-24 text-pink-500 cursor-pointer"
                 onClick={handleAddImage}
               />
 
+              <div className="absolute bottom-12 left-0">
+                <span className="text-sm font-semibold text-[#001F3F]">
+                  Nếu chưa có ảnh? Hãy thử{" "}
+                </span>
+                <button
+                  className="text-blue-500"
+                  onClick={() => setIsFindingImage(!isFindingImage)}
+                >
+                  Tìm kiếm
+                </button>
+                <br />
+                {isFindingImage && (
+                  <form onSubmit={(e) => searchOnUnsplash(e)}>
+                    <input
+                      className="inputSearch absolute left-2"
+                      type="text"
+                      name="findingimage"
+                      placeholder="Tìm kiếm hình ảnh..."
+                      onChange={(e) => setSearchValueImage(e.target.value)}
+                    />
+                    <button
+                      type="submit"
+                      className="absolute right-6 top-[65%] translate-x-[-100%] translate-y-[50%] text-white text-lg"
+                    >
+                      <FontAwesomeIcon icon={faSearch} width={20} height={20} />
+                    </button>
+                  </form>
+                )}
+              </div>
+              <div>
+                {isFindingImage && photos && (
+                  <div
+                    className={`relative w-full top-[40px] flex flex-wrap gap-3 ${photos && "mb-20"} 
+                  ${selectedImage && "mb-0"}`}
+                  >
+                    {photos.map((photo) => (
+                      <div className="relative w-[30%] hover:scale-[2.5] transition-transform z-[10] hover:z-[11]">
+                        <img
+                          key={photo.id}
+                          src={photo.urls.small}
+                          alt={photo.alt_description}
+                          title="Chọn"
+                          className="cursor-pointer block h-full object-cover "
+                          onClick={() =>
+                            handleChooseImageSearch(photo.urls.small)
+                          }
+                        />
+                      </div>
+                    ))}
+                    {loading ? (
+                      <p>Đang tải...</p>
+                    ) : (
+                      photos.length > 0 && (
+                        <button
+                          onClick={loadMorePhotos}
+                          className="mt-4 btn h-fit"
+                        >
+                          Tải thêm
+                        </button>
+                      )
+                    )}
+                  </div>
+                )}
+              </div>
+
               {selectedImage && (
-                <div className="w-fit relative mt-0 mb-2">
+                <div
+                  className={`w-fit relative ${photos ? "mt-16" : "mt-0"} mb-2`}
+                >
                   <img
                     src={selectedImage}
                     alt="Preview"

@@ -7,7 +7,7 @@ export const GlobalProvider = ({ children }) => {
   const [users, setUsers] = useState([]);
   const [user, setUser] = useState([]);
   const [posts, setPosts] = useState([]);
-  const [postsOfUser, setPostOfUser] = useState([]);
+  const [postsOfUser, setPostsOfUser] = useState([]);
 
   useEffect(() => {
     const storedUserId = localStorage.getItem("userId");
@@ -41,7 +41,7 @@ export const GlobalProvider = ({ children }) => {
           setUsers(usersData);
           setPosts(postsData);
           setUser(userData);
-          setPostOfUser(postData);
+          setPostsOfUser(postData);
         } catch (error) {
           console.error("Lỗi khi gọi API:", error);
         }
@@ -50,6 +50,14 @@ export const GlobalProvider = ({ children }) => {
       fetchData();
     }
   }, [userId]);
+
+  const updatePostLikes = (postId, updatedLikes) => {
+    setPostsOfUser((prevPosts) =>
+      prevPosts.map((post) =>
+        post._id === postId ? { ...post, likes: updatedLikes } : post
+      )
+    );
+  };
 
   const login = (userId) => {
     setUserId(userId);
@@ -63,7 +71,7 @@ export const GlobalProvider = ({ children }) => {
 
   return (
     <GlobalContext.Provider
-      value={{ userId, login, logout, users, posts, user, postsOfUser }}
+      value={{ userId, login, logout, users, posts, user, postsOfUser, updatePostLikes }}
     >
       {children}
     </GlobalContext.Provider>

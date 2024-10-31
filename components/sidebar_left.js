@@ -73,7 +73,7 @@ export default function SideLeft({ users, user, clickOpenMess }) {
                     }
                     width={30}
                     height={30}
-                    alt={user.username ? user.name : "ccc"}
+                    alt={user.username ? user.username : "ccc"}
                     loading="lazy"
                   />
                   <p className="text-base text-[#001F3F] font-medium">

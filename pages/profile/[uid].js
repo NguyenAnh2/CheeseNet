@@ -5,6 +5,7 @@ import Layout from "../../components/layout";
 import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeart } from "@fortawesome/free-regular-svg-icons";
+import { useGlobal } from "../../components/global_context";
 
 export default function UserProfile() {
   const router = useRouter();
@@ -13,6 +14,8 @@ export default function UserProfile() {
   const [posts, setPosts] = useState([]);
   const [error, setError] = useState();
   const [isLoading, setIsLoading] = useState(true);
+  const { userId } = useGlobal();
+  const { updatePostLikes } = useGlobal();
 
   const fetchUserInfo = async () => {
     try {
@@ -81,43 +84,30 @@ export default function UserProfile() {
   };
 
   const handleLike = async (postId) => {
-    setPosts((prevPosts) =>
-      prevPosts.map((post) => {
-        if (post._id === postId) {
-          const isLiked = post.likes.some((like) => like.userId === uid);
-          if (isLiked) {
-            return {
-              ...post,
-              likes: post.likes.filter((like) => like.userId !== uid),
-            };
-          } else {
-            return {
-              ...post,
-              likes: [...post.likes, { uid, like_at: Date.now() }],
-            };
-          }
-        }
-        return post;
-      })
-    );
+    if (posts) {
+      const post = posts.find((post) => post._id === postId);
+      if (!post) return;
 
-    try {
-      const response = await fetch("/api/posts/update", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          postId: postId,
-          userId: uid,
-        }),
-      });
+      const isLiked = post.likes.some((like) => like.userId === userId);
+      const updatedLikes = isLiked
+        ? post.likes.filter((like) => like.userId !== userId)
+        : [...post.likes, { userId, like_at: Date.now() }];
 
-      if (!response.ok) {
-        console.error("Lỗi khi like/unlike:", await response.json());
+      // Cập nhật trong context
+      updatePostLikes(postId, updatedLikes);
+
+      // Call API để cập nhật server
+      try {
+        const response = await fetch("/api/posts/update", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ postId, userId }),
+        });
+        if (!response.ok)
+          console.error("Lỗi khi like/unlike:", await response.json());
+      } catch (error) {
+        console.error("Lỗi:", error);
       }
-    } catch (error) {
-      console.error("Lỗi:", error);
     }
   };
 
@@ -126,7 +116,7 @@ export default function UserProfile() {
   return (
     <Layout>
       <Head>
-        <title>{user.username}</title>
+        <title>{user ? user.username : "Unknow User"}</title>
         <link rel="icon" href="/icon.png" />
       </Head>
       {user ? (
@@ -178,67 +168,68 @@ export default function UserProfile() {
       )}
 
       <div className="pb-10">
-        {posts && posts.length > 0 ? (
-          <div>
-            {posts
-              .sort((a, b) => b.timestamp - a.timestamp)
-              .map((post) => {
-                const isLiked = post.likes.some((like) => like.userId === uid);
-                return (
-                  <div className="card relative w-[40%] left-[100%] translate-x-[-175%] block border  rounded-lg my-5 pb-3 ">
-                    <div className="flex justify-between items-center mb-5 border-b px-2 py-3">
-                      <div
-                        className="flex flex-col"
-                        title={user && user.username}
-                      >
-                        <div className="flex">
-                          <Image
-                            src={
-                              user ? user.avatar : "/images/defaultavatar.jpg"
-                            }
-                            alt="avatarUser"
-                            className="rounded-full mr-3 w-8 h-8 object-cover"
-                            width={30}
-                            height={30}
-                            loading="lazy"
-                          />
-                          <p className="text-[#001F3F] font-semibold text-base ">{user ? user.username : "Unknown User"}</p>
-                        </div>
-                        <p className="text-xs mt-3 text-slate-600">
-                          {timeAgo(post.timestamp)}
-                        </p>
-                      </div>
-                    </div>
+        {posts ? (
+          posts
+            .sort((a, b) => b.timestamp - a.timestamp)
+            .map((post) => {
+              const isLiked = post.likes.some((like) => like.userId === userId);
+              return (
+                <div
+                  className="card relative w-[40%] left-[100%] translate-x-[-175%] block border  rounded-lg my-5 pb-3"
+                  key={post._id}
+                >
+                  <div className="flex justify-between items-center mb-5 border-b px-2 py-3">
                     <div
-                      className={`border-b mb-2 ${post.image ? "mb-20" : "mb-5"} px-3`}
+                      className="flex flex-col"
+                      title={user && user.username}
                     >
-                      <div className="mb-5 text-[#001F3F] font-semibold text-base ">{post.content}</div>
-                      {post.image && (
+                      <div className="flex">
                         <Image
-                          src={
-                            post.image
-                              ? post.image
-                              : "/images/defaultavatar.jpg"
-                          }
-                          alt="imageOfPost"
-                          className="w-full block cursor-pointer hover:scale-[1.2] bg-white z-[1000000] transition-all"
-                          width={100}
-                          height={100}
+                          src={user ? user.avatar : "/images/defaultavatar.jpg"}
+                          alt="avatarUser"
+                          className="rounded-full mr-3 w-8 h-8 object-cover"
+                          width={30}
+                          height={30}
                           loading="lazy"
                         />
-                      )}
-                    </div>
-                    <div
-                      id={`like_of_${post._id}`}
-                      className={`cursor-pointer w-fit px-2 text-xl ${isLiked ? "text-red-500" : "text-black"}`}
-                      onClick={() => handleLike(post._id)}
-                    >
-                      <FontAwesomeIcon icon={faHeart} width={18} height={18} />
+                        <p className="text-[#001F3F] font-semibold text-base ">
+                          {user ? user.username : "Unknown User"}
+                        </p>
+                      </div>
+                      <p className="text-xs mt-3 text-slate-600">
+                        {timeAgo(post.timestamp)}
+                      </p>
                     </div>
                   </div>
-                );
-              })}
-          </div>
+                  <div
+                    className={`border-b mb-2 ${post.image ? "mb-20" : "mb-5"} px-3`}
+                  >
+                    <div className="mb-5 text-[#001F3F] font-semibold text-base ">
+                      {post.content}
+                    </div>
+                    {post.image && (
+                      <Image
+                        src={
+                          post.image ? post.image : "/images/defaultavatar.jpg"
+                        }
+                        alt="imageOfPost"
+                        className="w-full block cursor-pointer hover:scale-[1.2] bg-white z-[1000000] transition-all"
+                        width={100}
+                        height={100}
+                        loading="lazy"
+                      />
+                    )}
+                  </div>
+                  <div
+                    id={`like_of_${post._id}`}
+                    className={`cursor-pointer w-fit px-2 text-xl ${isLiked ? "text-red-500" : "text-[#001F3F]"}`}
+                    onClick={() => handleLike(post._id)}
+                  >
+                    <FontAwesomeIcon icon={faHeart} width={20} height={20} />
+                  </div>
+                </div>
+              );
+            })
         ) : (
           <p className="relative mt-40 w-[40%] left-[100%] translate-x-[-175%] block font-bold text-[#001F3F]">
             Bài viết trống

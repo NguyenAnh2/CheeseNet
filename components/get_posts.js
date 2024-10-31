@@ -10,6 +10,7 @@ import Image from "next/image";
 import { useGlobal } from "./global_context";
 import { useState, useEffect, useRef } from "react";
 import LoadingPage from "./custom/loading-page";
+import Link from "next/link";
 
 export default function GetPosts({}) {
   const [currentTime, setCurrentTime] = useState(Date.now());
@@ -108,7 +109,10 @@ export default function GetPosts({}) {
               >
                 <div className="flex justify-between mb-5 border-b px-2 py-3">
                   <div className="flex flex-col" title={user && user.username}>
-                    <div className="flex">
+                    <Link
+                      href={`/profile/${user.uid}`}
+                      className="flex cursor-pointer"
+                    >
                       <Image
                         src={user ? user.avatar : "/images/defaultavatar.jpg"}
                         alt="avatarUser"
@@ -121,7 +125,7 @@ export default function GetPosts({}) {
                         {user ? user.username : "Unknown User"}
                       </p>{" "}
                       <br />
-                    </div>
+                    </Link>
                     <p className="text-xs mt-3 text-[#001F3F]">
                       {timeAgo(post.timestamp)}
                     </p>

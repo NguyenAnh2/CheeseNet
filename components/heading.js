@@ -167,7 +167,7 @@ export default function Heading({}) {
                     }
                     width={30}
                     height={30}
-                    alt={user.username ? user.name : "ccccccccc"}
+                    alt={user.username ? user.username : "ccccccccc"}
                     loading="lazy"
                   />
                 </li>

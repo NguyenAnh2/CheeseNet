@@ -2,7 +2,7 @@ import axios from "axios";
 
 export default async function handler(req, res) {
   const { query } = req;
-  const { page = 1, per_page = 10 } = query; // Thêm các tham số phân trang
+  const { page = 1, per_page = 10 } = query; 
 
   try {
     const response = await axios.get(`https://api.unsplash.com/search/photos`, {
